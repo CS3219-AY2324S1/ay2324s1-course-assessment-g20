@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 export interface IConstantsService {
   NODE_ENV: string;
   PORT: string;
+  CORS_ORIGIN: string;
 }
 
 @Injectable()
@@ -24,4 +25,5 @@ export class ConstantsService implements IConstantsService {
 
   NODE_ENV = this.get('NODE_ENV');
   PORT = this.getOrDefaultTo('PORT', 4000);
+  CORS_ORIGIN = this.getOrThrow('CORS_ORIGIN');
 }

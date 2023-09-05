@@ -6,9 +6,10 @@ import { ConstantsService } from './constants.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `.env${
-        process.env.NODE_ENV ? `.${process.env.NODE_ENV}` : ''
-      }`,
+      envFilePath:
+        process.env.NODE_ENV === 'test'
+          ? `./test/.env.test`
+          : `.env${process.env.NODE_ENV ? `.${process.env.NODE_ENV}` : ''}`,
     }),
   ],
   providers: [ConstantsService],

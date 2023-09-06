@@ -23,6 +23,12 @@
       ],
       "@app/utils-lib/*": [
         "libs/utils-lib/src/*"
+      ],
+      "@app/config": [
+        "libs/config/src"
+      ],
+      "@app/config/*": [
+        "libs/config/src/*"
       ]
     }
   }

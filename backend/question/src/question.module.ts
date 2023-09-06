@@ -8,7 +8,11 @@ import questionConfiguration from './config/configuration';
   imports: [
     ConfigModule.forRoot({
       load: [questionConfiguration],
-      envFilePath: process.env.NODE_ENV ? undefined : '../.env',
+      envFilePath: [undefined, 'development'].includes(process.env.NODE_ENV) // during development
+        ? '../.env'
+        : process.env.NODE_ENV === 'test' // during testing
+        ? '../.env.test'
+        : undefined,
     }),
   ],
   controllers: [QuestionController],

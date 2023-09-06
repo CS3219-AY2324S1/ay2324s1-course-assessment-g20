@@ -12,7 +12,7 @@
     "format:ci": "yarn workspaces run format:ci",
     "lint": "yarn workspaces run lint",
     "lint:ci": "yarn workspaces run lint:ci",
-    "test": "cd gateway; yarn test:e2e --force-exit",
+    "test": "cd gateway; NODE_ENV=development yarn test:e2e --force-exit",
     "test:ci": "yarn start:ci; cd gateway; yarn test:e2e --force-exit",
     "build": "yarn workspaces run build",
     "prepare": "cd .. && husky install backend/.husky"

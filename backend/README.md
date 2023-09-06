@@ -2,8 +2,7 @@
 1. `cd` to the `backend` directory.
 1. Run `yarn install`.
 1. Copy the `.env.example` file as `.env` (e.g. `cp .env.example .env`) and update the variables where necessary.
-1. Open multiple terminals and `cd` to the directory of each microservice. E.g. `gateway`, `question`.
-1. Run each microservice via `yarn run start:dev` in separate terminals to start the nest microservices in 'watch' mode.
+1. Open multiple terminals to the `backend` directory, and run each microservice in 'watch' mode (e.g. `yarn start:dev gateway`, `yarn start:dev question`).
 
 ## Using Docker
 TODO

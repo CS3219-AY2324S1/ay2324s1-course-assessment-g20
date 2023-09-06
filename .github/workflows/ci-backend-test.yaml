@@ -24,5 +24,7 @@ jobs:
           node-version: '18'
       - name: Install backend dependencies
         run: cd backend; yarn install --frozen-lockfile;
+      - name: Start microservices
+        run: cd backend; yarn start:ci;
       - name: Run backend tests
         run: cd backend; yarn run ${{ matrix.commands }}

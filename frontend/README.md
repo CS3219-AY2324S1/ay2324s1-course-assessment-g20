@@ -1,3 +1,20 @@
+# Installation
+
+```bash
+$ yarn install
+```
+
+# Running the app in development mode
+
+```bash
+# development
+$ yarn dev
+
+# production mode
+$ yarn build
+$ yarn preview
+```
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

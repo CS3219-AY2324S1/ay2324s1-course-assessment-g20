@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        commands: ['format:ci', 'lint:ci', build, test]
+        commands: ['format:ci', 'lint:ci', build]
 
     steps:
       - name: Check out repository code

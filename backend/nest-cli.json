@@ -35,6 +35,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
       }
+    },
+    "sql-database": {
+      "type": "library",
+      "root": "libs/sql-database",
+      "entryFile": "index",
+      "sourceRoot": "libs/sql-database/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/sql-database/tsconfig.lib.json"
+      }
     }
   }
 }

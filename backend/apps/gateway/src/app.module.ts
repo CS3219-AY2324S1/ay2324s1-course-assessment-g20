@@ -2,16 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { ClientProxyFactory } from '@nestjs/microservices';
 import gatewayConfiguration from './config/configuration';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@app/config';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      load: [gatewayConfiguration],
-      ignoreEnvFile: ['staging', 'production'].includes(process.env.NODE_ENV),
-      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
-    }),
-  ],
+  imports: [ConfigModule.loadConfiguration(gatewayConfiguration)],
   controllers: [AppController],
   providers: [
     {

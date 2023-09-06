@@ -8,8 +8,8 @@
   "scripts": {
     "build": "nest build; nest build question",
     "start:ci": "NODE_ENV=test nest start & NODE_ENV=test nest start question &",
-    "format": "prettier --write \"apps/**/*.ts\"",
-    "format:ci": "prettier --list-different \"apps/**/*.ts\"",
+    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
+    "format:ci": "prettier --list-different \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",

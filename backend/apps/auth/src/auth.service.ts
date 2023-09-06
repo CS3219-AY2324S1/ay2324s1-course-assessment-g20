@@ -4,6 +4,8 @@ import { RefreshTokensDaoService } from './daos/refreshTokens/refreshTokens.dao.
 import { JwtService as NestJwtService } from '@nestjs/jwt';
 import { JwtTokenConfig } from './config/configuration';
 import { JwtPayload } from '@app/types';
+import { UserModel } from './models/user.model';
+import { UserDaoService } from './daos/users/user.dao.service';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +15,7 @@ export class AuthService {
     private readonly jwtService: NestJwtService,
     private readonly configService: ConfigService,
     private readonly refreshTokensDaoService: RefreshTokensDaoService,
+    private readonly userDaoService: UserDaoService,
   ) {
     this.tokenConfig = configService.get('jwtTokenConfig');
   }
@@ -79,5 +82,9 @@ export class AuthService {
     }
 
     return this.generateJwts(user, refreshToken);
+  }
+
+  findOrCreateOAuthUser(user: Partial<UserModel>) {
+    return this.userDaoService.findOrCreateOAuthUser(user);
   }
 }

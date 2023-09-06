@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { MessagePattern } from '@nestjs/microservices';
+import { UserModel } from './models/user.model';
 
 @Controller()
 export class AuthController {
@@ -14,5 +15,10 @@ export class AuthController {
   @MessagePattern('generate_jwts_from_refresh_token')
   generateJwtsFromRefreshToken(refreshToken) {
     return this.authService.generateJwtsFromRefreshToken(refreshToken);
+  }
+
+  @MessagePattern('find_or_create_oauth_user')
+  findOrCreateOauthUser(user: Partial<UserModel>) {
+    return this.authService.findOrCreateOAuthUser(user);
   }
 }

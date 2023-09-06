@@ -1,7 +1,7 @@
 import { Controller, Get, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
-import { Public } from './jwt/jwtPublic.decorator';
+import { Public } from '../jwt/jwtPublic.decorator';
 
 @Controller()
 export class AppController {

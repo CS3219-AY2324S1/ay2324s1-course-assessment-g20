@@ -7,6 +7,8 @@ import { SqlDatabaseModule } from '@app/sql-database';
 import { RefreshTokenModel } from './models/refreshToken.model';
 import { RefreshTokensDaoModule } from './daos/refreshTokens/refreshTokens.dao.module';
 import { JwtModule as NestJwtModule } from '@nestjs/jwt';
+import { UserModel } from './models/user.model';
+import { UserDaoModule } from './daos/users/user.dao.module';
 
 @Module({
   imports: [
@@ -14,8 +16,9 @@ import { JwtModule as NestJwtModule } from '@nestjs/jwt';
     NestJwtModule,
 
     // Database and DAOs
-    SqlDatabaseModule.factory([RefreshTokenModel]),
+    SqlDatabaseModule.factory([RefreshTokenModel, UserModel]),
     RefreshTokensDaoModule,
+    UserDaoModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],

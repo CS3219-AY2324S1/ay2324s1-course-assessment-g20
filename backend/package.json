@@ -5,13 +5,14 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "workspaces": ["gateway", "question"],
   "scripts": {
-    "format": "prettier --write \"./**/*.ts\"",
-    "format:ci": "prettier --list-different \"./**/*.ts\"",
-    "lint": "eslint \"./**/*.ts\" --fix",
-    "lint:ci": "eslint \"./**/*.ts\"",
+    "format": "yarn workspaces run format",
+    "format:ci": "yarn workspaces run format:ci",
+    "lint": "yarn workspaces run lint",
+    "lint:ci": "yarn workspaces run lint:ci",
     "test": "cd gateway; yarn test:e2e --force-exit",
-    "build": "cd gateway; yarn build; cd ../question; yarn build",
+    "build": "yarn workspaces run build",
     "prepare": "cd .. && husky install backend/.husky"
   },
   "devDependencies": {

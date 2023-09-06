@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule } from '@nestjs/common';
 import { BaseModel } from './models/base.model';
 import { ConfigService } from '@nestjs/config';
 import Knex from 'knex';
@@ -39,6 +39,7 @@ export class SqlDatabaseModule {
         },
       ],
       exports: [...modelProviders],
+      global: true,
     };
   }
 }

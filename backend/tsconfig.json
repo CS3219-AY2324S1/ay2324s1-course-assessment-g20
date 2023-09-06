@@ -35,6 +35,12 @@
       ],
       "@app/config/*": [
         "libs/config/src/*"
+      ],
+      "@app/types": [
+        "libs/types/src"
+      ],
+      "@app/types/*": [
+        "libs/types/src/*"
       ]
     }
   }

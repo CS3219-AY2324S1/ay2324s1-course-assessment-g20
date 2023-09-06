@@ -5,11 +5,11 @@ import Dashboard from '../pages/Dashboard';
 export default createBrowserRouter([
   {
     path: '/login',
-    element: <Login />
+    element: <Login />,
   },
   {
     path: '/dashboard',
-    element: <Dashboard />
+    element: <Dashboard />,
   },
   { path: '*', element: <Navigate to="/login" replace /> },
-])
+]);

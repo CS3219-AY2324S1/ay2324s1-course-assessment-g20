@@ -4,20 +4,12 @@ import { ClientProxyFactory } from '@nestjs/microservices';
 import gatewayConfiguration from './config/configuration';
 import { ConfigService } from '@nestjs/config';
 import { ConfigModule } from '@app/config';
-import { JwtStrategy } from './jwt/jwt.strategy';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtGuard } from './jwt/jwt.guard';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
-  imports: [ConfigModule.loadConfiguration(gatewayConfiguration)],
+  imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
   controllers: [AppController],
   providers: [
-    JwtStrategy,
-    {
-      // Global JWT app guard. Lets through endpoints with @Public decorator.
-      provide: APP_GUARD,
-      useClass: JwtGuard,
-    },
     {
       provide: 'QUESTION_SERVICE',
       useFactory: (configService: ConfigService) => {

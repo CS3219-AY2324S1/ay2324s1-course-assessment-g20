@@ -1,0 +1,47 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "workspaces": ["gateway", "question"],
+  "scripts": {
+    "start:ci": "yarn workspaces run start:ci",
+    "format": "yarn workspaces run format",
+    "format:ci": "yarn workspaces run format:ci",
+    "lint": "yarn workspaces run lint",
+    "lint:ci": "yarn workspaces run lint:ci",
+    "test": "cd gateway; NODE_ENV=development yarn test:e2e --force-exit",
+    "test:ci": "yarn start:ci; cd gateway; yarn test:e2e --force-exit",
+    "build": "yarn workspaces run build",
+    "prepare": "cd .. && husky install backend/.husky"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^8.0.3",
+    "prettier": "^3.0.0",
+    "typescript": "^5.1.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}

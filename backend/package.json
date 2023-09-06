@@ -5,27 +5,54 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-  "workspaces": ["gateway", "question"],
   "scripts": {
-    "start:ci": "yarn workspaces run start:ci",
-    "format": "yarn workspaces run format",
-    "format:ci": "yarn workspaces run format:ci",
-    "lint": "yarn workspaces run lint",
-    "lint:ci": "yarn workspaces run lint:ci",
-    "test": "cd gateway; NODE_ENV=development yarn test:e2e --force-exit",
-    "test:ci": "yarn start:ci; cd gateway; yarn test:e2e --force-exit",
-    "build": "yarn workspaces run build",
+    "build": "nest build; nest build question",
+    "start:ci": "NODE_ENV=test nest start & NODE_ENV=test nest start question &",
+    "format": "prettier --write \"apps/**/*.ts\"",
+    "format:ci": "prettier --list-different \"apps/**/*.ts\"",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/apps/gateway/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint:ci": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "test:ci": "jest --config ./apps/gateway/test/jest-e2e.json --force-exit",
+    "test": "NODE_ENV=development yarn test:ci",
     "prepare": "cd .. && husky install backend/.husky"
   },
+  "dependencies": {
+    "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^3.0.1",
+    "@nestjs/core": "^9.0.0",
+    "@nestjs/microservices": "^10.2.4",
+    "@nestjs/platform-express": "^9.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "rxjs": "^7.2.0"
+  },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.42.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
+    "@nestjs/cli": "^9.0.0",
+    "@nestjs/schematics": "^9.0.0",
+    "@nestjs/testing": "^9.0.0",
+    "@types/express": "^4.17.13",
+    "@types/jest": "28.1.8",
+    "@types/node": "^16.0.0",
+    "@types/supertest": "^2.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "husky": "^8.0.3",
-    "prettier": "^3.0.0",
-    "typescript": "^5.1.3"
+    "jest": "28.1.3",
+    "prettier": "^2.3.2",
+    "source-map-support": "^0.5.20",
+    "supertest": "^6.1.3",
+    "ts-jest": "28.0.8",
+    "ts-loader": "^9.2.3",
+    "ts-node": "^10.0.0",
+    "tsconfig-paths": "4.1.0",
+    "typescript": "^4.7.4"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -42,6 +69,13 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^@app/utils-lib(|/.*)$": "<rootDir>/libs/utils-lib/src/$1"
+    }
   }
 }

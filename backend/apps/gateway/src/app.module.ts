@@ -8,11 +8,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot({
       load: [gatewayConfiguration],
-      envFilePath: [undefined, 'development'].includes(process.env.NODE_ENV) // during development
-        ? '../.env'
-        : process.env.NODE_ENV === 'test' // during testing
-        ? '../.env.test'
-        : undefined,
+      ignoreEnvFile: ['staging', 'production'].includes(process.env.NODE_ENV),
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
     }),
   ],
   controllers: [AppController],

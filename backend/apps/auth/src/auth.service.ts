@@ -1,11 +1,10 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RefreshTokensDaoService } from './daos/refreshTokens/refreshTokens.dao.service';
+import { RefreshTokensDaoService } from './database/daos/refreshTokens/refreshTokens.dao.service';
 import { JwtService as NestJwtService } from '@nestjs/jwt';
-import { JwtTokenConfig } from './config/configuration';
-import { JwtPayload } from '@app/types';
-import { UserModel } from './models/user.model';
-import { UserDaoService } from './daos/users/user.dao.service';
+import { JwtPayload, JwtTokenConfig } from '@app/types';
+import { UserDaoService } from './database/daos/users/user.dao.service';
+import { UserModel } from './database/models/user.model';
 
 @Injectable()
 export class AuthService {
@@ -78,6 +77,7 @@ export class AuthService {
     );
 
     if (!isValidRefreshToken) {
+      // TODO: How to 401 in upstream gateway microservice?
       throw new HttpException('Invalid refresh token', 401);
     }
 

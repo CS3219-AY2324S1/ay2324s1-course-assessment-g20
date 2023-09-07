@@ -18,7 +18,12 @@
     "lint:ci": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test:ci": "jest --config ./apps/gateway/test/jest-e2e.json --force-exit",
     "test": "NODE_ENV=development yarn test:ci",
-    "prepare": "cd .. && husky install backend/.husky"
+    "prepare": "cd .. && husky install backend/.husky",
+    "knex-script": "knex --knexfile",
+    "knex": "./scripts/knex.sh",
+    "migrate": "./scripts/migrate_latest.sh",
+    "migrate:all": "node ./scripts/createSqlDatabases.js; yarn migrate auth question;",
+    "migrate:make": "./scripts/migrate_make.sh"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

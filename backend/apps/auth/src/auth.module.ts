@@ -4,11 +4,11 @@ import { AuthService } from './auth.service';
 import { ConfigModule } from '@app/config';
 import authConfiguration from './config/configuration';
 import { SqlDatabaseModule } from '@app/sql-database';
-import { RefreshTokenModel } from './models/refreshToken.model';
-import { RefreshTokensDaoModule } from './daos/refreshTokens/refreshTokens.dao.module';
+import { RefreshTokensDaoModule } from './database/daos/refreshTokens/refreshTokens.dao.module';
 import { JwtModule as NestJwtModule } from '@nestjs/jwt';
-import { UserModel } from './models/user.model';
-import { UserDaoModule } from './daos/users/user.dao.module';
+import { UserDaoModule } from './database/daos/users/user.dao.module';
+import { UserModel } from './database/models/user.model';
+import { RefreshTokenModel } from './database/models/refreshToken.model';
 
 @Module({
   imports: [

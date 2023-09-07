@@ -1,5 +1,5 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-google-oauth20';
+import { Strategy, _StrategyOptionsBase } from 'passport-google-oauth20';
 import { Inject, Injectable } from '@nestjs/common';
 import { VerifiedCallback } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
@@ -13,7 +13,12 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
     @Inject('AUTH_SERVICE') private readonly authServiceClient: ClientProxy,
     configService: ConfigService,
   ) {
-    const googleOauthOptions = configService.get('googleOauthOptions');
+    const googleOauthOptions: _StrategyOptionsBase =
+      configService.get('googleOauthOptions');
+    if (!googleOauthOptions) {
+      throw Error('Google OAuth environment variables not configured!');
+    }
+
     super({
       ...googleOauthOptions,
       scope: ['email', 'profile'],

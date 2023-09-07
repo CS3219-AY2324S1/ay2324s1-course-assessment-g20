@@ -1,4 +1,5 @@
 import { TcpOptions, Transport } from '@nestjs/microservices';
+import { _StrategyOptionsBase } from 'passport-google-oauth20';
 
 const gatewayConfiguration = () => {
   const questionServiceOptions: TcpOptions = {
@@ -17,7 +18,7 @@ const gatewayConfiguration = () => {
     transport: Transport.TCP,
   };
 
-  const googleOauthOptions = {
+  const googleOauthOptions: _StrategyOptionsBase = {
     clientID: process.env.OAUTH_GOOGLE_ID,
     clientSecret: process.env.OAUTH_GOOGLE_SECRET,
     callbackURL: process.env.OAUTH_GOOGLE_REDIRECT_URL,

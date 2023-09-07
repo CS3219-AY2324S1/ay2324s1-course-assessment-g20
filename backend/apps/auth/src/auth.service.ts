@@ -36,7 +36,7 @@ export class AuthService {
   private verifyRefreshToken(refreshToken: string): JwtPayload {
     try {
       return this.jwtService.verify(refreshToken, {
-        secret: this.tokenConfig.accessTokenSecret,
+        secret: this.tokenConfig.refreshTokenSecret,
       });
     } catch (e) {
       throw new HttpException('Invalid refresh token', 401);
@@ -77,7 +77,6 @@ export class AuthService {
     );
 
     if (!isValidRefreshToken) {
-      // TODO: How to 401 in upstream gateway microservice?
       throw new HttpException('Invalid refresh token', 401);
     }
 

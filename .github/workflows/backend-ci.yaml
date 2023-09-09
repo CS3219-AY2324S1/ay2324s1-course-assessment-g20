@@ -19,7 +19,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Start test containers
-        run: cd backend && docker compose -f ./docker-compose.test.yml up -d
+        run: cd backend && docker compose -f ./docker-compose.test.yml --env-file=.env.test up -d
       - name: Use Node.js
         uses: actions/setup-node@v2-beta
         with:
@@ -30,4 +30,4 @@ jobs:
         run: cd backend && yarn run ${{ matrix.commands }}
       - name: Stop containers
         if: always()
-        run: cd backend && docker compose -f ./docker-compose.test.yml down
+        run: cd backend && docker compose -f ./docker-compose.test.yml --env-file=.env.test down

@@ -24,11 +24,23 @@
       "@app/utils-lib/*": [
         "libs/utils-lib/src/*"
       ],
+      "@app/sql-database": [
+        "libs/sql-database/src"
+      ],
+      "@app/sql-database/*": [
+        "libs/sql-database/src/*"
+      ],
       "@app/config": [
         "libs/config/src"
       ],
       "@app/config/*": [
         "libs/config/src/*"
+      ],
+      "@app/types": [
+        "libs/types/src"
+      ],
+      "@app/types/*": [
+        "libs/types/src/*"
       ]
     }
   }

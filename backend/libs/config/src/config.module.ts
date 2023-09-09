@@ -18,6 +18,7 @@ export class ConfigModule extends NestConfigModule {
       ],
       module: ConfigModule,
       providers: [ConfigService],
+      global: true,
     };
   }
 }

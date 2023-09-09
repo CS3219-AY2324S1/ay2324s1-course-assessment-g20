@@ -1,6 +1,9 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
+import { useAuth } from '../utils/hooks';
 
 export default function Login() {
+  const auth = useAuth();
+
   return (
     <>
       <Box
@@ -13,9 +16,7 @@ export default function Login() {
         <Typography variant="h1" gutterBottom>
           PeerPrep
         </Typography>
-        <TextField id="outlined-basic" label="Username" variant="outlined" />
-        <TextField id="outlined-basic" label="Password" variant="outlined" />
-        <Button href={`/dashboard`} variant="contained">
+        <Button onClick={auth.redirectToSignIn} variant="contained">
           Log in
         </Button>
       </Box>

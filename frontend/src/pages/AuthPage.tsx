@@ -19,7 +19,7 @@ export default function AuthPage() {
     });
 
     navigate('/dashboard', { replace: true });
-  }, []);
+  }, [navigate, auth]);
 
   return <>Wait a moment, authenticating</>;
 }

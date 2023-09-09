@@ -13,18 +13,21 @@ jobs:
 
     strategy:
       matrix:
-        commands: ['format:ci', 'lint:ci', build, 'test:ci']
+        commands: ['format:ci', 'lint:ci', 'build:ci', 'test:ci']
 
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
+      - name: Start test containers
+        run: docker compose -f ./docker-compose.test.yml up -d
       - name: Use Node.js
         uses: actions/setup-node@v2-beta
         with:
           node-version: '18'
       - name: Install backend dependencies
         run: cd backend; yarn install --frozen-lockfile;
-      - name: Start microservices
-        run: cd backend; yarn start:ci;
       - name: Run backend tests
         run: cd backend; yarn run ${{ matrix.commands }}
+      - name: Stop containers
+        if: always()
+        run: docker compose -f ./docker-compose.test.yml down

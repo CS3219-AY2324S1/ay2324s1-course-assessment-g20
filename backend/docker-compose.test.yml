@@ -1,0 +1,30 @@
+version: "3"
+services:
+  gateway:
+    build: 
+      context: .
+      dockerfile: ./apps/gateway/Dockerfile
+    ports:
+      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+    env_file:
+      .env.test
+  auth:
+    build: 
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+    ports:
+      - ${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}
+    env_file:
+      .env.test
+    environment:
+      - AUTH_SERVICE_SQL_DATABASE_HOST=host.docker.internal
+  question:
+    build: 
+      context: .
+      dockerfile: ./apps/question/Dockerfile
+    ports:
+      - ${QUESTION_SERVICE_PORT}:${QUESTION_SERVICE_PORT}
+    env_file:
+      .env.test
+    environment:
+      - QUESTION_SERVICE_SQL_DATABASE_HOST=host.docker.internal

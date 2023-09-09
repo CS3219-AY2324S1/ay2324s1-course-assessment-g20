@@ -1,0 +1,38 @@
+version: "3"
+services:
+  gateway:
+    build: 
+      context: .
+      dockerfile: ./apps/gateway/Dockerfile
+    ports:
+      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+    networks:
+      - backend
+    env_file:
+      .env
+    environment:
+      - AUTH_SERVICE_HOST=auth
+      - QUESTION_SERVICE_HOST=question
+  auth:
+    build: 
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+    networks:
+      - backend
+    env_file:
+      .env
+    environment:
+      - AUTH_SERVICE_SQL_DATABASE_HOST=host.docker.internal
+  question:
+    build: 
+      context: .
+      dockerfile: ./apps/question/Dockerfile
+    networks:
+      - backend
+    env_file:
+      .env
+    environment:
+      - QUESTION_SERVICE_SQL_DATABASE_HOST=host.docker.internal
+networks:
+  backend:
+    driver: bridge

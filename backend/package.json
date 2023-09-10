@@ -24,7 +24,7 @@
     "knex-script": "knex --knexfile",
     "knex": "./scripts/knex.sh",
     "migrate": "./scripts/migrate_latest.sh",
-    "migrate:all": "node ./scripts/createSqlDatabases.js && yarn migrate auth question",
+    "migrate:all": "node ./scripts/createSqlDatabases.js && yarn migrate auth",
     "migrate:make": "./scripts/migrate_make.sh"
   },
   "dependencies": {

@@ -4,27 +4,61 @@ services:
     build: 
       context: .
       dockerfile: ./apps/gateway/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
     ports:
       - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
     env_file:
       .env.test
+    environment:
+      - AUTH_SERVICE_HOST=auth
+      - QUESTION_SERVICE_HOST=question
+
   auth:
     build: 
       context: .
       dockerfile: ./apps/auth/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
     ports:
       - ${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}
     env_file:
       .env.test
-    environment:
-      - AUTH_SERVICE_SQL_DATABASE_HOST=host.docker.internal
+
   question:
     build: 
       context: .
       dockerfile: ./apps/question/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
     ports:
       - ${QUESTION_SERVICE_PORT}:${QUESTION_SERVICE_PORT}
     env_file:
       .env.test
+
+  postgres:
+    image: postgres:14.1-alpine
+    restart: always
+    env_file:
+      .env.test
     environment:
-      - QUESTION_SERVICE_SQL_DATABASE_HOST=host.docker.internal
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sql-migrations:
+    build: 
+      context: .
+      dockerfile: ./scripts/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      .env.test

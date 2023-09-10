@@ -4,6 +4,9 @@ services:
     build: 
       context: .
       dockerfile: ./apps/gateway/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
     ports:
       - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
     networks:
@@ -13,26 +16,80 @@ services:
     environment:
       - AUTH_SERVICE_HOST=auth
       - QUESTION_SERVICE_HOST=question
+
   auth:
     build: 
       context: .
       dockerfile: ./apps/auth/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
     networks:
       - backend
     env_file:
       .env
     environment:
-      - AUTH_SERVICE_SQL_DATABASE_HOST=host.docker.internal
+      - AUTH_SERVICE_SQL_DATABASE_HOST=postgres
+      - AUTH_SERVICE_SQL_DATABASE_PORT=5432
+      - AUTH_SERVICE_SQL_DATABASE_USER=postgres
+      - AUTH_SERVICE_SQL_DATABASE_PASSWORD=postgres
+
   question:
     build: 
       context: .
       dockerfile: ./apps/question/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
     networks:
       - backend
     env_file:
       .env
     environment:
-      - QUESTION_SERVICE_SQL_DATABASE_HOST=host.docker.internal
+      - QUESTION_SERVICE_SQL_DATABASE_HOST=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_PORT=5432
+      - QUESTION_SERVICE_SQL_DATABASE_USER=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_PASSWORD=postgres
+
+  postgres:
+    image: postgres:14.1-alpine
+    restart: always
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data # Persist data between restarts
+    env_file:
+      .env
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sql-migrations:
+    build: 
+      context: .
+      dockerfile: ./scripts/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      .env
+    networks:
+      - backend
+    environment:
+      - AUTH_SERVICE_SQL_DATABASE_HOST=postgres
+      - AUTH_SERVICE_SQL_DATABASE_PORT=5432
+      - AUTH_SERVICE_SQL_DATABASE_USER=postgres
+      - AUTH_SERVICE_SQL_DATABASE_PASSWORD=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_HOST=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_PORT=5432
+      - QUESTION_SERVICE_SQL_DATABASE_USER=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_PASSWORD=postgres
+
 networks:
   backend:
     driver: bridge

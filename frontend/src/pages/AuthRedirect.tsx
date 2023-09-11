@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/hooks';
 
-export default function AuthPage() {
+export default function AuthRedirect() {
   const navigate = useNavigate();
 
   const auth = useAuth();

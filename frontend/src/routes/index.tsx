@@ -1,22 +1,19 @@
-import { Navigate, createBrowserRouter, Outlet } from 'react-router-dom';
+import { Navigate, createBrowserRouter } from 'react-router-dom';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
-import NavBar from '../navigation/NavBar';
-import AuthPage from '../pages/AuthPage';
-import PublicOnly from './PublicOnly';
-import RequireAuth from './RequireAuth';
+import PublicOnlyRoutes from './PublicOnlyRoutes';
+import ProtectedRoutes from './ProtectedRoutes';
+import AuthRedirect from '../pages/AuthRedirect';
+import AppWrapper from './AppWrapper';
 
 export const router = createBrowserRouter([
   {
     element: (
-      <>
-        <NavBar />
-        <Outlet />
-      </>
+      <AppWrapper/>
     ),
     children: [
       {
-        element: <PublicOnly />,
+        element: <PublicOnlyRoutes />,
         children: [
           {
             path: '/login',
@@ -25,7 +22,7 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <RequireAuth />,
+        element: <ProtectedRoutes />,
         children: [
           {
             path: '/dashboard',
@@ -35,7 +32,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/authRedirect',
-        element: <AuthPage />,
+        element: <AuthRedirect />,
       },
       { path: '*', element: <Navigate to="/login" replace /> },
     ],

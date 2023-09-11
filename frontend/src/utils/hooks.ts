@@ -1,5 +1,5 @@
 import React from 'react';
-import { AuthContext } from '../App';
+import { AuthContext } from '../contextProviders/AuthContext';
 import { readLocalStorage, setLocalStorage } from './localStorageHelper';
 
 /**

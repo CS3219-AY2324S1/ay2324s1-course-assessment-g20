@@ -8,9 +8,7 @@ import AppWrapper from './AppWrapper';
 
 export const router = createBrowserRouter([
   {
-    element: (
-      <AppWrapper/>
-    ),
+    element: <AppWrapper />,
     children: [
       {
         element: <PublicOnlyRoutes />,

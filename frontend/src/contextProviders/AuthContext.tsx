@@ -4,7 +4,6 @@ import React from 'react';
 import { IAuth, IAuthContext } from '../interfaces';
 import { useLocalStorageState } from '../utils/hooks';
 
-
 export const AuthContext = React.createContext<IAuthContext>(null!);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

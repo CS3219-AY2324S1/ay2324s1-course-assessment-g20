@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { IAuthContext } from '../interfaces';
+import { backendServicesPaths, BACKEND_API_HOST, VERSION_PREFIX } from '../utils/constants';
 
 interface RetryConfig extends AxiosRequestConfig {
   retryDelay: number;
@@ -13,7 +14,7 @@ export const generateAuthInterceptor = (authContext: IAuthContext) => {
   };
 
   const protectedRequests = axios.create({
-    baseURL: `${import.meta.env.VITE_BACKEND_API_HOST}/v1`,
+    baseURL: `${BACKEND_API_HOST}${VERSION_PREFIX}`,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -56,7 +57,7 @@ export const generateAuthInterceptor = (authContext: IAuthContext) => {
         if (refreshToken) {
           try {
             const resp = await axios.post(
-              `${import.meta.env.VITE_BACKEND_API_HOST}/v1/auth/refresh`,
+              `${BACKEND_API_HOST}${VERSION_PREFIX}${backendServicesPaths.auth.refresh}`,
               { refreshToken: refreshToken },
             );
             if (resp.status === 201) {

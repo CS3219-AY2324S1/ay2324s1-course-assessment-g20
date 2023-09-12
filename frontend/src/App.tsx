@@ -1,5 +1,3 @@
-// import Login from './pages/Login';
-
 import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './contextProviders/AuthContext';
 import router from './routes';

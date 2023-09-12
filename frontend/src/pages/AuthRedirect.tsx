@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../utils/hooks';
+import { CircularProgress } from '@mui/material';
 
 export default function AuthRedirect() {
   const auth = useAuth();
@@ -10,6 +11,10 @@ export default function AuthRedirect() {
 
     const accessToken = params.get('accessToken');
     const refreshToken = params.get('refreshToken');
+
+    if (!accessToken || !refreshToken) {
+      return;
+    }
 
     auth.signIn({
       accessToken: accessToken!,
@@ -21,5 +26,9 @@ export default function AuthRedirect() {
     return <Navigate to="/dashboard" />;
   }
 
-  return <></>;
+  return (
+    <>
+      <CircularProgress />
+    </>
+  );
 }

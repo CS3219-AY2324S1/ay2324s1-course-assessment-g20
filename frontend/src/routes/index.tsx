@@ -28,12 +28,12 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: '/authRedirect',
-        element: <AuthRedirect />,
-      },
       { path: '*', element: <Navigate to="/login" replace /> },
     ],
+  },
+  {
+    path: '/authRedirect',
+    element: <AuthRedirect />,
   },
 ]);
 

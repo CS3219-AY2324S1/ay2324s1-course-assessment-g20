@@ -20,5 +20,4 @@ export class AppController {
   pingAuth(): Observable<string> {
     return this.questionServiceClient.send('get_hello', {});
   }
-
 }

@@ -2,6 +2,8 @@
 .env.staging
 .env.production
 
+postgres-data
+
 # compiled output
 /dist
 /node_modules

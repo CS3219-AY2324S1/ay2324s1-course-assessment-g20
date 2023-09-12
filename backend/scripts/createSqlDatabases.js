@@ -43,4 +43,4 @@ async function createDatabaseIfNotExist(connectionOptions) {
 
 Promise.all(databaseConnections.map(c => createDatabaseIfNotExist(c)))
   .catch(console.log)
-  .then(process.exit);
+  .finally(() => process.exit(0));

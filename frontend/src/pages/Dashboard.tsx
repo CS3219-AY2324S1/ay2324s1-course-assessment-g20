@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Paper,
   Table,
   TableBody,
@@ -24,15 +23,14 @@ function createData(
 
 const rows = [
   createData(1, 'Reverse a String', 'Description 1', 'Strings, Algorithms', 'Easy'),
-  createData(1, 'Repeated DNA Sequences', 'Description 2', 'Data Structures, Algorithms', 'Medium'),
-  createData(1, 'Sliding Window Maximum', 'Description 3', 'Arrays, Algorithms', 'Hard'),
+  createData(2, 'Repeated DNA Sequences', 'Description 2', 'Data Structures, Algorithms', 'Medium'),
+  createData(3, 'Sliding Window Maximum', 'Description 3', 'Arrays, Algorithms', 'Hard'),
 ];
 
 export default function Dashboard() {
   return (
     <Box>
       <Typography variant="h2">PeerPrep Dashboard</Typography>
-      <Button href={`/login`}>Log out</Button>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>

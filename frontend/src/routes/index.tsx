@@ -1,15 +1,40 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
+import PublicOnlyRoutes from './PublicOnlyRoutes';
+import ProtectedRoutes from './ProtectedRoutes';
+import AuthRedirect from '../pages/AuthRedirect';
+import AppWrapper from './AppWrapper';
 
-export default createBrowserRouter([
+export const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <Login />,
+    element: <AppWrapper />,
+    children: [
+      {
+        element: <PublicOnlyRoutes />,
+        children: [
+          {
+            path: '/login',
+            element: <Login />,
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoutes />,
+        children: [
+          {
+            path: '/dashboard',
+            element: <Dashboard />,
+          },
+        ],
+      },
+      {
+        path: '/authRedirect',
+        element: <AuthRedirect />,
+      },
+      { path: '*', element: <Navigate to="/login" replace /> },
+    ],
   },
-  {
-    path: '/dashboard',
-    element: <Dashboard />,
-  },
-  { path: '*', element: <Navigate to="/login" replace /> },
 ]);
+
+export default router;

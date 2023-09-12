@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../utils/hooks';
 
 export default function AuthRedirect() {
-  const navigate = useNavigate();
-
   const auth = useAuth();
 
   useEffect(() => {
@@ -17,9 +15,11 @@ export default function AuthRedirect() {
       accessToken: accessToken!,
       refreshToken: refreshToken!,
     });
+  }, []);
 
-    navigate('/dashboard', { replace: true });
-  }, [navigate, auth]);
+  if (auth.authState?.accessToken && auth.authState?.refreshToken) {
+    return <Navigate to="/dashboard" />;
+  }
 
-  return <>Wait a moment, authenticating</>;
+  return <></>;
 }

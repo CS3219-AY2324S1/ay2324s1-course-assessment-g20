@@ -1,4 +1,4 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Get, HttpException, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { Public } from '../jwt/jwtPublic.decorator';
@@ -15,4 +15,10 @@ export class AppController {
   getHello(): Observable<string> {
     return this.questionServiceClient.send('get_hello', {});
   }
+
+  @Get('ping-auth')
+  pingAuth(): Observable<string> {
+    return this.questionServiceClient.send('get_hello', {});
+  }
+
 }

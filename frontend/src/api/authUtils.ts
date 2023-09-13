@@ -3,14 +3,20 @@ import { IAuthContext } from '../interfaces';
 import { backendServicesPaths, BACKEND_API_HOST, VERSION_PREFIX } from '../utils/constants';
 
 interface RetryConfig extends AxiosRequestConfig {
-  retryDelay: number;
-  _retry?: boolean;
+  retry?: boolean;
 }
 
+const refreshAccessToken = (refreshToken: string) =>
+  axios.post(
+    `${BACKEND_API_HOST}${VERSION_PREFIX}${backendServicesPaths.auth.refresh}`,
+    { refreshToken: refreshToken },
+  );
+
+// The auth interceptor is used to intercept requests to the backend and add the access token to the request.
+// In the event that the access token is expired, the interceptor will attempt to refresh the access token.
 export const generateAuthInterceptor = (authContext: IAuthContext) => {
   const protectedRequestConfig: RetryConfig = {
-    retryDelay: 10,
-    _retry: false,
+    retry: false,
   };
 
   const protectedRequests = axios.create({
@@ -40,26 +46,14 @@ export const generateAuthInterceptor = (authContext: IAuthContext) => {
     async function (error) {
       const originalRequest = error.config;
 
-      if (error.response.status === 401) {
-        // unauthenticated, try to refresh tokens
-
-        if (originalRequest._retry) {
-          // already retried but still unauthenticated, sign out user
-          authContext.signout();
-          return Promise.reject(error);
-        }
-
-        originalRequest._retry = true;
-
+      // unauthenticated, try to refresh tokens
+      if (error.response.status === 401 && !originalRequest.retry) {
+        originalRequest.retry = true;
         const refreshToken = authContext.authState?.refreshToken;
         let authState = authContext.authState;
-
         if (refreshToken) {
           try {
-            const resp = await axios.post(
-              `${BACKEND_API_HOST}${VERSION_PREFIX}${backendServicesPaths.auth.refresh}`,
-              { refreshToken: refreshToken },
-            );
+            const resp = await refreshAccessToken(refreshToken);
             if (resp.status === 201) {
               authState = resp.data;
             }
@@ -68,20 +62,9 @@ export const generateAuthInterceptor = (authContext: IAuthContext) => {
             authContext.signout();
             return Promise.reject(e);
           }
-
           originalRequest.headers.Authorization = `Bearer ${authState?.accessToken}`;
-
-          const delayRetryRequest = new Promise<void>((resolve) => {
-            setTimeout(() => {
-              resolve();
-            }, originalRequest.retryDelay);
-          });
-
-          // return promise to retry request after delay
-          return delayRetryRequest.then(() => {
-            authContext.signIn(authState!);
-            return protectedRequests(originalRequest);
-          });
+          authContext.signIn(authState!);
+          return protectedRequests(originalRequest);
         }
       } else {
         // user has no refresh token, sign out user

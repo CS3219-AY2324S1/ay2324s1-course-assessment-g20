@@ -36,7 +36,7 @@ export default function Dashboard() {
   // TODO: Remove this useEffect and replace it with a real API call using react-router data loaders
   useEffect(() => {
     pingBackend(auth).then(console.log);
-  }, []);
+  });
 
   // TODO: Populate this table with real data from the backend
   return (

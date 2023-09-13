@@ -7,10 +7,9 @@ interface RetryConfig extends AxiosRequestConfig {
 }
 
 const refreshAccessToken = (refreshToken: string) =>
-  axios.post(
-    `${BACKEND_API_HOST}${VERSION_PREFIX}${backendServicesPaths.auth.refresh}`,
-    { refreshToken: refreshToken },
-  );
+  axios.post(`${BACKEND_API_HOST}${VERSION_PREFIX}${backendServicesPaths.auth.refresh}`, {
+    refreshToken: refreshToken,
+  });
 
 // The auth interceptor is used to intercept requests to the backend and add the access token to the request.
 // In the event that the access token is expired, the interceptor will attempt to refresh the access token.

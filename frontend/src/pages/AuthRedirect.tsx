@@ -20,7 +20,7 @@ export default function AuthRedirect() {
       accessToken: accessToken!,
       refreshToken: refreshToken!,
     });
-  }, []);
+  });
 
   if (auth.authState?.accessToken && auth.authState?.refreshToken) {
     return <Navigate to="/dashboard" />;

@@ -1,0 +1,23 @@
+apiVersion: v2
+name: backend
+description: Helm chart to deploy PeerPrep backend
+
+type: application
+
+version: 0.1.0
+
+dependencies:
+  - alias: gateway-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: auth-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: question-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice

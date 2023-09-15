@@ -1,0 +1,29 @@
+gateway-microservice:
+  microserviceName: 'gateway'
+  replicaCount: 1
+  image:
+    repository: backend-gateway
+    tag: 'latest'
+  portProtocol: http
+  containerPort: 4000
+  servicePort: 4000
+
+auth-microservice:
+  microserviceName: 'auth'
+  replicaCount: 1
+  image:
+    repository: backend-auth
+    tag: 'latest'
+  portProtocol: tcp
+  containerPort: 4001
+  servicePort: 4001
+
+question-microservice:
+  microserviceName: 'question'
+  replicaCount: 1
+  image:
+    repository: backend-question
+    tag: 'latest'
+  portProtocol: tcp
+  containerPort: 4002
+  servicePort: 4002

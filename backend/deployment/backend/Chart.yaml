@@ -21,3 +21,7 @@ dependencies:
     name: base-microservice
     version: '0.1.0'
     repository: file://../base-microservice
+
+  - name: base-nginx-ingress
+    version: '0.1.0'
+    repository: file://../base-nginx-ingress

@@ -21,6 +21,7 @@ const authConfiguration = () => {
     port: parseInt(process.env.AUTH_SERVICE_PORT, 10),
     jwtTokenConfig,
     databaseConfigurationOptions,
+    rmqUrl: process.env.RMQ_URL,
   };
 };
 

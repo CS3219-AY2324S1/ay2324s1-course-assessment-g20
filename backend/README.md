@@ -1,5 +1,6 @@
 ## Development Setup
-1. Ensure that you have PostgreSQL and node v18 installed.
+1. Ensure that you have PostgreSQL, RabbitMQ and node v18 installed.
+1. Start PostgreSQL and RabbitMQ (e.g. `brew services start rabbitmq` if installed via Homebrew on MacOS)
 1. `cd` to the `backend` directory.
 1. Run `yarn install`.
 1. Copy the `.env.example` file as `.env` (e.g. `cp .env.example .env`) and update the variables where necessary.

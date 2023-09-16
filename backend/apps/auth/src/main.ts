@@ -1,17 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
-import { Transport } from '@nestjs/microservices';
+import { RmqOptions, Transport } from '@nestjs/microservices';
 import authConfiguration from './config/configuration';
+import { RmqQueue } from '@app/types/rmqQueues';
 
 async function bootstrap() {
-  const { port } = authConfiguration();
+  const { port, rmqUrl } = authConfiguration();
   const app = await NestFactory.createMicroservice(AuthModule, {
-    transport: Transport.TCP,
+    transport: Transport.RMQ,
     options: {
-      host: '0.0.0.0',
-      port,
+      urls: [rmqUrl],
+      queue: RmqQueue.AUTH,
     },
-  });
+  } as RmqOptions);
   await app.listen();
   console.log(`Auth microservice running on port ${port}`);
 }

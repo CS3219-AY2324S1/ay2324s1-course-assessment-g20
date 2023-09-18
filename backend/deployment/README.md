@@ -41,3 +41,6 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Run `minikube tunnel` to connect to the nginx LoadBalancer service
 1. Access the gateway via `http://localhost`
 <!-- 1. To access the API gateway from localhost, run `kubectl port-forward deployment/gateway 4000:4000`. This is a temporary workaround until the ingress is properly configured. -->
+
+#### Deployment Architecture Diagram
+![Deployment Architecture Diagram](deployment_architecture.png)

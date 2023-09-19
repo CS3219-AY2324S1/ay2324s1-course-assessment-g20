@@ -11,15 +11,4 @@ export class MockGoogleOauthGuard extends GoogleOauthGuard {
     req.user = MOCK_GOOGLE_USER;
     return true;
   }
-
-  handleRequest<TUser = any>(
-    err: any,
-    user: any,
-    info: any,
-    context: ExecutionContext,
-    status?: any,
-  ): TUser {
-    console.log(user);
-    return user;
-  }
 }

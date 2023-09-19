@@ -70,7 +70,6 @@ export const generateAuthInterceptor = (authContext: IAuthContext) => {
       const refreshToken = authContext.authState?.refreshToken;
       let authState = authContext.authState;
 
-      console.log(authState?.refreshToken, 'old refreshToken');
       if (!refreshToken) {
         // user has no refresh token, sign out user
         authContext.signout();

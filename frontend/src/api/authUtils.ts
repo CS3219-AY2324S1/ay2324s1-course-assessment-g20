@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { IAuth, IAuthContext } from '../interfaces';
 import { backendServicesPaths, BACKEND_API_HOST, VERSION_PREFIX } from '../utils/constants';
 
+// sets a global variable which we can await so that we don't send multiple refresh requests
 let refreshingFunc: undefined | Promise<IRefreshTokenResponse> = undefined;
 
 interface RetryConfig extends AxiosRequestConfig {

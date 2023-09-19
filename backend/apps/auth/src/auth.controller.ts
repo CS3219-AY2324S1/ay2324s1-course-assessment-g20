@@ -7,8 +7,15 @@ import { UserModel } from './database/models/user.model';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @MessagePattern('get_hello')
+  getHello() {
+    console.log('/auth get_hello called');
+    return this.authService.getHello();
+  }
+
   @MessagePattern('generate_jwts')
   generateJwts(user) {
+    console.log('generate_jwts called');
     return this.authService.generateJwts(user);
   }
 

@@ -86,4 +86,9 @@ export class AuthService {
   findOrCreateOAuthUser(user: Partial<UserModel>) {
     return this.userDaoService.findOrCreateOAuthUser(user);
   }
+
+  getHello() {
+    console.log('responding to auth hello request');
+    return 'Hello World!';
+  }
 }

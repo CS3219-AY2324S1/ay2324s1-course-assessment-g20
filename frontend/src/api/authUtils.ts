@@ -70,6 +70,7 @@ export const generateAuthInterceptor = (authContext: IAuthContext) => {
       const refreshToken = authContext.authState?.refreshToken;
       let authState = authContext.authState;
 
+      console.log(authState?.refreshToken, 'old refreshToken');
       if (!refreshToken) {
         // user has no refresh token, sign out user
         authContext.signout();
@@ -81,6 +82,7 @@ export const generateAuthInterceptor = (authContext: IAuthContext) => {
           refreshingFunc = refreshAccessToken(refreshToken);
         }
         const resp = await refreshingFunc;
+
         if (resp.status === 201) {
           authState = resp.data;
         }
@@ -88,7 +90,10 @@ export const generateAuthInterceptor = (authContext: IAuthContext) => {
         // refreshing tokens failed, sign out user
         authContext.signout();
         return Promise.reject(e);
+      } finally {
+        refreshingFunc = undefined;
       }
+
       originalRequest.headers.Authorization = `Bearer ${authState?.accessToken}`;
       authContext.signIn(authState!);
 

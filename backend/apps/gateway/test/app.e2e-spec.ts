@@ -35,8 +35,14 @@ describe('Backend (e2e)', () => {
 
   const AUTH_DATABASE_NAME = 'peer-prep-auth-service';
   const QUESTION_DATABASE_NAME = 'peer-prep-question-service';
-  const knexAuthDatabaseConfig = getKnexConfig(authKnexConfig, AUTH_DATABASE_NAME);
-  const knexQuestionDatabaseConfig = getKnexConfig(questionKnexConfig, QUESTION_DATABASE_NAME);
+  const knexAuthDatabaseConfig = getKnexConfig(
+    authKnexConfig,
+    AUTH_DATABASE_NAME,
+  );
+  const knexQuestionDatabaseConfig = getKnexConfig(
+    questionKnexConfig,
+    QUESTION_DATABASE_NAME,
+  );
 
   const createBaseTestingModule = () =>
     Test.createTestingModule({
@@ -113,9 +119,7 @@ describe('Backend (e2e)', () => {
     });
 
     it(`${prefix}/google (GET)`, () => {
-      return request(app.getHttpServer())
-        .get(`${prefix}/google`)
-        .expect(200);
+      return request(app.getHttpServer()).get(`${prefix}/google`).expect(200);
     });
 
     // it(`${prefix}/google/redirect (GET)`, async () => {

@@ -3,25 +3,18 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import * as dotenv from 'dotenv';
-import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { GoogleOauthStrategy } from '../src/oauthProviders/google/google-oauth.strategy';
-// import { MockGoogleOAuthStrategy } from './google-oauth.strategy.mock';
 import { getMockGoogleOAuthStrategy } from './google-oauth.strategy.mock';
 import { MockGoogleOauthGuard } from './google-oauth.guard.mock';
 import { GoogleOauthGuard } from '../src/oauthProviders/google/google-oauth.guard';
-import authConfiguration from '../src/config/configuration';
-import questionConfiguration from '../src/config/configuration';
 import knex from 'knex';
 import authKnexConfig from '../../auth/knexfile';
 import questionKnexConfig from '../../question/knexfile';
-import { get } from 'http';
 
 dotenv.config({ path: '.env.test' });
 describe('Backend (e2e)', () => {
   /* ================ Setup ================ */
   let app: INestApplication;
-  let authServiceClient: ClientProxy;
-  let questionServiceClient: ClientProxy;
   let knexAuthDatabaseInstance;
   let knexQuestionDatabaseInstance;
 
@@ -46,27 +39,7 @@ describe('Backend (e2e)', () => {
 
   const createBaseTestingModule = () =>
     Test.createTestingModule({
-      imports: [
-        AppModule,
-        // ClientsModule.register([
-        //   {
-        //     name: 'QUESTION_SERVICE',
-        //     transport: Transport.TCP,
-        //     options: {
-        //       host: '0.0.0.0',
-        //       port: questionConfiguration().port,
-        //     }
-        //   },
-        //   {
-        //     name: 'AUTH_SERVICE',
-        //     transport: Transport.TCP,
-        //     options: {
-        //       host: '0.0.0.0',
-        //       port: authConfiguration().port,
-        //     }
-        //   },
-        // ]),
-      ],
+      imports: [AppModule],
     })
       .overrideGuard(GoogleOauthGuard)
       .useValue(new MockGoogleOauthGuard())
@@ -78,15 +51,7 @@ describe('Backend (e2e)', () => {
       await createBaseTestingModule().compile();
 
     app = moduleFixture.createNestApplication();
-    // await app.connectMicroservice({
-    //   transport: Transport.TCP,
-    // });
-    // await app.startAllMicroservices();
     await app.init();
-    // questionServiceClient = app.get('QUESTION_SERVICE');
-    // await questionServiceClient.connect();
-    // authServiceClient = app.get('AUTH_SERVICE');
-    // await authServiceClient.connect();
     knexAuthDatabaseInstance = knex(knexAuthDatabaseConfig);
     knexQuestionDatabaseInstance = knex(knexQuestionDatabaseConfig);
   });
@@ -94,8 +59,6 @@ describe('Backend (e2e)', () => {
   /* ================ Teardown ================ */
   afterAll(async () => {
     await app.close();
-    // authServiceClient.close();
-    // questionServiceClient.close();
   });
 
   /* ================ Tests ================ */

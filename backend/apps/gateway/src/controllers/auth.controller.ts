@@ -42,18 +42,12 @@ export class AuthController {
   @Get('google/redirect')
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-    // console.log("Redirecting");
-    // console.log(req);
-    console.log('req.user in /google/redirect', req.user);
     const { accessToken, refreshToken } = await firstValueFrom(
       this.authServiceClient.send('generate_jwts', req.user),
     );
-    console.log('accessToken', accessToken);
-    console.log('refreshToken', refreshToken);
     const redirectUrl = `${this.configService.get(
       'corsOrigin',
     )}/authRedirect?accessToken=${accessToken}&refreshToken=${refreshToken}`;
-    // console.log('redirectUrl', redirectUrl);
     return res.redirect(redirectUrl);
   }
 

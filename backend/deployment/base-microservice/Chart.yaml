@@ -1,0 +1,7 @@
+apiVersion: v2
+name: base-microservice
+description: Base Helm chart for deployment of microservices in PeerPrep
+
+type: application
+
+version: 0.1.0

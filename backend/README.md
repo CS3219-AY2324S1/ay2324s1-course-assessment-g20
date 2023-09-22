@@ -5,6 +5,7 @@
 1. Run `yarn install`.
 1. Copy the `.env.example` file as `.env` (e.g. `cp .env.example .env`) and update the variables where necessary.
 1. Setup the databases via `yarn migrate:all`.
+1. Populate the databases via `yarn seed:all`.
 1. Open multiple terminals to the `backend` directory, and run each microservice in 'watch' mode (e.g. `yarn start:dev gateway`, `yarn start:dev question`).
 
 ## Building locally

@@ -8,4 +8,18 @@ export class UserModel extends BaseModel {
   readonly authProviderId: string;
   readonly oauthName: string;
   readonly email: string;
+
+  // TODO: Need to ensure this relation via async messaging queue whenever there is create or update or delete
+  // readonly userProfile: UserProfileModel;
+
+  // static relationMappings = () => ({
+  //   userProfile: {
+  //     relation: Model.HasOneRelation,
+  //     modelClass: UserProfileModel,
+  //     join: {
+  //       from: 'users.id',
+  //       to: 'userProfiles.userId',
+  //     },
+  //   },
+  // });
 }

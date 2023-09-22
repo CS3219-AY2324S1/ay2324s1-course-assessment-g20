@@ -24,8 +24,10 @@
     "knex-script": "knex --knexfile",
     "knex": "./scripts/knex.sh",
     "migrate": "./scripts/migrate_latest.sh",
-    "migrate:all": "node ./scripts/createSqlDatabases.js && yarn migrate auth",
-    "migrate:make": "./scripts/migrate_make.sh"
+    "migrate:all": "node ./scripts/createSqlDatabases.js && yarn migrate auth user",
+    "migrate:make": "./scripts/migrate_make.sh",
+    "seed": "./scripts/seed.sh",
+    "seed:all": "yarn seed user"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

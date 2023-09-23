@@ -1,68 +1,111 @@
 import {
   Box,
+  Button,
   Paper,
+  styled,
   Table,
   TableBody,
   TableCell,
+  tableCellClasses,
   TableContainer,
   TableHead,
   TableRow,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { pingProtectedBackend, pingPublicBackend } from '../api/questionBankApi';
-import { toTitleCase } from '../utils/stringUtils';
-import { useNavigate } from 'react-router-dom';
-import { IQuestion } from '../interfaces';
-import { exampleQuestions } from '../mocks';
+import { useState } from 'react';
+import Popup from '../components/Popup';
+
+// TODO: Replace this with a real table
+function createData(
+  id: number,
+  title: string,
+  category: string,
+  complexity: string,
+  description: string,
+) {
+  return { id, title, category, complexity, description };
+}
+
+const rows = [
+  createData(1, 'Reverse a String', 'Strings, Algorithms', 'Easy', 'Description 1'),
+  createData(2, 'Repeated DNA Sequences', 'Data Structures, Algorithms', 'Medium', 'Description 2'),
+  createData(3, 'Sliding Window Maximum', 'Arrays, Algorithms', 'Hard', 'Description 3'),
+];
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const [questions, setQuestions] = useState<IQuestion[]>([]);
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
 
-  useEffect(() => {
-    pingPublicBackend().then((response) => {
-      console.log('public response', response);
-    });
-    pingProtectedBackend().then((response) => {
-      console.log('protected response', response);
-    });
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '&:last-child td, &:last-child th': {
+      border: 0,
+    },
+  }));
 
-    // TODO: Replace below with a real API call
-    setQuestions(exampleQuestions);
-  }, []);
+  const [rowIndex, setRowIndex] = useState(-1);
+  const handleSelectItem = (item: string) => {
+    console.log(item);
+  };
+
+  const [popupVisibility, setPopupVisibility] = useState(false);
+  const handleOnClick = (num: number) => {
+    setRowIndex(num);
+    setPopupVisibility(true);
+  };
+  const handleOnClose = () => setPopupVisibility(false);
 
   return (
     <Box>
-      <Typography variant="h2">PeerPrep Dashboard</Typography>
+      <Typography variant="h2" color="green" align="center">
+        Questions
+      </Typography>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell align="left">Title</TableCell>
-              <TableCell align="left">Category&nbsp;(g)</TableCell>
-              <TableCell align="left">Complexity&nbsp;(g)</TableCell>
+              <StyledTableCell align="left">No.</StyledTableCell>
+              <StyledTableCell align="left">Title</StyledTableCell>
+              <StyledTableCell align="left">Category</StyledTableCell>
+              <StyledTableCell align="left">Complexity</StyledTableCell>
+              <StyledTableCell align="left">Description</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {questions.map((row) => (
-              <TableRow
+            {rows.map((row) => (
+              <StyledTableRow
                 key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 onClick={() => {
-                  navigate(`/question/${row.id}`);
+                  handleSelectItem(row.title);
                 }}
               >
-                <TableCell component="th" scope="row">
+                <StyledTableCell component="th" scope="row">
                   {row.id}
-                </TableCell>
-                <TableCell align="left">{row.title}</TableCell>
-                <TableCell align="left">
-                  {row.categories.map((x) => toTitleCase(x.name)).join(', ')}
-                </TableCell>
-                <TableCell align="left">{toTitleCase(row.difficulty.name)}</TableCell>
-              </TableRow>
+                </StyledTableCell>
+                <StyledTableCell align="left">{row.title}</StyledTableCell>
+                <StyledTableCell align="left">{row.category}</StyledTableCell>
+                <StyledTableCell align="left">{row.complexity}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {popupVisibility && rowIndex == row.id && (
+                    <Popup
+                      title={row.title}
+                      children={row.description}
+                      openPopup={true}
+                      setOpenPopup={handleOnClose}
+                    ></Popup>
+                  )}
+                  <Button onClick={() => handleOnClick(row.id)}>READ</Button>
+                </StyledTableCell>
+              </StyledTableRow>
             ))}
           </TableBody>
         </Table>

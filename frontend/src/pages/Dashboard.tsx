@@ -64,9 +64,27 @@ export default function Dashboard() {
   };
   const handleOnClose = () => setPopupVisibility(false);
 
+  if (rows.length == 0) {
+    return (
+        <Box>
+          <Typography variant="h2" color="white" align="center" 
+            sx={{
+              backgroundColor: 'red',
+            }}
+          >
+            NO QUESTIONS AVAILABLE!
+          </Typography>
+        </Box>
+    );
+  }
+  
   return (
     <Box>
-      <Typography variant="h2" color="green" align="center">
+      <Typography variant="h2" color="white" align="center"
+        sx={{
+          backgroundColor: 'green',
+        }}
+      >
         Questions
       </Typography>
       <TableContainer component={Paper}>

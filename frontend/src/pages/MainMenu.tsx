@@ -4,39 +4,52 @@ import Dashboard from './Dashboard';
 export default function MainMenu() {
   return (
     <>
-      <Typography variant="h2" align="center" color="white"
+      <Typography
+        variant="h2"
+        align="center"
+        color="white"
         sx={{
           backgroundColor: 'grey',
         }}
       >
         MATCH WITH SOMEONE
       </Typography>
+      <h1></h1>
       <Typography align="center" component={'span'}>
         <Stack display={'block'} spacing={2} direction={'row'}>
           <Button
             variant={'contained'}
-            color={'success'}
-            size={'large'}
             onClick={() => console.log('CLICKED EASY')}
-            aria-label="Large sizes"
+            style={{ fontSize: '50px' }}
+            sx={{
+              width: 170,
+              height: 75,
+              backgroundColor: 'green',
+            }}
           >
             EASY
           </Button>
           <Button
             variant={'contained'}
-            color={'warning'}
-            size={'large'}
             onClick={() => console.log('CLICKED MEDIUM')}
-            aria-label="Large sizes"
+            style={{ fontSize: '50px' }}
+            sx={{
+              width: 230,
+              height: 75,
+              backgroundColor: 'orange',
+            }}
           >
             MEDIUM
           </Button>
           <Button
             variant={'contained'}
-            color={'error'}
-            size={'large'}
             onClick={() => console.log('CLICKED HARD')}
-            aria-label="Large sizes"
+            style={{ fontSize: '50px' }}
+            sx={{
+              width: 170,
+              height: 75,
+              backgroundColor: 'red',
+            }}
           >
             HARD
           </Button>

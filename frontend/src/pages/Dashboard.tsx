@@ -66,21 +66,25 @@ export default function Dashboard() {
 
   if (rows.length == 0) {
     return (
-        <Box>
-          <Typography variant="h2" color="white" align="center" 
-            sx={{
-              backgroundColor: 'red',
-            }}
-          >
-            NO QUESTIONS AVAILABLE!
-          </Typography>
-        </Box>
+      <Box>
+        <Typography
+          variant="h2"
+          color="white"
+          align="center"
+          sx={{
+            backgroundColor: 'red',
+          }}
+        >
+          NO QUESTIONS AVAILABLE!
+        </Typography>
+      </Box>
     );
   }
-  
+
   return (
     <Box>
-      <Typography variant="h2" color="white" align="center"
+      <Typography
+        variant="h2" color="white" align="center"
         sx={{
           backgroundColor: 'green',
         }}

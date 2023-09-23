@@ -27,3 +27,13 @@ question-microservice:
   portProtocol: tcp
   containerPort: 4002
   servicePort: 4002
+
+user-microservice:
+  microserviceName: 'user'
+  replicaCount: 1
+  image:
+    repository: backend-user
+    tag: 'latest'
+  portProtocol: tcp
+  containerPort: 4003
+  servicePort: 4003

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
-  getHello(): string {
+  getSomething(): string {
     console.log('responding to hello request');
-    return 'Hello World!';
+    return 'Hello World from user service!';
   }
 
   getUserProfile(): string {

@@ -7,9 +7,9 @@ import PatchUserProfileDto from './dtos/patchUserProfile.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @MessagePattern('get_hello')
-  getHello(): string {
-    return this.userService.getHello();
+  @MessagePattern('get_something')
+  getSomething(): string {
+    return this.userService.getSomething();
   }
 
   @MessagePattern('get_user_profile')

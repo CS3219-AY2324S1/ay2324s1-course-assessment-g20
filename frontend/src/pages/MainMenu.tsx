@@ -4,7 +4,11 @@ import Dashboard from './Dashboard';
 export default function MainMenu() {
   return (
     <>
-      <Typography variant="h2" align="center" color="black">
+      <Typography variant="h2" align="center" color="white"
+        sx={{
+          backgroundColor: 'grey',
+        }}
+      >
         MATCH WITH SOMEONE
       </Typography>
       <Typography align="center" component={'span'}>

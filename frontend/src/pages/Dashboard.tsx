@@ -10,28 +10,71 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect } from 'react';
+import { ICategory, IDifficulty, IQuestion } from '../interfaces';
+import { toTitleCase } from '../utils/stringUtils';
+import { useNavigate } from 'react-router-dom';
 import { pingProtectedBackend, pingPublicBackend } from '../api/questionBankApi';
 
-// TODO: Replace this with a real table
-function createData(
-  id: number,
-  title: string,
-  description: string,
-  category: string,
-  complexity: string,
-) {
-  return { id, title, description, category, complexity };
-}
+// TODO: remove this dummy data and replace it with real data from the backend
+const loremIpsum = `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`;
+const questionCategoryStrings: ICategory = {
+  id: 1,
+  name: 'strings',
+};
+const questionCategoryArrays: ICategory = {
+  id: 2,
+  name: 'arrays',
+};
+const questionCategoryAlgorithms: ICategory = {
+  id: 3,
+  name: 'algorithms',
+};
 
-const rows = [
-  createData(1, 'Reverse a String', 'Description 1', 'Strings, Algorithms', 'Easy'),
-  createData(2, 'Repeated DNA Sequences', 'Description 2', 'Data Structures, Algorithms', 'Medium'),
-  createData(3, 'Sliding Window Maximum', 'Description 3', 'Arrays, Algorithms', 'Hard'),
-];
+const questionDifficultyEasy: IDifficulty = {
+  id: 1,
+  name: 'easy',
+};
+
+const questionDifficultyMedium: IDifficulty = {
+  id: 2,
+  name: 'medium',
+};
+
+const questionDifficultyHard: IDifficulty = {
+  id: 3,
+  name: 'hard',
+};
+
+export const exampleQuestion1: IQuestion = {
+  id: 1,
+  title: 'Reverse a String',
+  description: loremIpsum,
+  categories: [questionCategoryStrings, questionCategoryAlgorithms],
+  difficulty: questionDifficultyEasy,
+};
+
+export const exampleQuestion2: IQuestion = {
+  id: 2,
+  title: 'Repeated DNA Sequences',
+  description: loremIpsum,
+  categories: [questionCategoryAlgorithms],
+  difficulty: questionDifficultyMedium,
+};
+
+export const exampleQuestion3: IQuestion = {
+  id: 3,
+  title: 'Sliding Window Maximum',
+  description: loremIpsum,
+  categories: [questionCategoryArrays, questionCategoryAlgorithms],
+  difficulty: questionDifficultyHard,
+};
+
+const exampleQuestions: IQuestion[] = [exampleQuestion1, exampleQuestion2, exampleQuestion3];
 
 export default function Dashboard() {
-  // TODO: Remove this line and replace it with a real API call that fetches from question bank using react-router data loaders
-  /* eslint-disable-next-line */
+
+  const navigate = useNavigate();
+  // TODO: Remove this useEffect and replace it with a real API call using react-router data loaders
   useEffect(() => {
     pingPublicBackend().then((response) => {
       console.log('public response', response);
@@ -56,14 +99,22 @@ export default function Dashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            {exampleQuestions.map((row) => (
+              <TableRow
+                key={row.id}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                onClick={() => {
+                  navigate(`/question/${row.id}`);
+                }}
+              >
                 <TableCell component="th" scope="row">
                   {row.id}
                 </TableCell>
                 <TableCell align="left">{row.title}</TableCell>
-                <TableCell align="left">{row.category}</TableCell>
-                <TableCell align="left">{row.complexity}</TableCell>
+                <TableCell align="left">
+                  {row.categories.map((x) => toTitleCase(x.name)).join(', ')}
+                </TableCell>
+                <TableCell align="left">{toTitleCase(row.difficulty.name)}</TableCell>
                 {/* <TableCell align="right">{row.protein}</TableCell> */}
               </TableRow>
             ))}

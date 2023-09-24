@@ -246,13 +246,13 @@ export default function Dashboard() {
         <Button
           variant={'contained'}
           onClick={handleButtonFormClick}
-          style={{ fontSize: '15px' }}
+          style={{ fontSize: '18px' }}
           sx={{
             width: 180,
             height: 50,
           }}
         >
-          + Add Question
+          Add Question
         </Button>
       </Typography>
     </Box>

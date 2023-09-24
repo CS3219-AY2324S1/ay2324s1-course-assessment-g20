@@ -18,20 +18,15 @@ import QuestionForm from '../components/QuestionForm';
 import Popup from '../components/Popup';
 
 // TODO: Replace this with a real table
-function createData(
-  title: string,
-  category: string,
-  complexity: string,
-  description: string,
-) {
+function createData(title: string, category: string, complexity: string, description: string) {
   return { title, category, complexity, description };
 }
 
-const rows = [
+/*const rows = [
   createData('Reverse a String', 'Strings, Algorithms', 'Easy', 'Description 1'),
   createData('Repeated DNA Sequences', 'Data Structures, Algorithms', 'Medium', 'Description 2'),
   createData('Sliding Window Maximum', 'Arrays, Algorithms', 'Hard', 'Description 3'),
-];
+];*/
 
 export default function Dashboard() {
   // Styling for dashboard table
@@ -53,6 +48,12 @@ export default function Dashboard() {
       border: 0,
     },
   }));
+
+  const [rows, setRows] = useState([
+    createData('Reverse a String', 'Strings, Algorithms', 'Easy', 'Description 1'),
+    createData('Repeated DNA Sequences', 'Data Structures, Algorithms', 'Medium', 'Description 2'),
+    createData('Sliding Window Maximum', 'Arrays, Algorithms', 'Hard', 'Description 3'),
+  ]);
 
   // Usestate for the current selected row
   const [rowIndex, setRowIndex] = useState(-1);
@@ -102,6 +103,14 @@ export default function Dashboard() {
     setOpenForm(false);
     console.log('Press Add'); //Remove later
   };
+
+  // Functions to handle the Delete Question button
+  //const [row, setRow] = useState(rows);
+  const handleDeleteOnClick = (num: number) => {
+    rows.splice(num, 1);
+    setRows([...rows]);
+    console.log('Press Delete ' + rows.length); //Remove later
+  }
 
   // Handle the scenario where the question bank database is empty
   if (rows.length == 0) {
@@ -161,6 +170,7 @@ export default function Dashboard() {
               <StyledTableCell align="left">Category</StyledTableCell>
               <StyledTableCell align="left">Complexity</StyledTableCell>
               <StyledTableCell align="left">Description</StyledTableCell>
+              <StyledTableCell align="left">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -186,6 +196,20 @@ export default function Dashboard() {
                     ></Popup>
                   )}
                   <Button onClick={() => handlePopupOnClick(index)}>READ</Button>
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {popupVisibility && rowIndex == index && (
+                    <Popup
+                      title={row.title}
+                      children={row.description}
+                      openPopup={true}
+                      setOpenPopup={handlePopupOnClose}
+                    ></Popup>
+                  )}
+                  <Button 
+                    variant={'contained'}
+                    onClick={() => handleDeleteOnClick(index)}
+                  >DELETE</Button>
                 </StyledTableCell>
               </StyledTableRow>
             ))}

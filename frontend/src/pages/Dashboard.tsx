@@ -212,13 +212,13 @@ export default function Dashboard() {
                       setOpenPopup={handlePopupOnClose}
                     ></Popup>
                   )}
-                  <Button 
+                  <Button
                     variant={'contained'}
                     onClick={() => handleDeleteOnClick(index)}
                     sx={{
                       width: 80,
                       height: 35,
-                      backgroundColor: 'red'
+                      backgroundColor: 'red',
                     }}
                   >
                     DELETE

@@ -19,19 +19,18 @@ import Popup from '../components/Popup';
 
 // TODO: Replace this with a real table
 function createData(
-  id: number,
   title: string,
   category: string,
   complexity: string,
   description: string,
 ) {
-  return { id, title, category, complexity, description };
+  return { title, category, complexity, description };
 }
 
 const rows = [
-  createData(1, 'Reverse a String', 'Strings, Algorithms', 'Easy', 'Description 1'),
-  createData(2, 'Repeated DNA Sequences', 'Data Structures, Algorithms', 'Medium', 'Description 2'),
-  createData(3, 'Sliding Window Maximum', 'Arrays, Algorithms', 'Hard', 'Description 3'),
+  createData('Reverse a String', 'Strings, Algorithms', 'Easy', 'Description 1'),
+  createData('Repeated DNA Sequences', 'Data Structures, Algorithms', 'Medium', 'Description 2'),
+  createData('Sliding Window Maximum', 'Arrays, Algorithms', 'Hard', 'Description 3'),
 ];
 
 export default function Dashboard() {
@@ -99,7 +98,7 @@ export default function Dashboard() {
   };
   const handleFormSubmit = () => {
     //Todo create new record
-    rows.push(createData(rows.length + 1, titleInput, catInput, complexInput, descInput));
+    rows.push(createData(titleInput, catInput, complexInput, descInput));
     setOpenForm(false);
     console.log('Press Add'); //Remove later
   };
@@ -158,7 +157,6 @@ export default function Dashboard() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell align="left">No.</StyledTableCell>
               <StyledTableCell align="left">Title</StyledTableCell>
               <StyledTableCell align="left">Category</StyledTableCell>
               <StyledTableCell align="left">Complexity</StyledTableCell>
@@ -166,21 +164,20 @@ export default function Dashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {rows.map((row, index) => (
               <StyledTableRow
-                key={row.id}
+                key={index}
                 onClick={() => {
                   handleSelectedItem(row.title);
                 }}
               >
                 <StyledTableCell component="th" scope="row">
-                  {row.id}
+                  {row.title}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.title}</StyledTableCell>
                 <StyledTableCell align="left">{row.category}</StyledTableCell>
                 <StyledTableCell align="left">{row.complexity}</StyledTableCell>
                 <StyledTableCell align="left">
-                  {popupVisibility && rowIndex == row.id && (
+                  {popupVisibility && rowIndex == index && (
                     <Popup
                       title={row.title}
                       children={row.description}
@@ -188,7 +185,7 @@ export default function Dashboard() {
                       setOpenPopup={handlePopupOnClose}
                     ></Popup>
                   )}
-                  <Button onClick={() => handlePopupOnClick(row.id)}>READ</Button>
+                  <Button onClick={() => handlePopupOnClick(index)}>READ</Button>
                 </StyledTableCell>
               </StyledTableRow>
             ))}

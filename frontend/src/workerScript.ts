@@ -1,4 +1,3 @@
-
 /**
  * This is the script that will be executed in the worker thread. It mainly does the following:
  *  - Secure the worker thread by removing access to unsafe objects

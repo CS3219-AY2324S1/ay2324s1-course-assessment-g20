@@ -1,9 +1,11 @@
 import { Button, Stack, Typography } from '@mui/material';
 import Dashboard from './Dashboard';
+import MainMenuBar from '../navigation/MainMenuBar';
 
 export default function MainMenu() {
   return (
     <>
+      <MainMenuBar></MainMenuBar>
       <Typography
         variant="h2"
         align="center"

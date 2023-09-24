@@ -17,11 +17,12 @@ export default function Popup({ title, children, openPopup, setOpenPopup }: Popu
           className="btn-close"
           onClick={setOpenPopup}
           aria-label="Close"
-          style={{ fontSize: '20px', padding: '0px 0px' }}
+          style={{ fontSize: '15px' }}
           sx={{
-            width: 10,
+            width: 0,
             height: 25,
             backgroundColor: 'white',
+            color: 'black'
           }}
         >
           X

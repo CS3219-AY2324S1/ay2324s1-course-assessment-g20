@@ -55,7 +55,7 @@ export default function QuestionForm({
     <>
       <Dialog open={openForm} onClose={closeForm}>
         <DialogTitle>{formType}</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <DialogContentText>Fill in every field below</DialogContentText>
           <TextField
             required

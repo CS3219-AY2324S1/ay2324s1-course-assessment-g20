@@ -110,7 +110,7 @@ export default function Dashboard() {
     rows.splice(num, 1);
     setRows([...rows]);
     console.log('Press Delete ' + rows.length); //Remove later
-  }
+  };
 
   // Handle the scenario where the question bank database is empty
   if (rows.length == 0) {
@@ -206,10 +206,9 @@ export default function Dashboard() {
                       setOpenPopup={handlePopupOnClose}
                     ></Popup>
                   )}
-                  <Button 
-                    variant={'contained'}
-                    onClick={() => handleDeleteOnClick(index)}
-                  >DELETE</Button>
+                  <Button variant={'contained'} onClick={() => handleDeleteOnClick(index)}>
+                    DELETE
+                  </Button>
                 </StyledTableCell>
               </StyledTableRow>
             ))}

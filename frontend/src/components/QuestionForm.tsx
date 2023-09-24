@@ -118,7 +118,7 @@ export default function QuestionForm({
         </DialogContent>
         <DialogActions>
           <Button onClick={closeForm}>Cancel</Button>
-          <Button onClick={submitForm}>Add</Button>
+          <Button onClick={submitForm}>Done</Button>
         </DialogActions>
       </Dialog>
     </>

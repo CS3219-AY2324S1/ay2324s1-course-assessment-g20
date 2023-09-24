@@ -13,7 +13,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import FunctionalityButton from '../components/FunctionalityButton';
 import QuestionForm from '../components/QuestionForm';
 import Popup from '../components/Popup';
 
@@ -140,10 +139,17 @@ export default function Dashboard() {
               submitForm={handleFormSubmit}
             ></QuestionForm>
           )}
-          <FunctionalityButton
-            children="+ Add Question"
-            handleOnClick={handleButtonFormClick}
-          ></FunctionalityButton>
+          <Button
+            variant={'contained'}
+            onClick={handleButtonFormClick}
+            style={{ fontSize: '15px' }}
+            sx={{
+              width: 180,
+              height: 50,
+            }}
+          >
+            + Add Question
+          </Button>
         </Typography>
       </Box>
     );
@@ -229,10 +235,17 @@ export default function Dashboard() {
             submitForm={handleFormSubmit}
           ></QuestionForm>
         )}
-        <FunctionalityButton
-          children="+ Add Question"
-          handleOnClick={handleButtonFormClick}
-        ></FunctionalityButton>
+        <Button
+          variant={'contained'}
+          onClick={handleButtonFormClick}
+          style={{ fontSize: '15px' }}
+          sx={{
+            width: 180,
+            height: 50,
+          }}
+        >
+          + Add Question
+        </Button>
       </Typography>
     </Box>
   );

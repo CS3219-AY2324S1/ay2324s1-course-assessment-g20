@@ -2,6 +2,11 @@ import { ICodeEvalOutput } from '../interfaces';
 import script from '../workerScript';
 
 //https://www.meziantou.net/executing-untrusted-javascript-code-in-a-browser.htm
+
+/**
+ * CodeEvaluator is a class that evaluates the code sent by the main thread
+ * It initializes a web worker and sends the code to evaluate to the worker
+ */
 export class CodeEvaluator {
   private output: ICodeEvalOutput = {
     logs: '',

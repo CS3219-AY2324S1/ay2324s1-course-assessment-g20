@@ -13,6 +13,7 @@ import { ICodeEvalOutput } from '../interfaces';
 
 // component built with reference to online guide: https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/
 
+// This function transpiles TypeScript to JavaScript, allowing users to write TypeScript in the code editor
 function tsCompile(source: string): string {
   const options = { compilerOptions: { module: ts.ModuleKind.CommonJS } };
   return ts.transpileModule(source, options).outputText;

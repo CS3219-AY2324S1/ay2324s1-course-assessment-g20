@@ -1,6 +1,12 @@
+
+/**
+ * This is the script that will be executed in the worker thread. It mainly does the following:
+ *  - Secure the worker thread by removing access to unsafe objects
+ *  - Wrap console.log, console.warn, console.error, console.info to postMessage to the main thread
+ *  - Execute the code sent by the main thread
+ */
 export default function script() {
-  // below are the safe objects that can be accessed from the worker,
-  // this is to prevent the worker from accessing the window object that can be used to access the local storage and other sensitive data
+  // below are the safe objects that can be accessed from the worker
   const safeObjects = [
     'self',
     'onmessage',

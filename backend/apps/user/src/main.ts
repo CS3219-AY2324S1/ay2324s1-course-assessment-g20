@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice(UserModule, {
     transport: Transport.RMQ,
     options: {
-      url: [rmqUrl],
+      urls: [rmqUrl],
       queue: RmqQueue.USER,
     },
   } as RmqOptions);

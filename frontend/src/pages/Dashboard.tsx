@@ -118,10 +118,30 @@ export default function Dashboard() {
         >
           NO QUESTIONS AVAILABLE!
         </Typography>
+        <h1></h1>
+        <Typography align="right">
+          {openForm && (
+            <QuestionForm
+              formType="Add a new question"
+              inputTitle={handleTitleInputChange}
+              inputCategory={handleCatInputChange}
+              inputComplexity={handleComplexInputChange}
+              inputDescription={handleDescInputChange}
+              openForm={openForm}
+              closeForm={handleFormClose}
+              submitForm={handleFormSubmit}
+            ></QuestionForm>
+          )}
+          <FunctionalityButton
+            children="+ Add Question"
+            handleOnClick={handleButtonFormClick}
+          ></FunctionalityButton>
+        </Typography>
       </Box>
     );
   }
 
+  // Else handle the scenario where the question bank database is not empty
   return (
     <Box>
       <Typography

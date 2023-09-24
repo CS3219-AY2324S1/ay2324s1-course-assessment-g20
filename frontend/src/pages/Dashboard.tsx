@@ -212,7 +212,15 @@ export default function Dashboard() {
                       setOpenPopup={handlePopupOnClose}
                     ></Popup>
                   )}
-                  <Button variant={'contained'} onClick={() => handleDeleteOnClick(index)}>
+                  <Button 
+                    variant={'contained'}
+                    onClick={() => handleDeleteOnClick(index)}
+                    sx={{
+                      width: 80,
+                      height: 35,
+                      backgroundColor: 'red'
+                    }}
+                  >
                     DELETE
                   </Button>
                 </StyledTableCell>

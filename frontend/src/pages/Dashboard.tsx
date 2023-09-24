@@ -13,6 +13,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import FunctionalityButton from '../components/FunctionalityButton';
+import QuestionForm from '../components/QuestionForm';
 import Popup from '../components/Popup';
 
 // TODO: Replace this with a real table
@@ -33,6 +35,7 @@ const rows = [
 ];
 
 export default function Dashboard() {
+  // Styling for dashboard table
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
@@ -52,18 +55,56 @@ export default function Dashboard() {
     },
   }));
 
+  // Usestate for the current selected row
   const [rowIndex, setRowIndex] = useState(-1);
-  const handleSelectItem = (item: string) => {
+  const handleSelectedItem = (item: string) => {
     console.log(item);
   };
 
+  // Usestate and functions to handle the description's popup
   const [popupVisibility, setPopupVisibility] = useState(false);
-  const handleOnClick = (num: number) => {
+  const handlePopupOnClick = (num: number) => {
     setRowIndex(num);
     setPopupVisibility(true);
   };
-  const handleOnClose = () => setPopupVisibility(false);
+  const handlePopupOnClose = () => setPopupVisibility(false);
 
+  // Usestate and functions to handle the change in record of a question
+  const [titleInput, setTitleInput] = useState('');
+  const handleTitleInputChange = (event: any) => {
+    setTitleInput(event.target.value);
+  };
+  const [catInput, setCatInput] = useState('');
+  const handleCatInputChange = (event: any) => {
+    setCatInput(event.target.value);
+  };
+  const [complexInput, setComplexInput] = useState('');
+  const handleComplexInputChange = (event: any) => {
+    setComplexInput(event.target.value);
+  };
+  const [descInput, setDescInput] = useState('');
+  const handleDescInputChange = (event: any) => {
+    setDescInput(event.target.value);
+  };
+
+  // Usestate and functions to handle the Add Question button's form
+  const [openForm, setOpenForm] = useState(false);
+  const handleButtonFormClick = () => {
+    setOpenForm(true);
+    console.log('Add Question'); //Remove later
+  };
+  const handleFormClose = () => {
+    setOpenForm(false);
+    console.log('Press Cancel'); //Remove later
+  };
+  const handleFormSubmit = () => {
+    //Todo create new record
+    rows.push(createData(rows.length + 1, titleInput, catInput, complexInput, descInput));
+    setOpenForm(false);
+    console.log('Press Add'); //Remove later
+  };
+
+  // Handle the scenario where the question bank database is empty
   if (rows.length == 0) {
     return (
       <Box>
@@ -84,9 +125,11 @@ export default function Dashboard() {
   return (
     <Box>
       <Typography
-        variant="h2" color="white" align="center"
+        variant="h2"
+        color="white"
+        align="center"
         sx={{
-          backgroundColor: 'green',
+          backgroundColor: 'success.light',
         }}
       >
         Questions
@@ -107,7 +150,7 @@ export default function Dashboard() {
               <StyledTableRow
                 key={row.id}
                 onClick={() => {
-                  handleSelectItem(row.title);
+                  handleSelectedItem(row.title);
                 }}
               >
                 <StyledTableCell component="th" scope="row">
@@ -122,16 +165,35 @@ export default function Dashboard() {
                       title={row.title}
                       children={row.description}
                       openPopup={true}
-                      setOpenPopup={handleOnClose}
+                      setOpenPopup={handlePopupOnClose}
                     ></Popup>
                   )}
-                  <Button onClick={() => handleOnClick(row.id)}>READ</Button>
+                  <Button onClick={() => handlePopupOnClick(row.id)}>READ</Button>
                 </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <h1></h1>
+      <Typography align="right">
+        {openForm && (
+          <QuestionForm
+            formType="Add a new question"
+            inputTitle={handleTitleInputChange}
+            inputCategory={handleCatInputChange}
+            inputComplexity={handleComplexInputChange}
+            inputDescription={handleDescInputChange}
+            openForm={openForm}
+            closeForm={handleFormClose}
+            submitForm={handleFormSubmit}
+          ></QuestionForm>
+        )}
+        <FunctionalityButton
+          children="+ Add Question"
+          handleOnClick={handleButtonFormClick}
+        ></FunctionalityButton>
+      </Typography>
     </Box>
   );
 }

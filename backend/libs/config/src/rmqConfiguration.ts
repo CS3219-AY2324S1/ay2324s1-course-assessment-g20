@@ -9,7 +9,7 @@ const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {
       urls: [rmqUrl],
       queue: rmqQueue,
     },
-  }
+  };
 };
 
 export const getRmqOptions = () => ({

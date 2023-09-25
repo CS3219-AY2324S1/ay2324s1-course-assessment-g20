@@ -8,7 +8,8 @@ const gatewayConfiguration = () => {
     callbackURL: process.env.OAUTH_GOOGLE_REDIRECT_URL,
   };
 
-  const { questionServiceOptions, authServiceOptions, userServiceOptions } = getRmqOptions();
+  const { questionServiceOptions, authServiceOptions, userServiceOptions } =
+    getRmqOptions();
 
   return {
     port: parseInt(process.env.API_GATEWAY_PORT, 10),

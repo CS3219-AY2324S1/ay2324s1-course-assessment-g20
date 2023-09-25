@@ -12,7 +12,9 @@ export class UserService {
     private readonly roleDaoService: RoleDaoService,
   ) {}
 
-  getUserProfile(userId: string): Promise<Partial<UserProfileModel> | undefined> {
+  getUserProfile(
+    userId: string,
+  ): Promise<Partial<UserProfileModel> | undefined> {
     const result = this.userProfileDaoService.findByUserId({
       userId,
       withGraphFetched: true,
@@ -20,20 +22,13 @@ export class UserService {
     return result;
   }
 
-  private validateForeignKeys = async (userProfile: Partial<UserProfileModel>) => {
+  private validateForeignKeys = async (
+    userProfile: Partial<UserProfileModel>,
+  ) => {
     // Validate all the fkeys before patching to add custom error messages
-    const fkeyName = [
-      'preferred language id',
-      'role id',
-    ];
-    const fkeyValues = [
-      userProfile.preferredLanguageId,
-      userProfile.roleId,
-    ];
-    const daoServices = [
-      this.preferredLanguageDaoService,
-      this.roleDaoService,
-    ];
+    const fkeyName = ['preferred language id', 'role id'];
+    const fkeyValues = [userProfile.preferredLanguageId, userProfile.roleId];
+    const daoServices = [this.preferredLanguageDaoService, this.roleDaoService];
     await Promise.all(
       fkeyValues.map(async (fkeyValue, idx) => {
         if (fkeyValue && !(await daoServices[idx].findById(fkeyValue))) {
@@ -41,9 +36,12 @@ export class UserService {
         }
       }),
     );
-  }
+  };
 
-  async updateUserProfile(id: string, userProfile: Partial<UserProfileModel>): Promise<UserProfileModel> {
+  async updateUserProfile(
+    id: string,
+    userProfile: Partial<UserProfileModel>,
+  ): Promise<UserProfileModel> {
     await this.validateForeignKeys(userProfile);
     return this.userProfileDaoService.updateByUserId(id, userProfile);
   }

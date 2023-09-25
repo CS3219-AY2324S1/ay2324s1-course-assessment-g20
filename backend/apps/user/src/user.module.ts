@@ -17,7 +17,11 @@ import { UserProfileDaoModule } from './database/daos/userProfiles/userProfile.d
     SqlDatabaseModule.factory([]),
 
     // Database and DAOs
-    SqlDatabaseModule.factory([PreferredLanguageModel, RoleModel, UserProfileModel]),
+    SqlDatabaseModule.factory([
+      PreferredLanguageModel,
+      RoleModel,
+      UserProfileModel,
+    ]),
     PreferredLanguageDaoModule,
     RoleDaoModule,
     UserProfileDaoModule,

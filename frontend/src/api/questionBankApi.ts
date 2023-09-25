@@ -1,10 +1,22 @@
 import { IAuthContext } from '../interfaces';
-import { backendServicesPaths } from '../utils/constants';
-import { generateAuthInterceptor } from './authUtils';
+import { backendServicesPaths, HttpRequestMethod } from '../utils/constants';
+import { requestBackend } from './apiUtils';
 
 // TODO: remove this API call
 // This API shows how to use the auth interceptor
-export async function pingBackend(authContext: IAuthContext) {
-  const { protectedRequests, protectedRequestConfig } = generateAuthInterceptor(authContext);
-  return protectedRequests.get(backendServicesPaths.question.pingAuth, protectedRequestConfig);
+export async function pingProtectedBackend(authContext: IAuthContext) {
+  return requestBackend({
+    path: backendServicesPaths.question.pingAuth,
+    authContext,
+    method: HttpRequestMethod.GET,
+  });
+}
+
+export async function pingPublicBackend(authContext: IAuthContext) {
+  return requestBackend({
+    path: backendServicesPaths.question.root,
+    authContext,
+    method: HttpRequestMethod.GET,
+    requireAuthentication: false,
+  });
 }

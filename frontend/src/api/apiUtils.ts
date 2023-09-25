@@ -1,6 +1,12 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { IAuth, IAuthContext } from '../interfaces';
-import { backendServicesPaths, BACKEND_API_HOST, VERSION_PREFIX } from '../utils/constants';
+import { RequestBackendParams } from '../types';
+import {
+  backendServicesPaths,
+  BACKEND_API_HOST,
+  HttpRequestMethod,
+  VERSION_PREFIX,
+} from '../utils/constants';
 
 // sets a global variable which we can await so that we don't send multiple refresh requests
 let refreshingFunc: undefined | Promise<IRefreshTokenResponse> = undefined;
@@ -14,12 +20,65 @@ interface IRefreshTokenResponse {
   status: number;
 }
 
+export const getBackendPath = (path?: string) =>
+  `${BACKEND_API_HOST}${VERSION_PREFIX}${path ?? ''}`;
+
 const refreshAccessToken = async (refreshToken: string) =>
   await axios
-    .post(`${BACKEND_API_HOST}${VERSION_PREFIX}${backendServicesPaths.auth.refresh}`, {
+    .post(getBackendPath(backendServicesPaths.auth.refresh), {
       refreshToken: refreshToken,
     })
     .then((resp) => resp as IRefreshTokenResponse);
+
+// Wrapper around axios to make requests to the backend.
+export function requestBackend(requestParams: RequestBackendParams) {
+  requestParams = {
+    requireAuthentication: true,
+    ...requestParams,
+  };
+
+  let config = {};
+
+  // generate axios instance to handle public requests
+  let axiosInstance = axios.create({
+    baseURL: getBackendPath(),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (requestParams.requireAuthentication) {
+    const { protectedRequests, protectedRequestConfig } = generateAuthInterceptor(
+      requestParams.authContext,
+    );
+    axiosInstance = protectedRequests;
+    config = protectedRequestConfig;
+  }
+
+  if (requestParams.method == HttpRequestMethod.POST) {
+    const data = requestParams.data;
+    return axiosInstance.post(requestParams.path, data, config);
+  }
+
+  if (requestParams.method == HttpRequestMethod.PUT) {
+    const data = requestParams.data;
+    return axiosInstance.put(requestParams.path, data, config);
+  }
+
+  if (requestParams.method == HttpRequestMethod.GET) {
+    return axiosInstance.get(requestParams.path, config);
+  }
+
+  if (requestParams.method == HttpRequestMethod.DELETE) {
+    return axiosInstance.delete(requestParams.path, config);
+  }
+
+  if (requestParams.method == HttpRequestMethod.PATCH) {
+    return axiosInstance.patch(requestParams.path, config);
+  }
+
+  throw new Error('Invalid HTTP request method');
+}
 
 // The auth interceptor is used to intercept requests to the backend and add the access token to the request.
 // In the event that the access token is expired, the interceptor will attempt to refresh the access token.
@@ -29,7 +88,7 @@ export const generateAuthInterceptor = (authContext: IAuthContext) => {
   };
 
   const protectedRequests = axios.create({
-    baseURL: `${BACKEND_API_HOST}${VERSION_PREFIX}`,
+    baseURL: getBackendPath(),
     headers: {
       'Content-Type': 'application/json',
     },

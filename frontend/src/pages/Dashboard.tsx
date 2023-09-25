@@ -13,7 +13,6 @@ import { useEffect } from 'react';
 import { pingProtectedBackend, pingPublicBackend } from '../api/questionBankApi';
 import { useAuth } from '../utils/hooks';
 
-
 // TODO: Replace this with a real table
 function createData(
   id: number,
@@ -36,7 +35,6 @@ export default function Dashboard() {
   /* eslint-disable-next-line */
   const authContext = useAuth();
 
-
   useEffect(() => {
     pingPublicBackend(authContext).then((response) => {
       console.log('public response', response);
@@ -44,7 +42,6 @@ export default function Dashboard() {
     pingProtectedBackend(authContext).then((response) => {
       console.log('protected response', response);
     });
-
   }, []);
 
   return (

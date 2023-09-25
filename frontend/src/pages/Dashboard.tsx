@@ -36,7 +36,7 @@ export default function Dashboard() {
   const authContext = useAuth();
 
   useEffect(() => {
-    pingPublicBackend(authContext).then((response) => {
+    pingPublicBackend().then((response) => {
       console.log('public response', response);
     });
     pingProtectedBackend(authContext).then((response) => {

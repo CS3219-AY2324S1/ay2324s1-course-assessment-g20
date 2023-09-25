@@ -12,11 +12,9 @@ export async function pingProtectedBackend(authContext: IAuthContext) {
   });
 }
 
-export async function pingPublicBackend(authContext: IAuthContext) {
+export async function pingPublicBackend() {
   return requestBackend({
     path: backendServicesPaths.question.root,
-    authContext,
     method: HttpRequestMethod.GET,
-    requireAuthentication: false,
   });
 }

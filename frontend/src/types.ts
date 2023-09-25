@@ -1,7 +1,7 @@
 import { IAuthContext } from './interfaces';
 import { HttpRequestMethod } from './utils/constants';
 
-export type VariableRequestBackendParams =
+export type RequestBackendMethodParams =
   | {
       method: HttpRequestMethod.POST | HttpRequestMethod.PUT | HttpRequestMethod.PATCH;
       /* eslint-disable-next-line */
@@ -12,7 +12,6 @@ export type VariableRequestBackendParams =
     };
 
 export type RequestBackendParams = {
-  requireAuthentication?: boolean;
   path: string;
-  authContext: IAuthContext;
-} & VariableRequestBackendParams;
+  authContext?: IAuthContext;
+} & RequestBackendMethodParams;

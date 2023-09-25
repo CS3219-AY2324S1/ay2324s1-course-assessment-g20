@@ -30,13 +30,14 @@ const refreshAccessToken = async (refreshToken: string) =>
     })
     .then((resp) => resp as IRefreshTokenResponse);
 
-// Wrapper around axios to make requests to the backend.
+/**
+ * Wrapper around axios to make requests to the backend.
+ * @param authContext - the auth context to use for the request, providing this will trigger an authenticated request
+ * @param path - the path to the backend service
+ * @param method - the HTTP method to use
+ * @param data - the data to send in the request body, for POST, PUT, and PATCH requests
+ *  */
 export function requestBackend(requestParams: RequestBackendParams) {
-  requestParams = {
-    requireAuthentication: true,
-    ...requestParams,
-  };
-
   let config = {};
 
   // generate axios instance to handle public requests
@@ -47,7 +48,7 @@ export function requestBackend(requestParams: RequestBackendParams) {
     },
   });
 
-  if (requestParams.requireAuthentication) {
+  if (requestParams.authContext) {
     const { protectedRequests, protectedRequestConfig } = generateAuthInterceptor(
       requestParams.authContext,
     );

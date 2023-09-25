@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Grid } from '@mui/material';
-import { exampleQuestion1 } from './Dashboard';
 import { CodeEvaluator } from '../utils/codeEvaluator';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,7 +8,10 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import * as ts from 'typescript';
 import { languages } from '../utils/constants';
-import { ICodeEvalOutput } from '../interfaces';
+import { ICodeEvalOutput, IQuestion } from '../interfaces';
+import { exampleQuestion1 } from '../mocks';
+import { pingProtectedBackend } from '../api/questionBankApi';
+import { useAuth } from '../utils/hooks';
 
 // component built with reference to online guide: https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/
 
@@ -31,6 +33,7 @@ const OutputBlock = ({ label, output }: { label: string; output: string }) => {
 };
 
 const CodeEditor = () => {
+  const [question, setQuestion] = useState<IQuestion | undefined>(undefined);
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState('// some comment');
   const [codeEvalOutput, setCodeEvalOutput] = useState<ICodeEvalOutput>({
@@ -38,6 +41,16 @@ const CodeEditor = () => {
     logs: '',
     result: '',
   });
+
+  const auth = useAuth();
+
+  useEffect(() => {
+    // TODO: Replace below with a real API call to fetch a question
+    pingProtectedBackend(auth).then((response) => {
+      console.log('protected response', response);
+      setQuestion(exampleQuestion1);
+    });
+  }, []);
 
   const handleLanguageChange = (event: SelectChangeEvent) => {
     setLanguage(event.target.value as string);
@@ -65,8 +78,8 @@ const CodeEditor = () => {
   return (
     <Grid container>
       <Grid item sm={6} xs={12}>
-        <h2>{exampleQuestion1.title}</h2>
-        {exampleQuestion1.description}
+        <h2>{question?.title}</h2>
+        {question?.description}
       </Grid>
       <Grid item sm={6} xs={12} style={{ padding: 10 }}>
         <FormControl sx={{ m: 1, minWidth: 200 }}>

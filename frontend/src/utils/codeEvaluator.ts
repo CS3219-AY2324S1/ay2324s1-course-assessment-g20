@@ -38,9 +38,9 @@ export class CodeEvaluator {
 
     return new Promise((resolve, reject) => {
       // Handle timeout
-      const handle = setTimeout(() => {
+      const timeoutHandler = setTimeout(() => {
         this.killWorker();
-        reject('timeout');
+        reject('timeout after ' + timeout + 'ms');
       }, timeout);
 
       // Send the script to eval to the worker
@@ -52,14 +52,14 @@ export class CodeEvaluator {
           this.output.logs += e?.data?.log + '\n';
         } else {
           this.output.result = JSON.stringify(e.data);
-          clearTimeout(handle);
+          clearTimeout(timeoutHandler);
           resolve(this.output);
         }
       };
 
       worker.onerror = (e) => {
         this.output.error = JSON.stringify(e.message);
-        clearTimeout(handle);
+        clearTimeout(timeoutHandler);
         reject(this.output);
       };
     });

@@ -9,72 +9,17 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useEffect } from 'react';
-import { ICategory, IDifficulty, IQuestion } from '../interfaces';
+import { useEffect, useState } from 'react';
+import { pingProtectedBackend, pingPublicBackend } from '../api/questionBankApi';
 import { toTitleCase } from '../utils/stringUtils';
 import { useNavigate } from 'react-router-dom';
-import { pingProtectedBackend, pingPublicBackend } from '../api/questionBankApi';
-
-// TODO: remove this dummy data and replace it with real data from the backend
-const loremIpsum = `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`;
-const questionCategoryStrings: ICategory = {
-  id: 1,
-  name: 'strings',
-};
-const questionCategoryArrays: ICategory = {
-  id: 2,
-  name: 'arrays',
-};
-const questionCategoryAlgorithms: ICategory = {
-  id: 3,
-  name: 'algorithms',
-};
-
-const questionDifficultyEasy: IDifficulty = {
-  id: 1,
-  name: 'easy',
-};
-
-const questionDifficultyMedium: IDifficulty = {
-  id: 2,
-  name: 'medium',
-};
-
-const questionDifficultyHard: IDifficulty = {
-  id: 3,
-  name: 'hard',
-};
-
-export const exampleQuestion1: IQuestion = {
-  id: 1,
-  title: 'Reverse a String',
-  description: loremIpsum,
-  categories: [questionCategoryStrings, questionCategoryAlgorithms],
-  difficulty: questionDifficultyEasy,
-};
-
-export const exampleQuestion2: IQuestion = {
-  id: 2,
-  title: 'Repeated DNA Sequences',
-  description: loremIpsum,
-  categories: [questionCategoryAlgorithms],
-  difficulty: questionDifficultyMedium,
-};
-
-export const exampleQuestion3: IQuestion = {
-  id: 3,
-  title: 'Sliding Window Maximum',
-  description: loremIpsum,
-  categories: [questionCategoryArrays, questionCategoryAlgorithms],
-  difficulty: questionDifficultyHard,
-};
-
-const exampleQuestions: IQuestion[] = [exampleQuestion1, exampleQuestion2, exampleQuestion3];
+import { IQuestion } from '../interfaces';
+import { exampleQuestions } from '../mocks';
 
 export default function Dashboard() {
-
   const navigate = useNavigate();
-  // TODO: Remove this useEffect and replace it with a real API call using react-router data loaders
+  const [questions, setQuestions] = useState<IQuestion[]>([]);
+
   useEffect(() => {
     pingPublicBackend().then((response) => {
       console.log('public response', response);
@@ -82,6 +27,9 @@ export default function Dashboard() {
     pingProtectedBackend().then((response) => {
       console.log('protected response', response);
     });
+
+    // TODO: Replace below with a real API call
+    setQuestions(exampleQuestions);
   }, []);
 
   return (
@@ -99,7 +47,7 @@ export default function Dashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {exampleQuestions.map((row) => (
+            {questions.map((row) => (
               <TableRow
                 key={row.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -115,7 +63,6 @@ export default function Dashboard() {
                   {row.categories.map((x) => toTitleCase(x.name)).join(', ')}
                 </TableCell>
                 <TableCell align="left">{toTitleCase(row.difficulty.name)}</TableCell>
-                {/* <TableCell align="right">{row.protein}</TableCell> */}
               </TableRow>
             ))}
           </TableBody>

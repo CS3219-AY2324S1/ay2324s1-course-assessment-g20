@@ -1,10 +1,11 @@
+import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './contextProviders/AuthContext';
-import PeerPrepRouterProvider from './routes';
+import router from './routes';
 
 export default function App() {
   return (
     <AuthProvider>
-      <PeerPrepRouterProvider />
+      <RouterProvider router={router} />
     </AuthProvider>
   );
 }

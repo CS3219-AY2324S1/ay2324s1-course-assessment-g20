@@ -12,7 +12,6 @@ const questionConfiguration = () => {
   return {
     port: parseInt(process.env.QUESTION_SERVICE_PORT, 10),
     databaseConfigurationOptions,
-    rmqUrl: process.env.RMQ_URL,
   };
 };
 

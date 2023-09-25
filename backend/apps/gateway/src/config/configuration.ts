@@ -1,27 +1,14 @@
-import { RmqQueue } from '@app/types/rmqQueues';
-import { RmqOptions, Transport } from '@nestjs/microservices';
 import { _StrategyOptionsBase } from 'passport-google-oauth20';
+import { getRmqOptions } from '@app/config/rmqConfiguration';
 
 const gatewayConfiguration = () => {
-  const rmqUrl = process.env.RMQ_URL;
-
-  const getRmqOptions = (rmqQueue: RmqQueue): RmqOptions => ({
-    transport: Transport.RMQ,
-    options: {
-      urls: [rmqUrl],
-      queue: rmqQueue,
-    },
-  });
-
-  const questionServiceOptions = getRmqOptions(RmqQueue.QUESTION);
-  const authServiceOptions = getRmqOptions(RmqQueue.AUTH);
-  const userServiceOptions = getRmqOptions(RmqQueue.USER);
-
   const googleOauthOptions: _StrategyOptionsBase = {
     clientID: process.env.OAUTH_GOOGLE_ID,
     clientSecret: process.env.OAUTH_GOOGLE_SECRET,
     callbackURL: process.env.OAUTH_GOOGLE_REDIRECT_URL,
   };
+
+  const { questionServiceOptions, authServiceOptions, userServiceOptions } = getRmqOptions();
 
   return {
     port: parseInt(process.env.API_GATEWAY_PORT, 10),

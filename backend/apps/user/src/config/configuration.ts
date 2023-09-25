@@ -12,7 +12,6 @@ const userConfiguration = () => {
   return {
     port: parseInt(process.env.USER_SERVICE_PORT, 10),
     databaseConfigurationOptions,
-    rmqUrl: process.env.RMQ_URL,
   };
 };
 

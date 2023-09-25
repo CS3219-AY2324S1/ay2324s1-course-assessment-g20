@@ -9,7 +9,10 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useLoaderData } from 'react-router-dom';
+import { useEffect } from 'react';
+import { pingProtectedBackend, pingPublicBackend } from '../api/questionBankApi';
+import { useAuth } from '../utils/hooks';
+
 
 // TODO: Replace this with a real table
 function createData(
@@ -31,9 +34,18 @@ const rows = [
 export default function Dashboard() {
   // TODO: Remove this line and replace it with a real API call that fetches from question bank using react-router data loaders
   /* eslint-disable-next-line */
-  const backendResponse = useLoaderData() as { protectedResponse: any; publicResponse: any };
-  console.log('public response', backendResponse.publicResponse);
-  console.log('protected response', backendResponse.protectedResponse);
+  const authContext = useAuth();
+
+
+  useEffect(() => {
+    pingPublicBackend(authContext).then((response) => {
+      console.log('public response', response);
+    });
+    pingProtectedBackend(authContext).then((response) => {
+      console.log('protected response', response);
+    });
+
+  }, []);
 
   return (
     <Box>

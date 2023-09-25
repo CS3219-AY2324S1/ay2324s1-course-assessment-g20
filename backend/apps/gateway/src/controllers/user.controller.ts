@@ -1,47 +1,28 @@
 import {
-  // Body,
+  Body,
   Controller,
   Get,
   Inject,
-  // Post,
-  // Req,
-  // Res,
-  // UseGuards,
+  Patch,
+  Req,
 } from '@nestjs/common';
-import { Public } from '../jwt/jwtPublic.decorator';
 import { ClientProxy } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
-// import { Request, Response } from 'express';
-// import { ConfigService } from '@nestjs/config';
-// import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
-// import RefreshDto from '../dtos/auth/refresh.dto';
+import PatchUserProfileDto from '../dtos/user/patchUserProfile.dto';
 
 @Controller('user')
 export class UserController {
   constructor(
     @Inject('USER_SERVICE')
     private readonly userServiceClient: ClientProxy,
-    // private readonly configService: ConfigService,
   ) {}
 
-  @Public()
   @Get()
-  getSomething(): Observable<string> {
-    // return 'Hello from user controller';
-    return this.userServiceClient.send('get_something', {});
+  async getUserProfile(@Req() req) {
+    return this.userServiceClient.send('get_user_profile', { id: req.user.id });
   }
 
-  @Public()
-  @Get('getUser')
-  getUser(): Observable<string> {
-    // return 'Hello from user controller';
-    return this.userServiceClient.send('get_user_profile', {});
-  }
-
-  @Public()
-  @Get('updateUser')
-  updateUser(): Observable<string> {
-    // return 'Hello from user controller';
-    return this.userServiceClient.send('update_user_profile', {});
+  @Patch()
+  async patchUserProfile(@Req() req, @Body() body: PatchUserProfileDto) {
+    return await this.userServiceClient.send('patch_user_profile', { id: req.user.id, body });
   }
 }

@@ -45,7 +45,7 @@ export class UserProfileDaoService {
     });
   }
 
-  updateByUserId(userId: string, data: UserProfileModel) {
+  updateByUserId(userId: string, data: Partial<UserProfileModel>) {
     return this.userProfileModel
       .query()
       .patch(data)

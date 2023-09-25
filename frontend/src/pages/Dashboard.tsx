@@ -43,7 +43,6 @@ export default function Dashboard() {
               <TableCell align="left">Title</TableCell>
               <TableCell align="left">Category&nbsp;(g)</TableCell>
               <TableCell align="left">Complexity&nbsp;(g)</TableCell>
-              {/* <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>

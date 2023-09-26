@@ -15,6 +15,7 @@ import {
   QuestionServiceApi,
 } from '@app/interservice-api/question';
 import QuestionDto from '../dtos/question/question.dto';
+import { DifficultyDto } from '../dtos/question/difficulty.dto';
 
 @Controller('question')
 export class AppController {
@@ -40,13 +41,13 @@ export class AppController {
   }
 
   @Public()
-  @Get(':id')
+  @Get('questions/:id')
   getQuestionWithId(@Param('id') questionId: string): Observable<QuestionDto> {
     return this.questionServiceClient.send('get_question_with_id', questionId);
   }
 
   @Public()
-  @Delete(':id')
+  @Delete('questions/:id')
   deleteQuestionWithId(@Param('id') questionId: string): Observable<string> {
     return this.questionServiceClient.send(
       'delete_question_with_id',

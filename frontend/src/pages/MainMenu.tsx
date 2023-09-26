@@ -16,7 +16,7 @@ export default function MainMenu() {
       >
         MATCH WITH SOMEONE
       </Typography>
-      <h1></h1>
+      <br />
       <Typography align="center" component={'span'}>
         <Stack display={'block'} spacing={2} direction={'row'}>
           <Button
@@ -57,7 +57,7 @@ export default function MainMenu() {
           </Button>
         </Stack>
       </Typography>
-      <h1></h1>
+      <br />
       <Dashboard></Dashboard>
     </>
   );

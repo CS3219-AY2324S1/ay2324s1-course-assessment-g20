@@ -19,17 +19,6 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { EMPTY_QUESTION, Question } from '../interfaces';
 
-// TODO: Replace this with a real table
-// function createData(title: string, category: string, complexity: string, description: string) {
-//   return { title, category, complexity, description };
-// }
-
-/*const rows = [
-  createData('Reverse a String', 'Strings, Algorithms', 'Easy', 'Description 1'),
-  createData('Repeated DNA Sequences', 'Data Structures, Algorithms', 'Medium', 'Description 2'),
-  createData('Sliding Window Maximum', 'Arrays, Algorithms', 'Hard', 'Description 3'),
-];*/
-
 export default function Dashboard() {
   const QUESTIONS_ROUTE = BACKEND_API_HOST + backendServicesPaths.question.root;
   // Styling for dashboard table
@@ -52,15 +41,7 @@ export default function Dashboard() {
     },
   }));
 
-  // const [rows, setRows] = useState([
-  //   createData('Reverse a String', 'Strings, Algorithms', 'Easy', 'Description 1'),
-  //   createData('Repeated DNA Sequences', 'Data Structures, Algorithms', 'Medium', 'Description 2'),
-  //   createData('Sliding Window Maximum', 'Arrays, Algorithms', 'Hard', 'Description 3'),
-  // ]);
-
-  const [rows, setRows] = useState<Question[]>([]);
-  useEffect(() => {
-    // Fetch categories from API
+  const getQuestions = () => {
     axios
       .get(QUESTIONS_ROUTE)
       .then((response) => {
@@ -69,13 +50,16 @@ export default function Dashboard() {
       .catch((error) => {
         console.error('Error:', error);
       });
+  };
+
+  const [rows, setRows] = useState<Question[]>([]);
+  useEffect(() => {
+    // Fetch categories from API
+    getQuestions();
   }, []);
 
   // Usestate for the current selected row
   const [rowIndex, setRowIndex] = useState(-1);
-  const handleSelectedItem = (item: string) => {
-    console.log(item);
-  };
 
   // Usestate and functions to handle the description's popup
   const [popupVisibility, setPopupVisibility] = useState(false);
@@ -120,11 +104,9 @@ export default function Dashboard() {
   const [openForm, setOpenForm] = useState(false);
   const handleButtonFormClick = () => {
     setOpenForm(true);
-    console.log('Add Question'); //Remove later
   };
   const handleFormClose = () => {
     setOpenForm(false);
-    console.log('Press Cancel'); //Remove later
   };
   const handleFormSubmit = () => {
     axios
@@ -132,14 +114,7 @@ export default function Dashboard() {
         question: questionInput,
       })
       .then(() => {
-        axios
-          .get(QUESTIONS_ROUTE)
-          .then((response) => {
-            setRows(response.data);
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-          });
+        getQuestions();
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -149,7 +124,6 @@ export default function Dashboard() {
 
     // Reset the useStates of the fields of the form
     setQuestionInput(EMPTY_QUESTION);
-    console.log('Press Add'); //Remove later
   };
 
   // Functions to handle the Delete Question button
@@ -162,17 +136,8 @@ export default function Dashboard() {
         console.error('Error:', error);
       })
       .then(() => {
-        axios
-          .get(QUESTIONS_ROUTE)
-          .then((response) => {
-            setRows(response.data);
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-          });
+        getQuestions();
       });
-
-    console.log('Press Delete ' + rows.length); //Remove later
   };
 
   const validateForm = () => {
@@ -210,12 +175,7 @@ export default function Dashboard() {
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
-              <StyledTableRow
-                key={index}
-                onClick={() => {
-                  handleSelectedItem(row.title);
-                }}
-              >
+              <StyledTableRow key={index}>
                 <StyledTableCell component="th" scope="row">
                   {row.title}
                 </StyledTableCell>
@@ -267,7 +227,7 @@ export default function Dashboard() {
           </TableBody>
         </Table>
       </TableContainer>
-      <h1></h1>
+      <br />
       <Typography align="right">
         {openForm && (
           <QuestionForm

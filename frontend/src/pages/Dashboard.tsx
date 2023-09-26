@@ -99,7 +99,7 @@ export default function Dashboard() {
   const handleFormSubmit = () => {
     rows.push(createData(titleInput, catInput.join(', '), complexInput, descInput)); //CALL BACKEND API
     setOpenForm(false);
-    
+
     // Reset the useStates of the fields of the form
     setTitleInput('');
     setCatInput([]);
@@ -118,11 +118,16 @@ export default function Dashboard() {
 
   const isEmpty = (str: string) => {
     return str.length === 0;
-  }
+  };
   const validateForm = () => {
-    return (isEmpty(titleInput) || isEmpty(catInput.toString()) || isEmpty(complexInput) || isEmpty(descInput))
-  }
-  let isValidated = validateForm();
+    return (
+      isEmpty(titleInput) ||
+      isEmpty(catInput.toString()) ||
+      isEmpty(complexInput) ||
+      isEmpty(descInput)
+    );
+  };
+  const isValidated = validateForm();
 
   // Handle the scenario where the question bank database is empty
   if (rows.length == 0) {

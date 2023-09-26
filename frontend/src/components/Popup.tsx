@@ -22,7 +22,7 @@ export default function Popup({ title, children, openPopup, setOpenPopup }: Popu
             width: 0,
             height: 25,
             backgroundColor: 'white',
-            color: 'black'
+            color: 'black',
           }}
         >
           X

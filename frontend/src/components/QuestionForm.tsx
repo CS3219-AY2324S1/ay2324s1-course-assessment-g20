@@ -23,7 +23,7 @@ interface FormProps {
   openForm: boolean;
   closeForm: () => void;
   submitForm: () => void;
-  isValidated: boolean
+  isValidated: boolean;
 }
 
 const categories = [
@@ -49,16 +49,17 @@ export default function QuestionForm({
   openForm,
   closeForm,
   submitForm,
-  isValidated
+  isValidated,
 }: FormProps) {
-
   return (
     <FormControl>
       <InputLabel id="category-label">Question Category</InputLabel>
       <Dialog open={openForm} onClose={closeForm}>
         <DialogTitle>{formType}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText>Fill in the question's title, category, complexity and description</DialogContentText>
+          <DialogContentText>
+            Fill in the question's title, category, complexity and description
+          </DialogContentText>
           <TextField
             required
             margin="dense"
@@ -119,7 +120,9 @@ export default function QuestionForm({
         </DialogContent>
         <DialogActions>
           <Button onClick={closeForm}>Cancel</Button>
-          <Button type='submit' onClick={submitForm} disabled={isValidated}>Done</Button>
+          <Button type="submit" onClick={submitForm} disabled={isValidated}>
+            Done
+          </Button>
         </DialogActions>
       </Dialog>
     </FormControl>

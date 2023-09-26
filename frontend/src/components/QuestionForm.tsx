@@ -12,32 +12,23 @@ import {
   Select,
   TextField,
 } from '@mui/material';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { BACKEND_API_HOST, backendServicesPaths } from '../utils/constants';
+import { Category, Difficulty } from '../interfaces';
 
 interface FormProps {
   formType: string;
-  category: never[];
-  inputTitle: (title: any) => void;
-  inputCategory: (category: any) => void;
-  inputComplexity: (complexity: any) => void;
-  inputDescription: (description: any) => void;
+  category: string[];
+  inputTitle: (event: any) => void;
+  inputCategory: (event: any) => void;
+  inputComplexity: (event: any) => void;
+  inputDescription: (event: any) => void;
   openForm: boolean;
   closeForm: () => void;
   submitForm: () => void;
   isValidated: boolean;
 }
-
-const categories = [
-  { value: 'Algorithms' },
-  { value: 'Arrays' },
-  { value: 'Bit Manipulation' },
-  { value: 'BrainTeaser' },
-  { value: 'Databases' },
-  { value: 'Data Structures' },
-  { value: 'Recursion' },
-  { value: 'Strings' },
-];
-
-const complexities = [{ value: 'Easy' }, { value: 'Medium' }, { value: 'Hard' }];
 
 export default function QuestionForm({
   formType,
@@ -51,6 +42,31 @@ export default function QuestionForm({
   submitForm,
   isValidated,
 }: FormProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [difficulties, setDifficulties] = useState<Difficulty[]>([]);
+
+  useEffect(() => {
+    // Fetch categories from API
+    axios
+      .get(BACKEND_API_HOST + backendServicesPaths.question.categories)
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+    // Fetch difficulties from API
+    axios
+      .get(BACKEND_API_HOST + backendServicesPaths.question.difficulties)
+      .then((response) => {
+        setDifficulties(response.data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }, []);
+
   return (
     <FormControl>
       <InputLabel id="category-label">Question Category</InputLabel>
@@ -84,9 +100,9 @@ export default function QuestionForm({
             onChange={inputCategory}
             //input={<OutlinedInput label="Question Category" />}
           >
-            {categories.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.value}
+            {categories.map((category) => (
+              <MenuItem key={category.id} value={category.name}>
+                {category.name}
               </MenuItem>
             ))}
           </Select>
@@ -100,9 +116,9 @@ export default function QuestionForm({
             select
             onChange={inputComplexity}
           >
-            {complexities.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.value}
+            {difficulties.map((difficulty) => (
+              <MenuItem key={difficulty.id} value={difficulty.name}>
+                {difficulty.name}
               </MenuItem>
             ))}
           </TextField>

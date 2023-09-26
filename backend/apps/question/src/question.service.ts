@@ -34,22 +34,22 @@ export class QuestionService {
   }
 
   async addQuestion(
-    questionWithCategories: QuestionWithCategoryAndDifficulty,
+    questionWithCategoriesAndDifficulty: QuestionWithCategoryAndDifficulty,
   ): Promise<QuestionWithCategoryAndDifficulty> {
     // Check if difficulty and categories exist
     const difficultyObject = await this.getDifficultyIfExists(
-      questionWithCategories.difficulty.id,
+      questionWithCategoriesAndDifficulty.difficulty,
     );
     const categoryObjects = await Promise.all(
-      questionWithCategories.categories.map((category) =>
-        this.getCategoryIfExists(category.id),
+      questionWithCategoriesAndDifficulty.categories.map((category) =>
+        this.getCategoryIfExists(category),
       ),
     );
 
     // Create new question
     const newQuestionObject = new this.questionModel({
-      title: questionWithCategories.title,
-      description: questionWithCategories.description,
+      title: questionWithCategoriesAndDifficulty.title,
+      description: questionWithCategoriesAndDifficulty.description,
       difficulty: difficultyObject,
     });
     const newQuestion = (await newQuestionObject.save()).toObject();
@@ -59,13 +59,17 @@ export class QuestionService {
 
     return {
       ...newQuestion,
-      difficulty: difficultyObject,
-      categories: categoryObjects,
+      difficulty: questionWithCategoriesAndDifficulty.difficulty,
+      categories: categoryObjects.map((category) => category.name),
     };
   }
 
-  private async getDifficultyIfExists(difficultyId: string | Difficulty) {
-    const difficultyObject = await this.diffcultyModel.findById(difficultyId);
+  private async getDifficultyIfExists(difficulty: string | Difficulty) {
+    const difficultyObject =
+      (await this.diffcultyModel.findOne({
+        name: difficulty,
+      })) ?? (await this.diffcultyModel.findById(difficulty.toString()));
+
     if (difficultyObject == null) {
       throw new NotFoundException('Difficulty not found');
     }
@@ -73,8 +77,11 @@ export class QuestionService {
     return difficultyObject.toObject();
   }
 
-  private async getCategoryIfExists(categoryId: string | Category) {
-    const categoryObject = await this.categoryModel.findById(categoryId);
+  private async getCategoryIfExists(category: string | Category) {
+    const categoryObject =
+      (await this.categoryModel.findOne({ name: category })) ??
+      (await this.categoryModel.findById(category.toString()));
+
     if (categoryObject == null) {
       throw new NotFoundException('Category not found');
     }
@@ -110,20 +117,22 @@ export class QuestionService {
         question: questionId,
       })) ?? [];
 
-    const categories = await Promise.all(
-      questionCategories.map((questionCategory) =>
-        this.getCategoryIfExists(questionCategory.category),
-      ),
-    );
+    const categories = (
+      await Promise.all(
+        questionCategories.map((questionCategory) =>
+          this.getCategoryIfExists(questionCategory.category),
+        ),
+      )
+    ).map((category) => category.name);
 
     return {
       ...questionObject,
-      difficulty: difficultyObject,
+      difficulty: difficultyObject.name,
       categories: categories,
     };
   }
 
-  private async getQuestionIfExists(questionId: string | Question) {
+  private async getQuestionIfExists(questionId: string) {
     const questionObject = await this.questionModel.findById(questionId);
     if (questionObject == null) {
       throw new NotFoundException('Question not found');

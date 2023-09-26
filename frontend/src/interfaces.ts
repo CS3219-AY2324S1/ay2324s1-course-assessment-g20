@@ -18,19 +18,24 @@ export interface ICodeEvalOutput {
 }
 
 export interface Question {
-  id: string;
+  _id?: string;
   title: string;
-  categories: Category[];
-  difficulty: Difficulty;
+  categories: string[];
+  difficulty: string;
   description: string;
 }
-
+export interface Difficulty {
+  id: string;
+  name: string;
+}
 export interface Category {
   id: string;
   name: string;
 }
 
-export interface Difficulty {
-  id: string;
-  name: string;
-}
+export const EMPTY_QUESTION: Question = {
+  title: '',
+  description: '',
+  difficulty: '',
+  categories: [],
+};

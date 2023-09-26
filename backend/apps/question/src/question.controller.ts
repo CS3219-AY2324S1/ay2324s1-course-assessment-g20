@@ -18,7 +18,9 @@ export class QuestionController {
   }
 
   @MessagePattern('add_question')
-  addQuestion(question: QuestionWithCategoryAndDifficulty): Promise<Question> {
+  addQuestion(
+    question: QuestionWithCategoryAndDifficulty,
+  ): Promise<QuestionWithCategoryAndDifficulty> {
     return this.questionService.addQuestion(question);
   }
 

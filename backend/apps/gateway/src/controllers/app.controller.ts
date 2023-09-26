@@ -15,7 +15,6 @@ import {
   QuestionServiceApi,
 } from '@app/interservice-api/question';
 import QuestionDto from '../dtos/question/question.dto';
-import { DifficultyDto } from '../dtos/question/difficulty.dto';
 
 @Controller('question')
 export class AppController {

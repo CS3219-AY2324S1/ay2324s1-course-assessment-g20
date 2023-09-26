@@ -1,7 +1,4 @@
-import { Type } from 'class-transformer';
-import { DifficultyDto } from './difficulty.dto';
-import { IsString, ValidateNested } from 'class-validator';
-import { CategoryDto } from './category.dto';
+import { IsArray, IsString } from 'class-validator';
 
 export default class QuestionDto {
   @IsString()
@@ -10,11 +7,9 @@ export default class QuestionDto {
   @IsString()
   description: string;
 
-  @Type(() => DifficultyDto)
-  @ValidateNested()
-  difficulty: DifficultyDto;
+  @IsString()
+  difficulty: string;
 
-  @Type(() => CategoryDto)
-  @ValidateNested()
-  categories: CategoryDto[];
+  @IsArray()
+  categories: string[];
 }

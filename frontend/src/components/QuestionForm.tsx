@@ -5,10 +5,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  FormControl,
   InputLabel,
+  // InputLabel,
   MenuItem,
-  //OutlinedInput,
   Select,
   TextField,
 } from '@mui/material';
@@ -68,79 +67,76 @@ export default function QuestionForm({
   }, []);
 
   return (
-    <FormControl>
-      <InputLabel id="category-label">Question Category</InputLabel>
-      <Dialog open={openForm} onClose={closeForm}>
-        <DialogTitle>{formType}</DialogTitle>
-        <DialogContent dividers>
-          <DialogContentText>
-            Fill in the question's title, category, complexity and description
-          </DialogContentText>
-          <TextField
-            required
-            margin="dense"
-            id="title"
-            label="Question Title"
-            type="text"
-            fullWidth
-            variant="outlined"
-            multiline
-            onChange={inputTitle}
-          ></TextField>
-          <Select
-            required
-            margin="dense"
-            labelId="category-label"
-            id="category"
-            label="Question Category"
-            fullWidth
-            variant="outlined"
-            multiple
-            value={category}
-            onChange={inputCategory}
-            //input={<OutlinedInput label="Question Category" />}
-          >
-            {categories.map((category) => (
-              <MenuItem key={category.id} value={category.name}>
-                {category.name}
-              </MenuItem>
-            ))}
-          </Select>
-          <TextField
-            required
-            margin="dense"
-            id="complexity"
-            label="Question Complexity"
-            fullWidth
-            variant="outlined"
-            select
-            onChange={inputComplexity}
-          >
-            {difficulties.map((difficulty) => (
-              <MenuItem key={difficulty.id} value={difficulty.name}>
-                {difficulty.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            required
-            margin="dense"
-            id="description"
-            label="Question Description"
-            type="text"
-            fullWidth
-            variant="outlined"
-            multiline
-            onChange={inputDescription}
-          ></TextField>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeForm}>Cancel</Button>
-          <Button type="submit" onClick={submitForm} disabled={isValidated}>
-            Done
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </FormControl>
+    <Dialog open={openForm} onClose={closeForm}>
+      <DialogTitle>{formType}</DialogTitle>
+      <DialogContent dividers>
+        <DialogContentText>
+          Fill in the question's title, category, complexity and description
+        </DialogContentText>
+        <br />
+        <InputLabel id="title-label">Question Title</InputLabel>
+        <TextField
+          required
+          margin="dense"
+          id="title"
+          type="text"
+          fullWidth
+          variant="outlined"
+          multiline
+          onChange={inputTitle}
+        ></TextField>
+        <InputLabel id="category-label">Question Category</InputLabel>
+        <Select
+          sx={{ marginBottom: '4px', marginTop: '8px' }}
+          required
+          margin="dense"
+          id="category"
+          fullWidth
+          variant="outlined"
+          multiple
+          value={category}
+          onChange={inputCategory}
+        >
+          {categories.map((category) => (
+            <MenuItem key={category._id} value={category.name}>
+              {category.name}
+            </MenuItem>
+          ))}
+        </Select>
+        <InputLabel id="complexity-label">Question Complexity</InputLabel>
+        <TextField
+          required
+          margin="dense"
+          id="complexity"
+          fullWidth
+          variant="outlined"
+          select
+          onChange={inputComplexity}
+        >
+          {difficulties.map((difficulty) => (
+            <MenuItem key={difficulty._id} value={difficulty.name}>
+              {difficulty.name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <InputLabel id="description-label">Question Description</InputLabel>
+        <TextField
+          required
+          margin="dense"
+          id="description"
+          type="text"
+          fullWidth
+          variant="outlined"
+          multiline
+          onChange={inputDescription}
+        ></TextField>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeForm}>Cancel</Button>
+        <Button type="submit" onClick={submitForm} disabled={isValidated}>
+          Done
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }

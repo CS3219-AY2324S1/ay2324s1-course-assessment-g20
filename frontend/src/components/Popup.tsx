@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 
 interface PopupProps {
   title: string;
@@ -28,7 +28,11 @@ export default function Popup({ title, children, openPopup, setOpenPopup }: Popu
           X
         </Button>
       </DialogTitle>
-      <DialogContent>{children}</DialogContent>
+      <DialogContent>
+        {children.split('\n').map((child, key) => {
+          return !child ? <br /> : <Typography key={key}>{child}</Typography>;
+        })}
+      </DialogContent>
     </Dialog>
   );
 }

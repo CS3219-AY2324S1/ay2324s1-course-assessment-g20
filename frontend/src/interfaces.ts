@@ -25,11 +25,11 @@ export interface Question {
   description: string;
 }
 export interface Difficulty {
-  id: string;
+  _id: string;
   name: string;
 }
 export interface Category {
-  id: string;
+  _id: string;
   name: string;
 }
 

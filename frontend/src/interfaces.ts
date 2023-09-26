@@ -11,26 +11,26 @@ export interface IAuthContext {
   signout: () => void;
 }
 
-export interface ICategory {
-  id: number;
-  name: string;
-}
-
-export interface IDifficulty {
-  id: number;
-  name: string;
-}
-
-export interface IQuestion {
-  id: number;
-  title: string;
-  description?: string; // Don't return this field to dashboard
-  difficulty: IDifficulty;
-  categories: ICategory[];
-}
-
 export interface ICodeEvalOutput {
   logs: string;
   result: string;
   error: string;
+}
+
+export interface Question {
+  id: string;
+  title: string;
+  categories: Category[];
+  difficulty: Difficulty;
+  description: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export interface Difficulty {
+  id: string;
+  name: string;
 }

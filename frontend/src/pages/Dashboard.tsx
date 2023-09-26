@@ -221,14 +221,16 @@ export default function Dashboard() {
                       setOpenPopup={handlePopupOnClose}
                     ></Popup>
                   )}
-                  <Button 
-                    variant='contained'
+                  <Button
+                    variant="contained"
                     onClick={() => handlePopupOnClick(index)}
                     sx={{
                       width: 30,
                       height: 35,
                     }}
-                  >READ</Button>
+                  >
+                    READ
+                  </Button>
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   {popupVisibility && rowIndex == index && (

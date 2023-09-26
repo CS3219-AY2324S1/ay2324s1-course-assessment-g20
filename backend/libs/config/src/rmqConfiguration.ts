@@ -1,7 +1,7 @@
 import { RmqOptions, Transport } from '@nestjs/microservices';
 import { RmqQueue } from '@app/types/rmqQueues';
 
-const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {
+export const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {
   const rmqUrl = process.env.RMQ_URL;
   return {
     transport: Transport.RMQ,
@@ -11,9 +11,3 @@ const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {
     },
   };
 };
-
-export const getRmqOptions = () => ({
-  questionServiceOptions: getRmqOptionsForQueue(RmqQueue.QUESTION),
-  authServiceOptions: getRmqOptionsForQueue(RmqQueue.AUTH),
-  userServiceOptions: getRmqOptionsForQueue(RmqQueue.USER),
-});

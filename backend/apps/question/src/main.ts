@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { QuestionModule } from './question.module';
 import questionConfiguration from './config/configuration';
-import { getRmqOptions } from '@app/config/rmqConfiguration';
+import { getRmqOptionsForQueue } from '@app/config/rmqConfiguration';
+import { RmqQueue } from '@app/types/rmqQueues';
 
 async function bootstrap() {
   const { port } = questionConfiguration();
-  const { questionServiceOptions } = getRmqOptions();
   const app = await NestFactory.createMicroservice(
     QuestionModule,
-    questionServiceOptions,
+    getRmqOptionsForQueue(RmqQueue.QUESTION),
   );
   await app.listen();
   console.log(`Question microservice running on port ${port}`);

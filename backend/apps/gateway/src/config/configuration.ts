@@ -1,5 +1,6 @@
 import { _StrategyOptionsBase } from 'passport-google-oauth20';
-import { getRmqOptions } from '@app/config/rmqConfiguration';
+import { getRmqOptionsForQueue } from '@app/config/rmqConfiguration';
+import { RmqQueue } from '@app/types/rmqQueues';
 
 const gatewayConfiguration = () => {
   const googleOauthOptions: _StrategyOptionsBase = {
@@ -8,8 +9,9 @@ const gatewayConfiguration = () => {
     callbackURL: process.env.OAUTH_GOOGLE_REDIRECT_URL,
   };
 
-  const { questionServiceOptions, authServiceOptions, userServiceOptions } =
-    getRmqOptions();
+  const questionServiceOptions = getRmqOptionsForQueue(RmqQueue.QUESTION);
+  const authServiceOptions = getRmqOptionsForQueue(RmqQueue.AUTH);
+  const userServiceOptions = getRmqOptionsForQueue(RmqQueue.USER);
 
   return {
     port: parseInt(process.env.API_GATEWAY_PORT, 10),

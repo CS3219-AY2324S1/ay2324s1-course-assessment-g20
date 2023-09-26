@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
 import authConfiguration from './config/configuration';
-import { getRmqOptions } from '@app/config/rmqConfiguration';
+import { getRmqOptionsForQueue } from '@app/config/rmqConfiguration';
+import { RmqQueue } from '@app/types/rmqQueues';
 
 async function bootstrap() {
   const { port } = authConfiguration();
-  const { authServiceOptions } = getRmqOptions();
   const app = await NestFactory.createMicroservice(
     AuthModule,
-    authServiceOptions,
+    getRmqOptionsForQueue(RmqQueue.AUTH),
   );
   await app.listen();
   console.log(`Auth microservice running on port ${port}`);

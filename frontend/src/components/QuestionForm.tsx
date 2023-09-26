@@ -5,16 +5,17 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControl,
+  InputLabel,
   MenuItem,
+  //OutlinedInput,
+  Select,
   TextField,
 } from '@mui/material';
 
 interface FormProps {
   formType: string;
-  defTitle?: string;
-  defCategory?: string;
-  defComplexity?: string;
-  defDescription?: string;
+  category: never[];
   inputTitle: (title: any) => void;
   inputCategory: (category: any) => void;
   inputComplexity: (complexity: any) => void;
@@ -22,6 +23,7 @@ interface FormProps {
   openForm: boolean;
   closeForm: () => void;
   submitForm: () => void;
+  isValidated: boolean
 }
 
 const categories = [
@@ -33,16 +35,13 @@ const categories = [
   { value: 'Data Structures' },
   { value: 'Recursion' },
   { value: 'Strings' },
-]; // Need to be able to select multiple
+];
 
 const complexities = [{ value: 'Easy' }, { value: 'Medium' }, { value: 'Hard' }];
 
 export default function QuestionForm({
   formType,
-  defTitle,
-  defCategory,
-  defComplexity,
-  defDescription,
+  category,
   inputTitle,
   inputCategory,
   inputComplexity,
@@ -50,50 +49,53 @@ export default function QuestionForm({
   openForm,
   closeForm,
   submitForm,
+  isValidated
 }: FormProps) {
+
   return (
-    <>
+    <FormControl>
+      <InputLabel id="category-label">Question Category</InputLabel>
       <Dialog open={openForm} onClose={closeForm}>
         <DialogTitle>{formType}</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText>Fill in every field below</DialogContentText>
+          <DialogContentText>Fill in the question's title, category, complexity and description</DialogContentText>
           <TextField
             required
             margin="dense"
-            id="name"
+            id="title"
             label="Question Title"
-            defaultValue={defTitle}
             type="text"
             fullWidth
-            variant="filled"
+            variant="outlined"
             multiline
             onChange={inputTitle}
           ></TextField>
-          <TextField
+          <Select
             required
             margin="dense"
-            id="name"
+            labelId="category-label"
+            id="category"
             label="Question Category"
-            defaultValue={defCategory}
             fullWidth
-            variant="filled"
-            select
+            variant="outlined"
+            multiple
+            value={category}
             onChange={inputCategory}
+            //input={<OutlinedInput label="Question Category" />}
           >
             {categories.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.value}
               </MenuItem>
             ))}
-          </TextField>
+          </Select>
           <TextField
             required
             margin="dense"
-            id="name"
+            id="complexity"
             label="Question Complexity"
-            defaultValue={defComplexity}
             fullWidth
-            variant="filled"
+            variant="outlined"
             select
             onChange={inputComplexity}
           >
@@ -104,23 +106,22 @@ export default function QuestionForm({
             ))}
           </TextField>
           <TextField
-            autoFocus
+            required
             margin="dense"
-            id="name"
+            id="description"
             label="Question Description"
-            defaultValue={defDescription}
             type="text"
             fullWidth
-            variant="filled"
+            variant="outlined"
             multiline
             onChange={inputDescription}
           ></TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={closeForm}>Cancel</Button>
-          <Button onClick={submitForm}>Done</Button>
+          <Button type='submit' onClick={submitForm} disabled={isValidated}>Done</Button>
         </DialogActions>
       </Dialog>
-    </>
+    </FormControl>
   );
 }

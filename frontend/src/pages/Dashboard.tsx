@@ -73,7 +73,7 @@ export default function Dashboard() {
   const handleTitleInputChange = (event: any) => {
     setTitleInput(event.target.value);
   };
-  const [catInput, setCatInput] = useState('');
+  const [catInput, setCatInput] = useState([]);
   const handleCatInputChange = (event: any) => {
     setCatInput(event.target.value);
   };
@@ -97,19 +97,32 @@ export default function Dashboard() {
     console.log('Press Cancel'); //Remove later
   };
   const handleFormSubmit = () => {
-    //Todo create new record
-    rows.push(createData(titleInput, catInput, complexInput, descInput));
+    rows.push(createData(titleInput, catInput.join(', '), complexInput, descInput)); //CALL BACKEND API
     setOpenForm(false);
+    
+    // Reset the useStates of the fields of the form
+    setTitleInput('');
+    setCatInput([]);
+    setComplexInput('');
+    setDescInput('');
     console.log('Press Add'); //Remove later
   };
 
   // Functions to handle the Delete Question button
   //const [row, setRow] = useState(rows);
   const handleDeleteOnClick = (num: number) => {
-    rows.splice(num, 1);
+    rows.splice(num, 1); //CALL BACKEND API
     setRows([...rows]);
     console.log('Press Delete ' + rows.length); //Remove later
   };
+
+  const isEmpty = (str: string) => {
+    return str.length === 0;
+  }
+  const validateForm = () => {
+    return (isEmpty(titleInput) || isEmpty(catInput.toString()) || isEmpty(complexInput) || isEmpty(descInput))
+  }
+  let isValidated = validateForm();
 
   // Handle the scenario where the question bank database is empty
   if (rows.length == 0) {
@@ -130,6 +143,7 @@ export default function Dashboard() {
           {openForm && (
             <QuestionForm
               formType="Add a new question"
+              category={catInput}
               inputTitle={handleTitleInputChange}
               inputCategory={handleCatInputChange}
               inputComplexity={handleComplexInputChange}
@@ -137,6 +151,7 @@ export default function Dashboard() {
               openForm={openForm}
               closeForm={handleFormClose}
               submitForm={handleFormSubmit}
+              isValidated={isValidated}
             ></QuestionForm>
           )}
           <Button
@@ -234,6 +249,7 @@ export default function Dashboard() {
         {openForm && (
           <QuestionForm
             formType="Add a new question"
+            category={catInput}
             inputTitle={handleTitleInputChange}
             inputCategory={handleCatInputChange}
             inputComplexity={handleComplexInputChange}
@@ -241,6 +257,7 @@ export default function Dashboard() {
             openForm={openForm}
             closeForm={handleFormClose}
             submitForm={handleFormSubmit}
+            isValidated={isValidated}
           ></QuestionForm>
         )}
         <Button

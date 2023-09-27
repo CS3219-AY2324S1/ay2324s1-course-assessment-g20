@@ -22,7 +22,7 @@ export default function AuthRedirect() {
     });
   });
 
-  if (auth.authState?.accessToken && auth.authState?.refreshToken) {
+  if (auth.isAuthenticated) {
     return <Navigate to="/dashboard" />;
   }
 

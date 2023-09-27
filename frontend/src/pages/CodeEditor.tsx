@@ -11,7 +11,6 @@ import { languages } from '../utils/constants';
 import { ICodeEvalOutput, IQuestion } from '../interfaces';
 import { exampleQuestion1 } from '../mocks';
 import { pingProtectedBackend } from '../api/questionBankApi';
-import { useAuth } from '../utils/hooks';
 
 // component built with reference to online guide: https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/
 
@@ -42,11 +41,9 @@ const CodeEditor = () => {
     result: '',
   });
 
-  const auth = useAuth();
-
   useEffect(() => {
     // TODO: Replace below with a real API call to fetch a question
-    pingProtectedBackend(auth).then((response) => {
+    pingProtectedBackend().then((response) => {
       console.log('protected response', response);
       setQuestion(exampleQuestion1);
     });

@@ -19,4 +19,17 @@ export const backendServicesPaths = {
 };
 
 // other constants
-export const AUTH_TOKEN_STORAGE_KEY = 'authState';
+export const AUTH_TOKEN_LOCAL_STORAGE_KEY = 'authState';
+
+export enum HttpRequestMethod {
+  GET = 'get',
+  POST = 'post',
+  PUT = 'put',
+  DELETE = 'delete',
+  PATCH = 'patch',
+}
+
+export const languages = {
+  javascript: 'javascript',
+  typescript: 'typescript',
+};

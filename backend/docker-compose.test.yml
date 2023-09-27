@@ -7,13 +7,16 @@ services:
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
     ports:
       - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+    networks:
+      - backend
     env_file:
       .env.test
     environment:
-      - AUTH_SERVICE_HOST=auth
-      - QUESTION_SERVICE_HOST=question
+      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   auth:
     build: 
@@ -22,10 +25,14 @@ services:
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
-    ports:
-      - ${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
     env_file:
       .env.test
+    environment:
+      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   question:
     build: 
@@ -34,14 +41,20 @@ services:
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
-    ports:
-      - ${QUESTION_SERVICE_PORT}:${QUESTION_SERVICE_PORT}
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
     env_file:
       .env.test
+    environment:
+      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   postgres:
     image: postgres:14.1-alpine
     restart: always
+    networks:
+      - backend
     env_file:
       .env.test
     environment:
@@ -57,8 +70,30 @@ services:
     build: 
       context: .
       dockerfile: ./scripts/Dockerfile
+    networks:
+      - backend
     depends_on:
       postgres:
         condition: service_healthy
     env_file:
       .env.test
+
+  rabbitmq:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+    networks:
+      - backend
+    ports:
+      - 5672:5672
+      # - 15672:15672
+
+networks:
+  backend:
+    driver: bridge

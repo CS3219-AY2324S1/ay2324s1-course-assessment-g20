@@ -9,6 +9,8 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { useEffect } from 'react';
+import { pingProtectedBackend, pingPublicBackend } from '../api/questionBankApi';
 
 // TODO: Replace this with a real table
 function createData(
@@ -28,6 +30,17 @@ const rows = [
 ];
 
 export default function Dashboard() {
+  // TODO: Remove this line and replace it with a real API call that fetches from question bank using react-router data loaders
+  /* eslint-disable-next-line */
+  useEffect(() => {
+    pingPublicBackend().then((response) => {
+      console.log('public response', response);
+    });
+    pingProtectedBackend().then((response) => {
+      console.log('protected response', response);
+    });
+  }, []);
+
   return (
     <Box>
       <Typography variant="h2">PeerPrep Dashboard</Typography>

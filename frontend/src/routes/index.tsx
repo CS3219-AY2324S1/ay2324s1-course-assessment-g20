@@ -6,7 +6,7 @@ import ProtectedRoutes from './ProtectedRoutes';
 import AuthRedirect from '../pages/AuthRedirect';
 import AppWrapper from './AppWrapper';
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     element: <AppWrapper />,
     children: [
@@ -28,12 +28,12 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: '/authRedirect',
-        element: <AuthRedirect />,
-      },
       { path: '*', element: <Navigate to="/login" replace /> },
     ],
+  },
+  {
+    path: '/authRedirect',
+    element: <AuthRedirect />,
   },
 ]);
 

@@ -15,4 +15,9 @@ export class AppController {
   getHello(): Observable<string> {
     return this.questionServiceClient.send('get_hello', {});
   }
+
+  @Get('ping-auth')
+  pingAuth(): Observable<string> {
+    return this.questionServiceClient.send('get_hello', {});
+  }
 }

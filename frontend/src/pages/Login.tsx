@@ -1,9 +1,6 @@
-import { Box, Button, Typography } from '@mui/material';
-import { useAuth } from '../utils/hooks';
+import { Box, Typography } from '@mui/material';
 
 export default function Login() {
-  const auth = useAuth();
-
   return (
     <>
       <Box
@@ -16,9 +13,6 @@ export default function Login() {
         <Typography variant="h1" gutterBottom>
           PeerPrep
         </Typography>
-        <Button onClick={auth.redirectToSignIn} variant="contained">
-          Log in
-        </Button>
       </Box>
     </>
   );

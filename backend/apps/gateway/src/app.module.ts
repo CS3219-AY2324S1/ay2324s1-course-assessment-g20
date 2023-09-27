@@ -7,6 +7,8 @@ import { ConfigModule } from '@app/config';
 import { JwtModule } from './jwt/jwt.module';
 import { AuthController } from './controllers/auth.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
+import { AUTH_SERVICE } from '@app/interservice-api/auth';
+import { QUESTION_SERVICE } from '@app/interservice-api/question';
 
 @Module({
   imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
@@ -14,7 +16,7 @@ import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strate
   providers: [
     GoogleOauthStrategy,
     {
-      provide: 'QUESTION_SERVICE',
+      provide: QUESTION_SERVICE,
       useFactory: (configService: ConfigService) => {
         const questionServiceOptions = configService.get(
           'questionServiceOptions',
@@ -24,7 +26,7 @@ import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strate
       inject: [ConfigService],
     },
     {
-      provide: 'AUTH_SERVICE',
+      provide: AUTH_SERVICE,
       useFactory: (configService: ConfigService) => {
         const authServiceOptions = configService.get('authServiceOptions');
         return ClientProxyFactory.create(authServiceOptions);

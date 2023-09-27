@@ -15,6 +15,7 @@ const gatewayConfiguration = () => {
 
   const questionServiceOptions = getRmqOptions(RmqQueue.QUESTION);
   const authServiceOptions = getRmqOptions(RmqQueue.AUTH);
+  const collaborationServiceOptions = getRmqOptions(RmqQueue.COLLABORATION);
 
   const googleOauthOptions: _StrategyOptionsBase = {
     clientID: process.env.OAUTH_GOOGLE_ID,
@@ -28,6 +29,7 @@ const gatewayConfiguration = () => {
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
     questionServiceOptions,
     authServiceOptions,
+    collaborationServiceOptions,
     googleOauthOptions,
   };
 };

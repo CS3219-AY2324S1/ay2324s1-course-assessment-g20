@@ -9,30 +9,34 @@ import { AuthController } from './controllers/auth.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
 import { AUTH_SERVICE } from '@app/interservice-api/auth';
 import { QUESTION_SERVICE } from '@app/interservice-api/question';
+import { CollaborationController } from './controllers/collaboration.controller';
+import { COLLABORATION_SERVICE } from '@app/interservice-api/collaboration';
+
+const microserviceOptionKeys = {
+  [AUTH_SERVICE]: 'authServiceOptions',
+  [QUESTION_SERVICE]: 'questionServiceOptions',
+  [COLLABORATION_SERVICE]: 'collaborationServiceOptions',
+};
+const createMicroserviceClientProxyProvider = (
+  microservice: string,
+  optionsKey: string,
+) => ({
+  provide: microservice,
+  useFactory: (configService: ConfigService) => {
+    const microserviceOptions = configService.get(optionsKey);
+    return ClientProxyFactory.create(microserviceOptions);
+  },
+  inject: [ConfigService],
+});
 
 @Module({
   imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
-  controllers: [AppController, AuthController],
+  controllers: [AppController, AuthController, CollaborationController],
   providers: [
     GoogleOauthStrategy,
-    {
-      provide: QUESTION_SERVICE,
-      useFactory: (configService: ConfigService) => {
-        const questionServiceOptions = configService.get(
-          'questionServiceOptions',
-        );
-        return ClientProxyFactory.create(questionServiceOptions);
-      },
-      inject: [ConfigService],
-    },
-    {
-      provide: AUTH_SERVICE,
-      useFactory: (configService: ConfigService) => {
-        const authServiceOptions = configService.get('authServiceOptions');
-        return ClientProxyFactory.create(authServiceOptions);
-      },
-      inject: [ConfigService],
-    },
-  ],
+    ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
+      createMicroserviceClientProxyProvider(key, value),
+    ),
+   ],
 })
 export class AppModule {}

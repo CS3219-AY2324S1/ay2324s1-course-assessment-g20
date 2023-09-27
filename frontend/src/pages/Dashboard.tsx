@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import { useEffect } from 'react';
 import { pingProtectedBackend, pingPublicBackend } from '../api/questionBankApi';
-import { useAuth } from '../utils/hooks';
 
 // TODO: Replace this with a real table
 function createData(
@@ -33,13 +32,11 @@ const rows = [
 export default function Dashboard() {
   // TODO: Remove this line and replace it with a real API call that fetches from question bank using react-router data loaders
   /* eslint-disable-next-line */
-  const authContext = useAuth();
-
   useEffect(() => {
     pingPublicBackend().then((response) => {
       console.log('public response', response);
     });
-    pingProtectedBackend(authContext).then((response) => {
+    pingProtectedBackend().then((response) => {
       console.log('protected response', response);
     });
   }, []);

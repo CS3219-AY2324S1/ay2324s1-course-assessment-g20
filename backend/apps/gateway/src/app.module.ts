@@ -10,6 +10,25 @@ import { UserController } from './controllers/user.controller';
 import { LanguagesController } from './controllers/languages.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
 import { Service } from '@app/interservice-api/services';
+import { CollaborationController } from './controllers/collaboration.controller';
+
+const microserviceOptionKeys = {
+  [Service.QUESTION_SERVICE]: 'questionServiceOptions',
+  [Service.USER_SERVICE]: 'userServiceOptions',
+  [Service.COLLABORATION_SERVICE]: 'collaborationServiceOptions',
+};
+
+const createMicroserviceClientProxyProvider = (
+  microservice: string,
+  optionsKey: string,
+) => ({
+  provide: microservice,
+  useFactory: (configService: ConfigService) => {
+    const microserviceOptions = configService.get(optionsKey);
+    return ClientProxyFactory.create(microserviceOptions);
+  },
+  inject: [ConfigService],
+});
 
 @Module({
   imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
@@ -18,27 +37,13 @@ import { Service } from '@app/interservice-api/services';
     AuthController,
     UserController,
     LanguagesController,
+    CollaborationController,
   ],
   providers: [
     GoogleOauthStrategy,
-    {
-      provide: Service.QUESTION_SERVICE,
-      useFactory: (configService: ConfigService) => {
-        const questionServiceOptions = configService.get(
-          'questionServiceOptions',
-        );
-        return ClientProxyFactory.create(questionServiceOptions);
-      },
-      inject: [ConfigService],
-    },
-    {
-      provide: Service.USER_SERVICE,
-      useFactory: (configService: ConfigService) => {
-        const userServiceOptions = configService.get('userServiceOptions');
-        return ClientProxyFactory.create(userServiceOptions);
-      },
-      inject: [ConfigService],
-    },
+    ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
+      createMicroserviceClientProxyProvider(key, value),
+    ),
   ],
 })
 export class AppModule {}

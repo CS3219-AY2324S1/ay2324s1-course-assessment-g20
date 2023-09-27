@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "build:ci": "nest build && nest build user && nest build question",
+    "build:ci": "nest build && nest build user && nest build question && nest build collaboration",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "format:ci": "prettier --list-different \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
@@ -23,7 +23,7 @@
     "prepare": "cd .. && husky install backend/.husky",
     "knex-script": "knex --knexfile",
     "knex": "./scripts/knex/knex.sh",
-    "migrate:sql:all": "node ./scripts/knex/createSqlDatabases.js && yarn migrate:sql user",
+    "migrate:sql:all": "node ./scripts/knex/createSqlDatabases.js && yarn migrate:sql user && yarn migrate collaboration",
     "migrate:sql": "./scripts/knex/migrate_latest.sh",
     "migrate:sql:make": "./scripts/knex/migrate_make.sh",
     "seed:all": "yarn seed:sql:all && yarn seed:mongo:all",

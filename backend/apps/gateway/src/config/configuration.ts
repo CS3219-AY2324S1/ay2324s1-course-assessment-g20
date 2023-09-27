@@ -11,6 +11,9 @@ const gatewayConfiguration = () => {
 
   const questionServiceOptions = getRmqOptionsForQueue(RmqQueue.QUESTION);
   const userServiceOptions = getRmqOptionsForQueue(RmqQueue.USER);
+  const collaborationServiceOptions = getRmqOptionsForQueue(
+    RmqQueue.COLLABORATION,
+  );
 
   return {
     port: parseInt(process.env.API_GATEWAY_PORT, 10),
@@ -18,6 +21,7 @@ const gatewayConfiguration = () => {
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
     questionServiceOptions,
     userServiceOptions,
+    collaborationServiceOptions,
     googleOauthOptions,
   };
 };

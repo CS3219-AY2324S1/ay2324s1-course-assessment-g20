@@ -5,6 +5,7 @@ import PublicOnlyRoutes from './PublicOnlyRoutes';
 import ProtectedRoutes from './ProtectedRoutes';
 import AuthRedirect from '../pages/AuthRedirect';
 import AppWrapper from './AppWrapper';
+import CodeEditor from '../pages/CodeEditor';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
           {
             path: '/dashboard',
             element: <Dashboard />,
+          },
+          {
+            path: '/question/:questionId',
+            element: <CodeEditor />,
           },
         ],
       },

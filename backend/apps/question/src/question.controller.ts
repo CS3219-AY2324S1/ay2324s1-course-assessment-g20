@@ -29,6 +29,13 @@ export class QuestionController {
     return this.questionService.deleteQuestionWithId(questionId);
   }
 
+  @MessagePattern(QuestionServiceApi.GET_QUESTION_WITH_ID)
+  getQuestionWithId(
+    questionId: string,
+  ): Promise<QuestionWithCategoryAndDifficulty> {
+    return this.questionService.getQuestionWithId(questionId);
+  }
+
   // DIFFICULTIES
 
   @MessagePattern(QuestionServiceApi.GET_DIFFICULTIES)

@@ -9,8 +9,8 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import * as ts from 'typescript';
 import { languages } from '../utils/constants';
 import { ICodeEvalOutput, IQuestion } from '../interfaces';
-import { exampleQuestion1 } from '../mocks';
-import { pingProtectedBackend } from '../api/questionBankApi';
+import { getQuestionWithId } from '../api/questionBankApi';
+import { useParams } from 'react-router-dom';
 
 // component built with reference to online guide: https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/
 
@@ -41,11 +41,11 @@ const CodeEditor = () => {
     result: '',
   });
 
+  const { questionId } = useParams();
+
   useEffect(() => {
-    // TODO: Replace below with a real API call to fetch a question
-    pingProtectedBackend().then((response) => {
-      console.log('protected response', response);
-      setQuestion(exampleQuestion1);
+    getQuestionWithId(questionId ?? '').then((response) => {
+      setQuestion(response.data);
     });
   }, []);
 

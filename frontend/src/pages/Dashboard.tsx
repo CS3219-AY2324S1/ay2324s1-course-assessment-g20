@@ -14,13 +14,14 @@ import {
 } from '@mui/material';
 import QuestionForm from '../components/QuestionForm';
 import Popup from '../components/Popup';
-import { BACKEND_API_HOST, backendServicesPaths } from '../utils/constants';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { EMPTY_QUESTION, Question } from '../interfaces';
+import { EMPTY_QUESTION, IQuestion } from '../interfaces';
+import { addQuestion, deleteQuestionWithId, getQuestions } from '../api/questionBankApi';
+import { useNavigate } from 'react-router-dom';
 
-export default function Dashboard() {
-  const QUESTIONS_ROUTE = BACKEND_API_HOST + backendServicesPaths.question.root;
+export default function Dashboasrd() {
+  const navigate = useNavigate();
+
   // Styling for dashboard table
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -41,21 +42,21 @@ export default function Dashboard() {
     },
   }));
 
-  const getQuestions = () => {
-    axios
-      .get(QUESTIONS_ROUTE)
+  const [rows, setRows] = useState<IQuestion[]>([]);
+  const fetchAndSetQuestions = () => {
+    getQuestions()
       .then((response) => {
         setRows(response.data);
+        console.log('protected response', response);
       })
       .catch((error) => {
         console.error('Error:', error);
       });
   };
 
-  const [rows, setRows] = useState<Question[]>([]);
   useEffect(() => {
     // Fetch questions from API
-    getQuestions();
+    fetchAndSetQuestions();
   }, []);
 
   // Usestate for the current selected row
@@ -70,7 +71,7 @@ export default function Dashboard() {
   const handlePopupOnClose = () => setPopupVisibility(false);
 
   // Usestate and functions to handle the change in record of a question
-  const [questionInput, setQuestionInput] = useState<Question>(EMPTY_QUESTION);
+  const [questionInput, setQuestionInput] = useState<IQuestion>(EMPTY_QUESTION);
 
   const handleTitleInputChange = (event: any) => {
     setQuestionInput({
@@ -109,12 +110,9 @@ export default function Dashboard() {
     setOpenForm(false);
   };
   const handleFormSubmit = () => {
-    axios
-      .post(QUESTIONS_ROUTE, {
-        question: questionInput,
-      })
+    addQuestion(questionInput)
       .then(() => {
-        getQuestions();
+        fetchAndSetQuestions();
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -130,13 +128,12 @@ export default function Dashboard() {
   const handleDeleteOnClick = (id: string | undefined) => {
     if (id == undefined) return;
 
-    axios
-      .delete(QUESTIONS_ROUTE + id)
+    deleteQuestionWithId(id)
       .catch((error) => {
         console.error('Error:', error);
       })
       .then(() => {
-        getQuestions();
+        fetchAndSetQuestions();
       });
   };
 
@@ -171,6 +168,7 @@ export default function Dashboard() {
               <StyledTableCell align="left">Complexity</StyledTableCell>
               <StyledTableCell align="left">Description</StyledTableCell>
               <StyledTableCell align="left">Actions</StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -220,6 +218,19 @@ export default function Dashboard() {
                     }}
                   >
                     DELETE
+                  </Button>
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  <Button
+                    variant={'contained'}
+                    onClick={() => navigate(`/question/${row._id}`)}
+                    sx={{
+                      width: 80,
+                      height: 35,
+                      backgroundColor: 'green',
+                    }}
+                  >
+                    SOLVE
                   </Button>
                 </StyledTableCell>
               </StyledTableRow>

@@ -104,7 +104,7 @@ export class QuestionService {
     );
   }
 
-  async getQuestionWithId(
+  public async getQuestionWithId(
     questionId: string,
   ): Promise<QuestionWithCategoryAndDifficulty> {
     const questionObject = await this.getQuestionIfExists(questionId);

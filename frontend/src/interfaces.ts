@@ -17,23 +17,23 @@ export interface ICodeEvalOutput {
   error: string;
 }
 
-export interface Question {
+export interface IQuestion {
   _id?: string;
   title: string;
   categories: string[];
   difficulty: string;
   description: string;
 }
-export interface Difficulty {
+export interface IDifficulty {
   _id: string;
   name: string;
 }
-export interface Category {
+export interface ICategory {
   _id: string;
   name: string;
 }
 
-export const EMPTY_QUESTION: Question = {
+export const EMPTY_QUESTION: IQuestion = {
   title: '',
   description: '',
   difficulty: '',

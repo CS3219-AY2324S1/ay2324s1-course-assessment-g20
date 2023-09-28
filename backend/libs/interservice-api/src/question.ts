@@ -1,5 +1,14 @@
 export enum QuestionServiceApi {
-  GET_HELLO = 'get_hello',
+  GET_QUESTIONS = 'get_questions',
+  ADD_QUESTION = 'add_question',
+  DELETE_QUESTION_WITH_ID = 'delete_question_with_id',
+  GET_QUESTION_WITH_ID = 'get_question_with_id',
+  GET_DIFFICULTIES = 'get_difficulties',
+  ADD_DIFFICULTY = 'add_difficulty',
+  DELETE_DIFFICULTY_WITH_ID = 'delete_difficulty_with_id',
+  GET_CATEGORIES = 'get_categories',
+  ADD_CATEGORY = 'add_category',
+  DELETE_CATEGORY_WITH_ID = 'delete_category_with_id',
 }
 
 export const QUESTION_SERVICE = 'QUESTION_SERVICE';

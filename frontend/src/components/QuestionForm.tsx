@@ -11,10 +11,9 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { BACKEND_API_HOST, backendServicesPaths } from '../utils/constants';
-import { Category, Difficulty } from '../interfaces';
+import { ICategory, IDifficulty } from '../interfaces';
+import { getCategories, getDifficulties } from '../api/questionBankApi';
 
 interface FormProps {
   formType: string;
@@ -41,13 +40,12 @@ export default function QuestionForm({
   submitForm,
   isValidated,
 }: FormProps) {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [difficulties, setDifficulties] = useState<Difficulty[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [difficulties, setDifficulties] = useState<IDifficulty[]>([]);
 
   useEffect(() => {
     // Fetch categories from API
-    axios
-      .get(BACKEND_API_HOST + backendServicesPaths.question.categories)
+    getCategories()
       .then((response) => {
         setCategories(response.data);
       })
@@ -56,8 +54,7 @@ export default function QuestionForm({
       });
 
     // Fetch difficulties from API
-    axios
-      .get(BACKEND_API_HOST + backendServicesPaths.question.difficulties)
+    getDifficulties()
       .then((response) => {
         setDifficulties(response.data);
       })

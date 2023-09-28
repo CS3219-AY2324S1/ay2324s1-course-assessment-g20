@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 import { AppController } from './controllers/app.controller';
 import { ClientProxyFactory } from '@nestjs/microservices';
 import gatewayConfiguration from './config/configuration';
@@ -10,6 +10,7 @@ import { UserController } from './controllers/user.controller';
 import { LanguagesController } from './controllers/languages.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
 import { Service } from '@app/interservice-api/services';
+import { YjsGateway } from './websocket-gateways/yjs.gateway';
 import { CollaborationController } from './controllers/collaboration.controller';
 
 const microserviceOptionKeys = {
@@ -21,7 +22,7 @@ const microserviceOptionKeys = {
 const createMicroserviceClientProxyProvider = (
   microservice: string,
   optionsKey: string,
-) => ({
+): Provider => ({
   provide: microservice,
   useFactory: (configService: ConfigService) => {
     const microserviceOptions = configService.get(optionsKey);
@@ -41,6 +42,7 @@ const createMicroserviceClientProxyProvider = (
   ],
   providers: [
     GoogleOauthStrategy,
+    YjsGateway,
     ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
       createMicroserviceClientProxyProvider(key, value),
     ),

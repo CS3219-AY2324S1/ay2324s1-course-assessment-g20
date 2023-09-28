@@ -15,7 +15,7 @@ import {
 @Module({
   imports: [
     ConfigModule.loadConfiguration(questionConfiguration),
-    MongooseModule.forRoot('mongodb://localhost:27017/peer-prep'),
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/peer-prep'),
     MongooseModule.forFeature([
       {
         name: Question.name,

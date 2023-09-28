@@ -1,0 +1,107 @@
+[
+  {
+    "name": "Array"
+  },
+  {
+    "name": "String"
+  },
+  {
+    "name": "Hash Table"
+  },
+  {
+    "name": "Math"
+  },
+  {
+    "name": "Dynamic Programming"
+  },
+  {
+    "name": "Sorting"
+  },
+  {
+    "name": "Greedy"
+  },
+  {
+    "name": "Depth-First Search"
+  },
+  {
+    "name": "Binary Search"
+  },
+  {
+    "name": "Breadth-First Search"
+  },
+  {
+    "name": "Tree"
+  },
+  {
+    "name": "Matrix"
+  },
+  {
+    "name": "Two Pointers"
+  },
+  {
+    "name": "Binary Tree"
+  },
+  {
+    "name": "Bit Manipulation"
+  },
+  {
+    "name": "Heap (Priority Queue)"
+  },
+  {
+    "name": "Stack"
+  },
+  {
+    "name": "Prefix Sum"
+  },
+  {
+    "name": "Graph"
+  },
+  {
+    "name": "Simulation"
+  },
+  {
+    "name": "Design"
+  },
+  {
+    "name": "Counting"
+  },
+  {
+    "name": "Backtracking"
+  },
+  {
+    "name": "Sliding Window"
+  },
+  {
+    "name": "Union Find"
+  },
+  {
+    "name": "Linked List"
+  },
+  {
+    "name": "Ordered Set"
+  },
+  {
+    "name": "Trie"
+  },
+  {
+    "name": "Recursion"
+  },
+  {
+    "name": "Divide and Conquer"
+  },
+  {
+    "name": "Queue"
+  },
+  {
+    "name": "Shortest Path"
+  },
+  {
+    "name": "Binary Search Tree"
+  },
+  {
+    "name": "Merge Sort"
+  },
+  {
+    "name": "Quickselect"
+  }
+]

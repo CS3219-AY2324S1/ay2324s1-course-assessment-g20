@@ -25,7 +25,9 @@
     "knex": "./scripts/knex.sh",
     "migrate": "./scripts/migrate_latest.sh",
     "migrate:all": "node ./scripts/createSqlDatabases.js && yarn migrate auth",
-    "migrate:make": "./scripts/migrate_make.sh"
+    "migrate:make": "./scripts/migrate_make.sh",
+    "seed:question-difficulties": "node ./scripts/seedQuestionDifficulties.js",
+    "seed:question-categories": "node ./scripts/seedQuestionCategories.js"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -41,6 +43,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "knex": "^2.5.1",
+    "mongodb": "^6.1.0",
     "mongoose": "^6.2.2",
     "objection": "^3.1.1",
     "passport": "^0.6.0",

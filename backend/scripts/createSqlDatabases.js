@@ -1,13 +1,6 @@
 const Knex = require('knex');
 require('dotenv').config({ path: `.env${process.env.NODE_ENV ? `.${process.env.NODE_ENV}` : ''}` });
 
-const authServiceDatabaseOptions = {
-  host: process.env.AUTH_SERVICE_SQL_DATABASE_HOST,
-  port: process.env.AUTH_SERVICE_SQL_DATABASE_PORT,
-  user: process.env.AUTH_SERVICE_SQL_DATABASE_USER,
-  password: process.env.AUTH_SERVICE_SQL_DATABASE_PASSWORD,
-  database: process.env.AUTH_SERVICE_SQL_DATABASE_NAME,
-}
 const questionServiceDatabaseOptions = {
   host: process.env.QUESTION_SERVICE_SQL_DATABASE_HOST,
   port: process.env.QUESTION_SERVICE_SQL_DATABASE_PORT,
@@ -23,7 +16,7 @@ const userServiceDatabaseOptions = {
   database: process.env.USER_SERVICE_SQL_DATABASE_NAME,
 }
 
-const databaseConnections = [authServiceDatabaseOptions, questionServiceDatabaseOptions, userServiceDatabaseOptions];
+const databaseConnections = [questionServiceDatabaseOptions, userServiceDatabaseOptions];
 
 async function createDatabaseIfNotExist(connectionOptions) {
   const databaseName = connectionOptions.database;

@@ -18,22 +18,6 @@ services:
     environment:
       - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
-  auth:
-    build: 
-      context: .
-      dockerfile: ./apps/auth/Dockerfile
-    depends_on:
-      sql-migrations:
-        condition: service_completed_successfully
-      rabbitmq:
-        condition: service_healthy
-    networks:
-      - backend
-    env_file:
-      .env.test
-    environment:
-      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
-
   question:
     build: 
       context: .

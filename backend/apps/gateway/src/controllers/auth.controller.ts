@@ -15,13 +15,13 @@ import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
 import RefreshDto from '../dtos/auth/refresh.dto';
-import { AUTH_SERVICE, AuthServiceApi } from '@app/interservice-api/auth';
+import { USER_SERVICE, UserServiceApi } from '@app/interservice-api/user';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject(AUTH_SERVICE)
-    private readonly authServiceClient: ClientProxy,
+    @Inject(USER_SERVICE)
+    private readonly userServiceClient: ClientProxy,
     private readonly configService: ConfigService,
   ) {}
 
@@ -37,7 +37,7 @@ export class AuthController {
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     const { accessToken, refreshToken } = await firstValueFrom(
-      this.authServiceClient.send(AuthServiceApi.GENERATE_JWTS, req.user),
+      this.userServiceClient.send(UserServiceApi.GENERATE_JWTS, req.user),
     );
     const redirectUrl = `${this.configService.get(
       'corsOrigin',
@@ -49,8 +49,8 @@ export class AuthController {
   @Public()
   @Post('refresh')
   async refreshTokenFlow(@Body() body: RefreshDto) {
-    return this.authServiceClient.send(
-      AuthServiceApi.GENERATE_JWTS_FROM_REFRESH_TOKEN,
+    return this.userServiceClient.send(
+      UserServiceApi.GENERATE_JWTS_FROM_REFRESH_TOKEN,
       body.refreshToken,
     );
   }

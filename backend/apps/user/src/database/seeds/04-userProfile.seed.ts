@@ -8,7 +8,7 @@ const MOCK_USER_2_UUID = '030eeafc-26cc-4e16-8467-f55b818689fa';
 
 export async function seed(knex: Knex): Promise<void> {
   if (IS_DEPLOYMENT) {
-    console.log('skipping user seeds');
+    console.log('skipping user profile seeds');
     return;
   }
 

@@ -1,16 +1,18 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RefreshTokensDaoService } from './database/daos/refreshTokens/refreshTokens.dao.service';
+import { RefreshTokensDaoService } from '../database/daos/refreshTokens/refreshTokens.dao.service';
 import { JwtService as NestJwtService } from '@nestjs/jwt';
 import { JwtPayload, JwtTokenConfig } from '@app/types';
-import { UserDaoService } from './database/daos/users/user.dao.service';
-import { UserModel } from './database/models/user.model';
+import { UserDaoService } from '../database/daos/users/user.dao.service';
+import { UserModel } from '../database/models/user.model';
 
 @Injectable()
 export class AuthService {
   private tokenConfig: JwtTokenConfig;
 
   constructor(
+    // @Inject('USER_SERVICE')
+    // private readonly userServiceClient: ClientProxy,
     private readonly jwtService: NestJwtService,
     private readonly configService: ConfigService,
     private readonly refreshTokensDaoService: RefreshTokensDaoService,

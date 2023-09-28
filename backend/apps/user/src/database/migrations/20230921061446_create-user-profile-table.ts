@@ -10,6 +10,7 @@ export async function up(knex: Knex): Promise<void> {
       .references('id')
       .inTable('preferredLanguages');
     table.integer('roleId').references('id').inTable('roles');
+    table.timestamps(true, true);
   });
 }
 

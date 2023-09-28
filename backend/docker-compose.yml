@@ -16,29 +16,8 @@ services:
     env_file:
       .env
     environment:
-      - AUTH_SERVICE_HOST=auth
       - QUESTION_SERVICE_HOST=question
       - USER_SERVICE_HOST=user
-      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
-
-  auth:
-    build: 
-      context: .
-      dockerfile: ./apps/auth/Dockerfile
-    depends_on:
-      sql-migrations:
-        condition: service_completed_successfully
-      rabbitmq:
-        condition: service_healthy
-    networks:
-      - backend
-    env_file:
-      .env
-    environment:
-      - AUTH_SERVICE_SQL_DATABASE_HOST=postgres
-      - AUTH_SERVICE_SQL_DATABASE_PORT=5432
-      - AUTH_SERVICE_SQL_DATABASE_USER=postgres
-      - AUTH_SERVICE_SQL_DATABASE_PASSWORD=postgres
       - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   question:
@@ -111,10 +90,6 @@ services:
     networks:
       - backend
     environment:
-      - AUTH_SERVICE_SQL_DATABASE_HOST=postgres
-      - AUTH_SERVICE_SQL_DATABASE_PORT=5432
-      - AUTH_SERVICE_SQL_DATABASE_USER=postgres
-      - AUTH_SERVICE_SQL_DATABASE_PASSWORD=postgres
       - QUESTION_SERVICE_SQL_DATABASE_HOST=postgres
       - QUESTION_SERVICE_SQL_DATABASE_PORT=5432
       - QUESTION_SERVICE_SQL_DATABASE_USER=postgres

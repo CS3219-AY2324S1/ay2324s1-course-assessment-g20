@@ -8,16 +8,6 @@ gateway-microservice:
   containerPort: 4000
   servicePort: 4000
 
-auth-microservice:
-  microserviceName: 'auth'
-  replicaCount: 1
-  image:
-    repository: backend-auth
-    tag: 'latest'
-  portProtocol: tcp
-  containerPort: 4001
-  servicePort: 4001
-
 question-microservice:
   microserviceName: 'question'
   replicaCount: 1
@@ -25,8 +15,8 @@ question-microservice:
     repository: backend-question
     tag: 'latest'
   portProtocol: tcp
-  containerPort: 4002
-  servicePort: 4002
+  containerPort: 4001
+  servicePort: 4001
 
 user-microservice:
   microserviceName: 'user'
@@ -35,5 +25,5 @@ user-microservice:
     repository: backend-user
     tag: 'latest'
   portProtocol: tcp
-  containerPort: 4003
-  servicePort: 4003
+  containerPort: 4002
+  servicePort: 4002

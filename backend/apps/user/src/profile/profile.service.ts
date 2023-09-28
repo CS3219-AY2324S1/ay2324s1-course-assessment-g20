@@ -1,16 +1,20 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { UserProfileDaoService } from './database/daos/userProfiles/userProfile.dao.service';
-import { UserProfileModel } from './database/models/userProfile.model';
-import { PreferredLanguageDaoService } from './database/daos/preferredLanguages/preferredLanguage.dao.service';
-import { RoleDaoService } from './database/daos/roles/role.dao.service';
+import { UserProfileDaoService } from '../database/daos/userProfiles/userProfile.dao.service';
+import { UserProfileModel } from '../database/models/userProfile.model';
+import { PreferredLanguageDaoService } from '../database/daos/preferredLanguages/preferredLanguage.dao.service';
+import { RoleDaoService } from '../database/daos/roles/role.dao.service';
 
 @Injectable()
-export class UserService {
+export class ProfileService {
   constructor(
     private readonly userProfileDaoService: UserProfileDaoService,
     private readonly preferredLanguageDaoService: PreferredLanguageDaoService,
     private readonly roleDaoService: RoleDaoService,
   ) {}
+
+  async createUserProfile(userId: string, name: string) {
+    return this.userProfileDaoService.createUser(userId, name);
+  }
 
   getUserProfile(
     userId: string,

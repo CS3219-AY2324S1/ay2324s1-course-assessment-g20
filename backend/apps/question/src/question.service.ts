@@ -156,9 +156,33 @@ export class QuestionService {
     return this.categoryModel.find().exec();
   }
 
+  async addCategory(category: Category): Promise<Category> {
+    const newCategory = new this.categoryModel(category);
+    return (await newCategory.save()).toObject();
+  }
+
+  async deleteCategoryWithId(categoryId: string): Promise<string> {
+    return await this.categoryModel.findByIdAndDelete(categoryId).then(() => {
+      return categoryId;
+    });
+  }
+
   // DIFFICULTIES
 
   getDifficulties(): Promise<Difficulty[]> {
     return this.diffcultyModel.find().exec();
+  }
+
+  async addDifficulty(difficulty: Difficulty): Promise<Difficulty> {
+    const newDifficulty = new this.diffcultyModel(difficulty);
+    return (await newDifficulty.save()).toObject();
+  }
+
+  async deleteDifficultyWithId(difficultyId: string): Promise<string> {
+    return await this.diffcultyModel
+      .findByIdAndDelete(difficultyId)
+      .then(() => {
+        return difficultyId;
+      });
   }
 }

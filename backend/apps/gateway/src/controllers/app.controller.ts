@@ -15,6 +15,9 @@ import {
   QuestionServiceApi,
 } from '@app/interservice-api/question';
 import QuestionDto from '../dtos/question/question.dto';
+import DifficultyDto from '../dtos/question/difficulty.dto';
+import { QuestionServiceApi } from 'libs/config/interservice-api/src/question';
+import CategoryDto from '../dtos/question/category.dto';
 
 @Controller('question')
 export class AppController {
@@ -28,7 +31,10 @@ export class AppController {
   @Public()
   @Get('questions')
   getQuestions(): Observable<QuestionDto[]> {
-    return this.questionServiceClient.send('get_questions', {});
+    return this.questionServiceClient.send(
+      QuestionServiceApi.GET_QUESTIONS,
+      {},
+    );
   }
 
   @Public()
@@ -36,20 +42,17 @@ export class AppController {
   addQuestion(
     @Body('question') question: QuestionDto,
   ): Observable<QuestionDto> {
-    return this.questionServiceClient.send('add_question', question);
-  }
-
-  @Public()
-  @Get('questions/:id')
-  getQuestionWithId(@Param('id') questionId: string): Observable<QuestionDto> {
-    return this.questionServiceClient.send('get_question_with_id', questionId);
+    return this.questionServiceClient.send(
+      QuestionServiceApi.ADD_QUESTION,
+      question,
+    );
   }
 
   @Public()
   @Delete('questions/:id')
   deleteQuestionWithId(@Param('id') questionId: string): Observable<string> {
     return this.questionServiceClient.send(
-      'delete_question_with_id',
+      QuestionServiceApi.DELETE_QUESTION_WITH_ID,
       questionId,
     );
   }
@@ -58,14 +61,62 @@ export class AppController {
 
   @Public()
   @Get('difficulties')
-  getDifficulties(): Observable<string> {
-    return this.questionServiceClient.send('get_difficulties', {});
+  getDifficulties(): Observable<DifficultyDto[]> {
+    return this.questionServiceClient.send(
+      QuestionServiceApi.GET_DIFFICULTIES,
+      {},
+    );
+  }
+
+  @Public()
+  @Post('difficulties')
+  addDifficulty(
+    @Body('difficulty') difficulty: DifficultyDto,
+  ): Observable<DifficultyDto> {
+    return this.questionServiceClient.send(
+      QuestionServiceApi.ADD_DIFFICULTY,
+      difficulty,
+    );
+  }
+
+  @Public()
+  @Delete('difficulties/:id')
+  deleteDifficultyWithId(
+    @Param('id') difficultyId: string,
+  ): Observable<string> {
+    return this.questionServiceClient.send(
+      QuestionServiceApi.DELETE_DIFFICULTY_WITH_ID,
+      difficultyId,
+    );
   }
 
   // CATEGORIES
 
   @Get('categories')
-  getCategories(): Observable<string> {
-    return this.questionServiceClient.send('get_categories', {});
+  getCategories(): Observable<CategoryDto[]> {
+    return this.questionServiceClient.send(
+      QuestionServiceApi.GET_CATEGORIES,
+      {},
+    );
+  }
+
+  @Public()
+  @Post('categories')
+  addCategory(
+    @Body('category') category: CategoryDto,
+  ): Observable<CategoryDto> {
+    return this.questionServiceClient.send(
+      QuestionServiceApi.ADD_CATEGORY,
+      category,
+    );
+  }
+
+  @Public()
+  @Delete('categories/:id')
+  deleteCategoryWithId(@Param('id') categoryId: string): Observable<string> {
+    return this.questionServiceClient.send(
+      QuestionServiceApi.DELETE_CATEGORY_WITH_ID,
+      categoryId,
+    );
   }
 }

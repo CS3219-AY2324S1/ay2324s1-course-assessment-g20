@@ -54,7 +54,7 @@ export default function Dashboard() {
 
   const [rows, setRows] = useState<Question[]>([]);
   useEffect(() => {
-    // Fetch categories from API
+    // Fetch questions from API
     getQuestions();
   }, []);
 

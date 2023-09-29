@@ -3,7 +3,7 @@ export const BACKEND_API_HOST = import.meta.env.VITE_BACKEND_API_HOST;
 
 // api service endpoints
 export const AUTH = '/auth';
-export const QUESTION = '';
+export const QUESTION = '/question';
 export const VERSION_PREFIX = '/v1';
 
 export const backendServicesPaths = {
@@ -14,7 +14,9 @@ export const backendServicesPaths = {
   },
   question: {
     root: QUESTION,
-    pingAuth: `${QUESTION}/ping-auth`, // TODO: remove this API call
+    questions: `${QUESTION}/questions`,
+    difficulties: `${QUESTION}/difficulties`,
+    categories: `${QUESTION}/categories`,
   },
 };
 

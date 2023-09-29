@@ -29,9 +29,4 @@ export class ProfileController {
     delete userProfile.userId;
     return this.profileService.updateUserProfile(userId, userProfile);
   }
-
-  // @MessagePattern('get_all_languages')
-  // getAllLanguages() {
-  //   return this.profileService.getAllLanguages();
-  // }
 }

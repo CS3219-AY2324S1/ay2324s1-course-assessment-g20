@@ -49,8 +49,4 @@ export class ProfileService {
     await this.validateForeignKeys(userProfile);
     return this.userProfileDaoService.updateByUserId(userId, userProfile);
   }
-
-  // async getAllLanguages() {
-  //   return await this.languageDaoService.getAll();
-  // }
 }

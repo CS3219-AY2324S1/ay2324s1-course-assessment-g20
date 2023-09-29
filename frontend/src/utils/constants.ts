@@ -23,7 +23,7 @@ export const backendServicesPaths = {
   },
   languages: {
     root: LANGUAGES,
-  }
+  },
 };
 
 // other constants

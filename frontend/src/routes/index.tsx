@@ -1,7 +1,4 @@
-import {
-  Navigate,
-  createBrowserRouter,
-} from 'react-router-dom';
+import { Navigate, createBrowserRouter } from 'react-router-dom';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import PublicOnlyRoutes from './PublicOnlyRoutes';

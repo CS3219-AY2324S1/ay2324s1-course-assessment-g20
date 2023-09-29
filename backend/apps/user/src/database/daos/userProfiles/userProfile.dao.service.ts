@@ -17,12 +17,9 @@ export class UserProfileDaoService {
     roleId = 2,
     preferredLanguageId = 1,
   ) {
-    // return this.userProfileModel.query().insert({ userId, name, roleId, preferredLanguageId });
-    const result = this.userProfileModel
+    return this.userProfileModel
       .query()
       .insert({ userId, name, roleId, preferredLanguageId });
-    console.log('createUser in userProfile.dao.service'), result;
-    return result;
   }
 
   findByUserId({

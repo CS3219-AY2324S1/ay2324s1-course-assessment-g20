@@ -7,13 +7,19 @@ import { ConfigModule } from '@app/config';
 import { JwtModule } from './jwt/jwt.module';
 import { AuthController } from './controllers/auth.controller';
 import { UserController } from './controllers/user.controller';
+import { LanguagesController } from './controllers/Languages.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
 import { QUESTION_SERVICE } from '@app/interservice-api/question';
 import { USER_SERVICE } from '@app/interservice-api/user';
 
 @Module({
   imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
-  controllers: [AppController, AuthController, UserController],
+  controllers: [
+    AppController,
+    AuthController,
+    UserController,
+    LanguagesController,
+  ],
   providers: [
     GoogleOauthStrategy,
     {

@@ -3,18 +3,12 @@ import { ProfileService } from './profile.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserProfileModel } from '../database/models/userProfile.model';
 
-interface UpdateUserProfilePayload {
-  id: string;
-  body: Partial<UserProfileModel>;
-}
-
 @Controller()
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @MessagePattern('create_user_profile')
   createUserProfile(@Payload() data: Partial<UserProfileModel>) {
-    console.log('create_user_profile in user service');
     const { userId, name } = data;
     return this.profileService.createUserProfile(userId, name);
   }
@@ -28,9 +22,16 @@ export class ProfileController {
 
   @MessagePattern('update_user_profile')
   updateUser(
-    @Payload() data: UpdateUserProfilePayload,
+    @Payload() data: Partial<UserProfileModel>,
   ): Promise<UserProfileModel> {
-    const { id, body: userProfile } = data;
-    return this.profileService.updateUserProfile(id, userProfile);
+    const { userId } = data;
+    const userProfile = { ...data };
+    delete userProfile.userId;
+    return this.profileService.updateUserProfile(userId, userProfile);
   }
+
+  // @MessagePattern('get_all_languages')
+  // getAllLanguages() {
+  //   return this.profileService.getAllLanguages();
+  // }
 }

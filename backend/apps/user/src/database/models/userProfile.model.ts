@@ -1,6 +1,6 @@
 import { Model } from 'objection';
 import { BaseModel } from '@app/sql-database';
-import { PreferredLanguageModel } from './preferredLanguage.model';
+import { LanguageModel } from './language.model';
 import { RoleModel } from './role.model';
 
 export class UserProfileModel extends BaseModel {
@@ -14,11 +14,11 @@ export class UserProfileModel extends BaseModel {
   static relationMappings = () => ({
     preferredLanguage: {
       relation: Model.BelongsToOneRelation,
-      modelClass: PreferredLanguageModel,
+      modelClass: LanguageModel,
       filter: (query) => query.select('id', 'name'),
       join: {
         from: 'userProfiles.preferredLanguageId',
-        to: 'preferredLanguages.id',
+        to: 'languages.id',
       },
     },
     role: {

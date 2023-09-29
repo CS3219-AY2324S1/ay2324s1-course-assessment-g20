@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Inject, Patch, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import PatchUserProfileDto from '../dtos/user/patchUserProfile.dto';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('user')
 export class UserController {
@@ -11,14 +12,23 @@ export class UserController {
 
   @Get()
   async getUserProfile(@Req() req) {
-    return this.userServiceClient.send('get_user_profile', { id: req.user.id });
+    const userProfile = await firstValueFrom(
+      this.userServiceClient.send('get_user_profile', req.user.id),
+    ).then((profile) => ({
+      name: profile.name,
+      preferredLanguage: profile.preferredLanguage,
+      role: profile.role,
+    }));
+    return userProfile;
   }
 
   @Patch()
   async patchUserProfile(@Req() req, @Body() body: PatchUserProfileDto) {
-    return await this.userServiceClient.send('patch_user_profile', {
-      id: req.user.id,
-      body,
-    });
+    return await firstValueFrom(
+      this.userServiceClient.send('update_user_profile', {
+        userId: req.user.id,
+        ...body,
+      }),
+    );
   }
 }

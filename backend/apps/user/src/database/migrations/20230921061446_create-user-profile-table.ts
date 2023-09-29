@@ -5,10 +5,7 @@ export async function up(knex: Knex): Promise<void> {
     table.increments('id').primary();
     table.uuid('userId').notNullable(); // references 'id' column in the 'users' table in the auth microservice
     table.string('name').notNullable();
-    table
-      .integer('preferredLanguageId')
-      .references('id')
-      .inTable('preferredLanguages');
+    table.integer('preferredLanguageId').references('id').inTable('languages');
     table.integer('roleId').references('id').inTable('roles');
     table.timestamps(true, true);
   });

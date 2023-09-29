@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       authorizedAxios.interceptors.request.eject(requestInterceptor);
       authorizedAxios.interceptors.response.eject(responseInterceptor);
     };
-  }, []);
+  });
 
   const redirectToSignIn = () => {
     window.location.replace(getBackendPath(backendServicesPaths.auth.googleRedirect));

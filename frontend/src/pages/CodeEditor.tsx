@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { CodeEvaluator } from '../utils/codeEvaluator';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -47,7 +47,7 @@ const CodeEditor = () => {
     getQuestionWithId(questionId ?? '').then((response) => {
       setQuestion(response.data);
     });
-  }, []);
+  });
 
   const handleLanguageChange = (event: SelectChangeEvent) => {
     setLanguage(event.target.value as string);
@@ -76,7 +76,9 @@ const CodeEditor = () => {
     <Grid container>
       <Grid item sm={6} xs={12}>
         <h2>{question?.title}</h2>
-        {question?.description}
+        {question?.description.split('\n').map((child, key) => {
+          return !child ? <br /> : <Typography key={key}>{child}</Typography>;
+        })}
       </Grid>
       <Grid item sm={6} xs={12} style={{ padding: 10 }}>
         <FormControl sx={{ m: 1, minWidth: 200 }}>

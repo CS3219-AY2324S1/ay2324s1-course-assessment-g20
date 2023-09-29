@@ -2,11 +2,12 @@ import { Body, Controller, Get, Inject, Patch, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import PatchUserProfileDto from '../dtos/user/patchUserProfile.dto';
 import { firstValueFrom } from 'rxjs';
+import { Service } from '@app/interservice-api/services';
 
 @Controller('user')
 export class UserController {
   constructor(
-    @Inject('USER_SERVICE')
+    @Inject(Service.USER_SERVICE)
     private readonly userServiceClient: ClientProxy,
   ) {}
 

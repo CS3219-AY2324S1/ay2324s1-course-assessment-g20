@@ -6,9 +6,7 @@ import { UserServiceApi } from '@app/interservice-api/user';
 
 @Controller()
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService, // @Inject('USER_SERVICE') // private readonly userServiceClient: ClientProxy,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @MessagePattern(UserServiceApi.GENERATE_JWTS)
   generateJwts(user) {

@@ -6,5 +6,3 @@ export enum UserServiceApi {
   GET_USER_PROFILE = 'get_user_profile',
   UPDATE_USER_PROFILE = 'update_user_profile',
 }
-
-export const USER_SERVICE = 'USER_SERVICE';

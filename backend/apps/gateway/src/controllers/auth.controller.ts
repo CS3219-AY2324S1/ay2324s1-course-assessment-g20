@@ -15,12 +15,13 @@ import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
 import RefreshDto from '../dtos/auth/refresh.dto';
-import { USER_SERVICE, UserServiceApi } from '@app/interservice-api/user';
+import { UserServiceApi } from '@app/interservice-api/user';
+import { Service } from '@app/interservice-api/services';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject(USER_SERVICE)
+    @Inject(Service.USER_SERVICE)
     private readonly userServiceClient: ClientProxy,
     private readonly configService: ConfigService,
   ) {}

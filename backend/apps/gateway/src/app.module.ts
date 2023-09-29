@@ -9,8 +9,7 @@ import { AuthController } from './controllers/auth.controller';
 import { UserController } from './controllers/user.controller';
 import { LanguagesController } from './controllers/languages.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
-import { QUESTION_SERVICE } from '@app/interservice-api/question';
-import { USER_SERVICE } from '@app/interservice-api/user';
+import { Service } from '@app/interservice-api/services';
 
 @Module({
   imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
@@ -23,7 +22,7 @@ import { USER_SERVICE } from '@app/interservice-api/user';
   providers: [
     GoogleOauthStrategy,
     {
-      provide: QUESTION_SERVICE,
+      provide: Service.QUESTION_SERVICE,
       useFactory: (configService: ConfigService) => {
         const questionServiceOptions = configService.get(
           'questionServiceOptions',
@@ -33,7 +32,7 @@ import { USER_SERVICE } from '@app/interservice-api/user';
       inject: [ConfigService],
     },
     {
-      provide: USER_SERVICE,
+      provide: Service.USER_SERVICE,
       useFactory: (configService: ConfigService) => {
         const userServiceOptions = configService.get('userServiceOptions');
         return ClientProxyFactory.create(userServiceOptions);

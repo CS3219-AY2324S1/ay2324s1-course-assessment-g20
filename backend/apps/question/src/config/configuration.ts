@@ -1,13 +1,10 @@
 import { DatabaseConfigurationOptions } from '@app/sql-database';
+import { getDatabaseConfigurationForService } from '@app/sql-database/config/databaseConfiguration';
+import { Service } from '@app/interservice-api/services';
 
 const questionConfiguration = () => {
-  const databaseConfigurationOptions: DatabaseConfigurationOptions = {
-    host: process.env.QUESTION_SERVICE_SQL_DATABASE_HOST,
-    port: process.env.QUESTION_SERVICE_SQL_DATABASE_PORT,
-    user: process.env.QUESTION_SERVICE_SQL_DATABASE_USER,
-    password: process.env.QUESTION_SERVICE_SQL_DATABASE_PASSWORD,
-    database: process.env.QUESTION_SERVICE_SQL_DATABASE_NAME,
-  };
+  const databaseConfigurationOptions: DatabaseConfigurationOptions =
+    getDatabaseConfigurationForService(Service.QUESTION_SERVICE);
 
   return {
     port: parseInt(process.env.QUESTION_SERVICE_PORT, 10),

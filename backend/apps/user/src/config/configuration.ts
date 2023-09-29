@@ -1,5 +1,7 @@
 import { DatabaseConfigurationOptions } from '@app/sql-database';
 import { JwtTokenConfig } from '@app/types';
+import { getDatabaseConfigurationForService } from '@app/sql-database/config/databaseConfiguration';
+import { Service } from '@app/interservice-api/services';
 
 const userConfiguration = () => {
   const jwtTokenConfig: JwtTokenConfig = {
@@ -8,14 +10,8 @@ const userConfiguration = () => {
     refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
     refreshTokenExpiry: process.env.REFRESH_TOKEN_EXPIRY,
   };
-
-  const databaseConfigurationOptions: DatabaseConfigurationOptions = {
-    host: process.env.USER_SERVICE_SQL_DATABASE_HOST,
-    port: process.env.USER_SERVICE_SQL_DATABASE_PORT,
-    user: process.env.USER_SERVICE_SQL_DATABASE_USER,
-    password: process.env.USER_SERVICE_SQL_DATABASE_PASSWORD,
-    database: process.env.USER_SERVICE_SQL_DATABASE_NAME,
-  };
+  const databaseConfigurationOptions: DatabaseConfigurationOptions =
+    getDatabaseConfigurationForService(Service.USER_SERVICE);
 
   return {
     port: parseInt(process.env.USER_SERVICE_PORT, 10),

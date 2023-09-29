@@ -11,8 +11,6 @@ export class AuthService {
   private tokenConfig: JwtTokenConfig;
 
   constructor(
-    // @Inject('USER_SERVICE')
-    // private readonly userServiceClient: ClientProxy,
     private readonly jwtService: NestJwtService,
     private readonly configService: ConfigService,
     private readonly refreshTokensDaoService: RefreshTokensDaoService,

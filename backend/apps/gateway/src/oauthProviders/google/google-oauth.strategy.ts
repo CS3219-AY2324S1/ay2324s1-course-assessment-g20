@@ -8,7 +8,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { USER_SERVICE, UserServiceApi } from '@app/interservice-api/user';
 import { UserProfileModel } from 'apps/user/src/database/models/userProfile.model';
-import { PreferredLanguage } from '@app/types/preferredLanguages';
+import { Language } from '@app/types/languages';
 import { Role } from '@app/types/roles';
 
 @Injectable()
@@ -44,7 +44,7 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
       oauthName: `${name.givenName} ${name.familyName}`,
       userProfile: {
         name: `${name.givenName} ${name.familyName}`,
-        preferredLanguageId: PreferredLanguage.JAVASCRIPT,
+        preferredLanguageId: Language.JAVASCRIPT,
         roleId: Role.REGULAR,
       } as UserProfileModel,
     };

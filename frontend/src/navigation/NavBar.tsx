@@ -34,7 +34,7 @@ export default function NavBar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
-        <Toolbar>{authContext.authState ? logoutButton() : loginButton()}</Toolbar>
+        <Toolbar>{authContext.isAuthenticated ? logoutButton() : loginButton()}</Toolbar>
       </AppBar>
     </Box>
   );

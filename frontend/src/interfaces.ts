@@ -4,7 +4,8 @@ export interface IAuth {
 }
 
 export interface IAuthContext {
-  authState: IAuth | null;
+  isAuthenticated: boolean;
+  getAuthStore: () => IAuth | null;
   redirectToSignIn: () => void;
   signIn: (auth: IAuth) => void;
   signout: () => void;

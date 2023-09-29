@@ -1,20 +1,30 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { IAuth, IAuthContext } from '../interfaces';
 import { AUTH_TOKEN_LOCAL_STORAGE_KEY, backendServicesPaths } from '../utils/constants';
-import { useLocalStorageState } from '../utils/hooks';
 import authorizedAxios, {
   getRequestInterceptor,
   getResponseInterceptors,
 } from '../api/axios/authorizedAxios';
 import { getBackendPath } from '../utils/api';
+import { readLocalStorage, setLocalStorage } from '../utils/localStorageHelper';
 
 export const AuthContext = React.createContext<IAuthContext>(null!);
 
+const getAuthStore = () => readLocalStorage<IAuth>(AUTH_TOKEN_LOCAL_STORAGE_KEY);
+const setAuthStore = (authState: IAuth | null) =>
+  setLocalStorage(AUTH_TOKEN_LOCAL_STORAGE_KEY, authState);
+const checkIfAuthenticated = () => {
+  const tokens = getAuthStore();
+  return !!tokens?.accessToken && !!tokens.refreshToken;
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [authState, setAuthState] = useLocalStorageState<IAuth | null>(
-    AUTH_TOKEN_LOCAL_STORAGE_KEY,
-    null,
-  );
+  /**
+   * Deliberate use of useState here so that axios interceptors still have access to
+   * React render lifecycle during the unauthenticated auto-signout flow.
+   * (see usages of `setIsAuthenticated` below)
+   */
+  const [isAuthenticated, setIsAuthenticated] = useState(checkIfAuthenticated());
 
   /**
    * useLayoutEffect as we want the axios interceptors to be set before triggering API
@@ -32,21 +42,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       authorizedAxios.interceptors.request.eject(requestInterceptor);
       authorizedAxios.interceptors.response.eject(responseInterceptor);
     };
-  }, [authState]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const redirectToSignIn = () => {
     window.location.replace(getBackendPath(backendServicesPaths.auth.googleRedirect));
   };
 
   const signout = () => {
-    setAuthState(null);
+    setAuthStore(null);
+    setIsAuthenticated(checkIfAuthenticated());
   };
 
   const signIn = (auth: IAuth) => {
-    setAuthState(auth);
+    setAuthStore(auth);
+    setIsAuthenticated(checkIfAuthenticated());
   };
 
-  const value = { authState, redirectToSignIn, signIn, signout };
+  const value = { isAuthenticated, getAuthStore, redirectToSignIn, signIn, signout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

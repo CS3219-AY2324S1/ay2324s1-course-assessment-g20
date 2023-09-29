@@ -1,7 +1,6 @@
 import {
-  Navigate, 
-  createBrowserRouter, 
-  // defer
+  Navigate,
+  createBrowserRouter,
 } from 'react-router-dom';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
@@ -11,7 +10,6 @@ import AuthRedirect from '../pages/AuthRedirect';
 import AppWrapper from './AppWrapper';
 import CodeEditor from '../pages/CodeEditor';
 import Profile from '../pages/Profile';
-// import { getUser } from '../api/user';
 
 const router = createBrowserRouter([
   {
@@ -37,19 +35,9 @@ const router = createBrowserRouter([
             path: '/question/:questionId',
             element: <CodeEditor />,
           },
-        ],
-      },
-      {
-        element: <ProtectedRoutes />,
-        children: [
           {
             path: '/profile',
             element: <Profile />,
-            // @TODO uncomment once auth interceptor is ready
-            // loader: async () => {
-            //   const userProfile = await pingProtectedBackend(authContext);
-            //   return defer({ userProfile })
-            // },
           },
         ],
       },

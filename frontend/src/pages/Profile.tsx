@@ -1,69 +1,77 @@
 import {
-  Box, 
-  FormControl, 
+  Box,
+  FormControl,
   InputLabel,
-  MenuItem, 
-  Paper, 
-  Select, 
-  SelectChangeEvent, 
-  Typography 
+  MenuItem,
+  Paper,
+  Select,
+  SelectChangeEvent,
+  Typography,
 } from '@mui/material';
-// import { useAuth } from '../utils/hooks';
-import { 
-  // Suspense, 
-  useState 
+import {
+  useEffect,
+  useState,
 } from 'react';
 import { 
-  // Await, 
-  useLoaderData 
-} from "react-router-dom";
+  getUserProfile,
+  updateUserProfile, 
+  getAllLanguages 
+} from '../api/userApi';
+import { UserProfile } from '../@types/UserProfile';
+import { Language } from '../@types/Language';
 
 export default function Profile() {
-  const userProfileData = useLoaderData();
-  console.log(userProfileData);
-  const [preferredLanguage, setPreferredLanguage] = useState('');
+  const [preferredLanguage, setPreferredLanguage] = useState<string>('');
+  const [languages, setLanguages] = useState<Language[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile>({});
+
+  useEffect(() => {
+    getAllLanguages()
+    .then(({ data }) => {
+      console.log(data);
+      setLanguages(data);
+    })
+  
+    getUserProfile()
+    .then(({ data }) => {
+      console.log(data);
+      setUserProfile(data);
+      setPreferredLanguage(data.preferredLanguage.id);
+    });
+  }, []);
 
   const handlePreferredLanguageChange = (event: SelectChangeEvent) => {
-    setPreferredLanguage(event.target.value as string);
-    // @TODO: API call to patch user's preferred language
+    const newPreferredLanguage = event.target.value;
+    setPreferredLanguage(newPreferredLanguage);
+    updateUserProfile({ preferredLanguageId: newPreferredLanguage as unknown as number })
   };
 
   return (
-    // <Suspense fallback={<p>Loading data...</p>}>
-    //   <Await
-    //     resolve={userProfileData}
-    //     errorElement={
-    //       <p>Error loading data</p>
-    //     }>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: '2rem',
-          }}
-        >
-          <Paper elevation={3} sx={{ padding: '2rem', width: '50%' }}>
-          {/* <Typography fontSize={20} variant='h1' fontWeight={20} paddingBottom={3} align='center'>{userProfileData.name}</Typography> */}
-          <Typography fontSize={20} variant='h1' fontWeight={20} paddingBottom={3} align='center'>{"User Name's Profile"}</Typography>
-            <FormControl fullWidth>
-              <InputLabel id="preferred-language-label">Preferred Language</InputLabel>
-              <Select
-                labelId="preferred-language-label"
-                id="preferred-language-select"
-                value={preferredLanguage}
-                label="Preferred Language"
-                onChange={handlePreferredLanguageChange}
-                // defaultValue={userProfileData.preferredLanguage}
-                
-              >
-                <MenuItem value={10}>JavaScript</MenuItem>
-                <MenuItem value={20}>TypeScript</MenuItem>
-              </Select>
-            </FormControl>
-          </Paper>
-        </Box>
-    //   </Await>
-    // </Suspense>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '2rem',
+      }}
+    >
+      <Paper elevation={3} sx={{ padding: '2rem', width: '50%' }}>
+        <Typography fontSize={20} variant='h1' fontWeight={20} paddingBottom={3} align='center'>{userProfile.name}</Typography>
+        <FormControl fullWidth>
+          <InputLabel id="preferred-language-label">Preferred Language</InputLabel>
+          <Select
+            labelId="preferred-language-label"
+            id="preferred-language-select"
+            value={preferredLanguage}
+            label="Preferred Language"
+            onChange={handlePreferredLanguageChange}
+          >
+            {languages.map((language: Language) => (
+              <MenuItem key={language.id} value={language.id}>{language.name}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Paper>
+    </Box>
   );
 }

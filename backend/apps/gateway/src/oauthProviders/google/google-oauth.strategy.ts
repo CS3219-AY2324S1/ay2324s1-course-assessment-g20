@@ -50,7 +50,10 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
     };
 
     const user = await firstValueFrom(
-      this.userServiceClient.send(UserServiceApi.FIND_OR_CREATE_OAUTH_USER, oauthUser),
+      this.userServiceClient.send(
+        UserServiceApi.FIND_OR_CREATE_OAUTH_USER,
+        oauthUser,
+      ),
     );
 
     done(null, user);

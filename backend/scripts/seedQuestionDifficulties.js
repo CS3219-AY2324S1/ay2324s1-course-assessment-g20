@@ -11,6 +11,11 @@ async function connectToDatabase() {
     await client.connect().then(() => console.log('Connected to MongoDB'));
 
     const collection = client.db('peer-prep').collection('difficulties');
+
+    await collection
+      .deleteMany({})
+      .then(() => console.log('Deleted all difficulties'));
+
     await collection
       .insertMany(difficultiesJson)
       .then(() => console.log('Finished inserting difficulties'));

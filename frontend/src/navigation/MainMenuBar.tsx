@@ -1,9 +1,12 @@
 import { AppBar, Box, Button, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
 import { useState } from 'react';
-
-const options = ['Profile', 'Logout'];
+import { useAuth } from '../utils/hooks';
+import { useNavigate } from 'react-router-dom';
 
 export default function MainMenuBar() {
+  const authContext = useAuth();
+  const navigate = useNavigate();
+
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -13,6 +16,20 @@ export default function MainMenuBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  // Can eventually abstract into a type / interface
+  const options = [
+    {
+      title: 'Profile',
+    },
+    {
+      title: 'Logout',
+      onClick: () => {
+        authContext.signout();
+        navigate('/login', { replace: true });
+      },
+    },
+  ];
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -64,8 +81,8 @@ export default function MainMenuBar() {
             onClose={handleCloseUserMenu}
           >
             {options.map((options) => (
-              <MenuItem key={options} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center">{options}</Typography>
+              <MenuItem key={options.title} onClick={options.onClick}>
+                <Typography textAlign="center">{options.title}</Typography>
               </MenuItem>
             ))}
           </Menu>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { CodeEvaluator } from '../utils/codeEvaluator';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,8 +9,8 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import * as ts from 'typescript';
 import { languages } from '../utils/constants';
 import { ICodeEvalOutput, IQuestion } from '../interfaces';
-import { exampleQuestion1 } from '../mocks';
-import { pingProtectedBackend } from '../api/questionBankApi';
+import { getQuestionWithId } from '../api/questionBankApi';
+import { useParams } from 'react-router-dom';
 
 // component built with reference to online guide: https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/
 
@@ -41,13 +41,13 @@ const CodeEditor = () => {
     result: '',
   });
 
+  const { questionId } = useParams();
+
   useEffect(() => {
-    // TODO: Replace below with a real API call to fetch a question
-    pingProtectedBackend().then((response) => {
-      console.log('protected response', response);
-      setQuestion(exampleQuestion1);
+    getQuestionWithId(questionId ?? '').then((response) => {
+      setQuestion(response.data);
     });
-  }, []);
+  });
 
   const handleLanguageChange = (event: SelectChangeEvent) => {
     setLanguage(event.target.value as string);
@@ -76,7 +76,9 @@ const CodeEditor = () => {
     <Grid container>
       <Grid item sm={6} xs={12}>
         <h2>{question?.title}</h2>
-        {question?.description}
+        {question?.description.split('\n').map((child, key) => {
+          return !child ? <br /> : <Typography key={key}>{child}</Typography>;
+        })}
       </Grid>
       <Grid item sm={6} xs={12} style={{ padding: 10 }}>
         <FormControl sx={{ m: 1, minWidth: 200 }}>

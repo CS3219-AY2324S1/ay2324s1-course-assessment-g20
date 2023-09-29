@@ -7,7 +7,6 @@ import { AuthProvider } from '@app/types/authProvider';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { UserServiceApi } from '@app/interservice-api/user';
-import { UserProfileModel } from 'apps/user/src/database/models/userProfile.model';
 import { Language } from '@app/types/languages';
 import { Role } from '@app/types/roles';
 import { Service } from '@app/interservice-api/services';
@@ -48,7 +47,7 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
         name: `${name.givenName} ${name.familyName}`,
         preferredLanguageId: Language.JAVASCRIPT,
         roleId: Role.REGULAR,
-      } as UserProfileModel,
+      },
     };
 
     const user = await firstValueFrom(

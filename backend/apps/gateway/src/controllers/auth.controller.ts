@@ -15,11 +15,12 @@ import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
 import RefreshDto from '../dtos/auth/refresh.dto';
+import { AUTH_SERVICE, AuthServiceApi } from '@app/interservice-api/auth';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject('AUTH_SERVICE')
+    @Inject(AUTH_SERVICE)
     private readonly authServiceClient: ClientProxy,
     private readonly configService: ConfigService,
   ) {}
@@ -36,7 +37,7 @@ export class AuthController {
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     const { accessToken, refreshToken } = await firstValueFrom(
-      this.authServiceClient.send('generate_jwts', req.user),
+      this.authServiceClient.send(AuthServiceApi.GENERATE_JWTS, req.user),
     );
     const redirectUrl = `${this.configService.get(
       'corsOrigin',
@@ -49,7 +50,7 @@ export class AuthController {
   @Post('refresh')
   async refreshTokenFlow(@Body() body: RefreshDto) {
     return this.authServiceClient.send(
-      'generate_jwts_from_refresh_token',
+      AuthServiceApi.GENERATE_JWTS_FROM_REFRESH_TOKEN,
       body.refreshToken,
     );
   }

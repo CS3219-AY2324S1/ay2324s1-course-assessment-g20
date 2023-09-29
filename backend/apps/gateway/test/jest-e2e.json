@@ -8,6 +8,7 @@
   },
   "moduleNameMapper": {
     "^@app/config(|/.*)$": "<rootDir>/../../../libs/config/src/$1",
-    "^@app/types(|/.*)$": "<rootDir>/../../../libs/types/src/$1"
+    "^@app/types(|/.*)$": "<rootDir>/../../../libs/types/src/$1",
+    "^@app/interservice-api(|/.*)$": "<rootDir>/../../../libs/interservice-api/src/$1"
   }
 }

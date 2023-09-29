@@ -1,6 +1,6 @@
-export function readLocalStorage<T>(key: string, defaultValue: T) {
+export function readLocalStorage<T>(key: string) {
   const localStorageValue = window.localStorage.getItem(key);
-  return localStorageValue ? JSON.parse(localStorageValue) : defaultValue;
+  return localStorageValue ? (JSON.parse(localStorageValue) as T) : null;
 }
 
 export function setLocalStorage<T>(key: string, value: T) {

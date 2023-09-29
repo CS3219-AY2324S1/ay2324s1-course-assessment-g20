@@ -33,7 +33,10 @@ const authorizedAxios = axios.create(baseAxiosConfig);
 export const getRequestInterceptor =
   (authContextValue: IAuthContext) =>
   (axiosRequestConfig: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    const accessToken = authContextValue.authState?.accessToken;
+    const accessToken = authContextValue.getAuthStore()?.accessToken;
+    if (!accessToken) {
+      throw Error('Access token not found!');
+    }
     if (accessToken && !axiosRequestConfig.headers.Authorization) {
       // do not overwrite existing authorization header if it exists as it may be a retry request
       axiosRequestConfig.headers.Authorization = `Bearer ${accessToken}`;
@@ -71,7 +74,7 @@ export const getResponseInterceptors = (
     }
 
     originalRequestConfig.retry = true;
-    const refreshToken = authContextValue.authState?.refreshToken;
+    const refreshToken = authContextValue.getAuthStore()?.refreshToken;
 
     // If user has no refresh token, sign out user
     if (!refreshToken) {

@@ -4,7 +4,7 @@ import { useAuth } from '../utils/hooks';
 export default function PublicOnlyRoutes() {
   const auth = useAuth();
   const location = useLocation();
-  if (auth.authState) {
+  if (auth.isAuthenticated) {
     return <Navigate to="/dashboard" state={{ from: location }} replace />;
   } else {
     return <Outlet />;

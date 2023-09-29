@@ -62,6 +62,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/types/tsconfig.lib.json"
       }
+    },
+    "interservice-api": {
+      "type": "library",
+      "root": "libs/interservice-api",
+      "entryFile": "index",
+      "sourceRoot": "libs/interservice-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/interservice-api/tsconfig.lib.json"
+      }
     }
   }
 }

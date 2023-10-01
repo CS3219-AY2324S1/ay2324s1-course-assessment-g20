@@ -6,32 +6,24 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import * as ts from 'typescript';
 import { languages } from '../utils/constants';
 import { ICodeEvalOutput, IQuestion } from '../interfaces';
-import { getQuestionWithId } from '../api/questionBankApi';
+import { editor as MonacoEditor } from 'monaco-editor';
+import { bindYjsToMonacoEditor, tsCompile } from '../utils/editorUtils';
 import { useParams } from 'react-router-dom';
+import { getSessionAndWsTicket } from '../api/collaborationServiceApi';
 
-// component built with reference to online guide: https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/
-
-// This function transpiles TypeScript to JavaScript, allowing users to write TypeScript in the code editor
-function tsCompile(source: string): string {
-  const options = { compilerOptions: { module: ts.ModuleKind.CommonJS } };
-  return ts.transpileModule(source, options).outputText;
-}
-
-const OutputBlock = ({ label, output }: { label: string; output: string }) => {
-  return output ? (
-    <div>
-      <h3>{label}</h3>
-      <pre>{output}</pre>
-    </div>
-  ) : (
-    <></>
-  );
-};
-
+/**
+ * This component abstracts the CodeEditor workspace page in a collaborative session.
+ *
+ * Outline of websocket connection logic:
+ * - Using sessionId in the URL, query the backend (with JWT) to retrieve the question information and a single-use websocket ticket to this session
+ * - Use the websocket ticket to initiate and authenticate a websocket connection to the collaboration service abstracting over Yjs
+ *
+ * Original code execution logic built with reference to online guide: https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/
+ */
 const CodeEditor = () => {
+  const { sessionId } = useParams<{ sessionId: string }>();
   const [question, setQuestion] = useState<IQuestion | undefined>(undefined);
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState('// some comment');
@@ -41,13 +33,32 @@ const CodeEditor = () => {
     result: '',
   });
 
-  const { questionId } = useParams();
+  /**
+   * We are unable to use refs directly on '@monaco-editor/react' Editor component as it is not exposed.
+   * However, we are able to access the instance via the onMount prop and call setEditor, in so doing,
+   * trigger the binding of Yjs to the Editor instance.
+   */
+  const [editor, setEditor] = useState<MonacoEditor.IStandaloneCodeEditor | null>(null);
+  const [wsTicket, setWsTicket] = useState<string | null>(null);
 
+  // Fetch question information and get single-use websocket ticket to this session
   useEffect(() => {
-    getQuestionWithId(questionId ?? '').then((response) => {
-      setQuestion(response.data);
-    });
-  });
+    if (sessionId) {
+      getSessionAndWsTicket(sessionId)
+        .then((resp) => {
+          const { question, ticket } = resp.data;
+          setQuestion(question);
+          setWsTicket(ticket);
+        })
+    }
+  }, []);
+
+  // Initialize websocket connection to Yjs service
+  useEffect(() => {
+    if (editor && wsTicket) {
+      bindYjsToMonacoEditor(wsTicket, editor);
+    }
+  }, [editor, wsTicket]);
 
   const handleLanguageChange = (event: SelectChangeEvent) => {
     setLanguage(event.target.value as string);
@@ -70,6 +81,10 @@ const CodeEditor = () => {
 
   const handleCodeChange = (value: string | undefined) => {
     setCode(value || '');
+  };
+
+  const handleEditorDidMount = (editor: MonacoEditor.IStandaloneCodeEditor) => {
+    setEditor(editor);
   };
 
   return (
@@ -107,6 +122,7 @@ const CodeEditor = () => {
           value={code}
           onChange={handleCodeChange}
           language={language}
+          onMount={handleEditorDidMount}
         />
         <button onClick={handleCompile}>Execute</button>
 
@@ -115,6 +131,17 @@ const CodeEditor = () => {
         <OutputBlock label="Error" output={codeEvalOutput.error} />
       </Grid>
     </Grid>
+  );
+};
+
+const OutputBlock = ({ label, output }: { label: string; output: string }) => {
+  return output ? (
+    <div>
+      <h3>{label}</h3>
+      <pre>{output}</pre>
+    </div>
+  ) : (
+    <></>
   );
 };
 

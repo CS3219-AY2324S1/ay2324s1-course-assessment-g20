@@ -12,11 +12,11 @@ export async function seed(knex: Knex): Promise<void> {
     return;
   }
 
-  // Deletes ALL existing entries
-  await knex('userProfiles').del();
+  // Deletes ALL existing entries and reset primary key
+  await knex.raw('TRUNCATE TABLE user_profiles RESTART IDENTITY CASCADE');
 
   // Inserts seed entries
-  await knex('userProfiles').insert([
+  await knex('user_profiles').insert([
     {
       userId: MOCK_USER_1_UUID,
       name: 'Alice Tan',

@@ -12,8 +12,8 @@ export async function seed(knex: Knex): Promise<void> {
     return;
   }
 
-  // Deletes ALL existing entries
-  await knex('users').del();
+  // Deletes ALL existing entries and reset primary key
+  await knex.raw('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
 
   // Inserts seed entries
   await knex('users').insert([

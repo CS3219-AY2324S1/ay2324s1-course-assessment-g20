@@ -27,6 +27,15 @@
         "tsConfigPath": "apps/question/tsconfig.app.json"
       }
     },
+    "matching": {
+      "type": "application",
+      "root": "apps/matching",
+      "entryFile": "main",
+      "sourceRoot": "apps/matching/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/matching/tsconfig.app.json"
+      }
+    },
     "config": {
       "type": "library",
       "root": "libs/config",

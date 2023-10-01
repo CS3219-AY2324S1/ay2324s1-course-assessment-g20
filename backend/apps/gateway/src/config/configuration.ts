@@ -15,6 +15,7 @@ const gatewayConfiguration = () => {
 
   const questionServiceOptions = getRmqOptions(RmqQueue.QUESTION);
   const authServiceOptions = getRmqOptions(RmqQueue.AUTH);
+  const matchingServiceOptions = getRmqOptions(RmqQueue.MATCHING);
 
   const googleOauthOptions: _StrategyOptionsBase = {
     clientID: process.env.OAUTH_GOOGLE_ID,
@@ -24,11 +25,14 @@ const gatewayConfiguration = () => {
 
   return {
     port: parseInt(process.env.API_GATEWAY_PORT, 10),
+    host: process.env.QUESTION_SERVICE_SQL_DATABASE_HOST,
     corsOrigin: process.env.CORS_ORIGIN,
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
     questionServiceOptions,
     authServiceOptions,
     googleOauthOptions,
+    matchingServiceOptions,
+    rmqUrl: rmqUrl,
   };
 };
 

@@ -6,6 +6,7 @@ import {
   Inject,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
@@ -126,5 +127,10 @@ export class AppController {
       QuestionServiceApi.DELETE_CATEGORY_WITH_ID,
       categoryId,
     );
+  }
+
+  @Get('get-user')
+  getUser(@Req() req): Observable<{ id: string }> {
+    return req.user;
   }
 }

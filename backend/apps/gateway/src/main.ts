@@ -2,6 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import {
+  MicroserviceOptions,
+  RmqOptions,
+  Transport,
+} from '@nestjs/microservices';
+import { RmqQueue } from '@app/types/rmqQueues';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,6 +36,18 @@ async function bootstrap() {
   }
 
   const port = configService.get('port');
+  const rmqUrl = configService.get('rmqUrl');
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [rmqUrl],
+      queue: RmqQueue.WEBSOCKET,
+    },
+  } as RmqOptions);
+
+  await app.startAllMicroservices();
+
   await app.listen(port);
   console.log(`Gateway running on port ${port}`);
 }

@@ -9,10 +9,14 @@ import { AuthController } from './controllers/auth.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
 import { AUTH_SERVICE } from '@app/interservice-api/auth';
 import { QUESTION_SERVICE } from '@app/interservice-api/question';
+import { MatchingGateway } from './gateways/matching.gateway';
+import { WebsocketMemoryService } from './services/websocketMemory.service';
+import { MATCHING_SERVICE } from '@app/interservice-api/matching';
+import { WebsocketController } from './controllers/websocket.controller';
 
 @Module({
   imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
-  controllers: [AppController, AuthController],
+  controllers: [AppController, AuthController, WebsocketController],
   providers: [
     GoogleOauthStrategy,
     {
@@ -33,6 +37,18 @@ import { QUESTION_SERVICE } from '@app/interservice-api/question';
       },
       inject: [ConfigService],
     },
+    {
+      provide: MATCHING_SERVICE,
+      useFactory: (configService: ConfigService) => {
+        const matchingServiceOptions = configService.get(
+          'matchingServiceOptions',
+        );
+        return ClientProxyFactory.create(matchingServiceOptions);
+      },
+      inject: [ConfigService],
+    },
+    MatchingGateway,
+    WebsocketMemoryService,
   ],
 })
 export class AppModule {}

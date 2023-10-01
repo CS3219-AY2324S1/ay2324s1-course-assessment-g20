@@ -21,16 +21,7 @@ export class UserDaoService {
     return await this.userModel.query().insertGraph(user);
   }
 
-  async findOAuthUser(user: Partial<UserModel>) {
-    const { authProviderId, authProvider } = user;
-
-    return await this.userModel.query().findOne({
-      authProviderId,
-      authProvider,
-    });
-  }
-
-  async createOAuthUser(user: Partial<UserModel>) {
-    return await this.userModel.query().insertGraph(user);
+  async deleteOAuthUser(id: string) {
+    return await this.userModel.query().deleteById(id);
   }
 }

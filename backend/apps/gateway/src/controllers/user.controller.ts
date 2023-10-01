@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Patch, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Patch,
+  Req,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import PatchUserProfileDto from '../dtos/user/patchUserProfile.dto';
 import { firstValueFrom } from 'rxjs';
@@ -30,6 +38,13 @@ export class UserController {
         userId: req.user.id,
         ...body,
       }),
+    );
+  }
+
+  @Delete()
+  async deleteUser(@Req() req) {
+    return await firstValueFrom(
+      this.userServiceClient.send('delete_oauth_user', req.user.id),
     );
   }
 }

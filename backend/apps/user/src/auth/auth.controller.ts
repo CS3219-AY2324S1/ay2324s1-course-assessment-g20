@@ -22,4 +22,9 @@ export class AuthController {
   findOrCreateOauthUser(user: Partial<UserModel>) {
     return this.authService.findOrCreateOAuthUser(user);
   }
+
+  @MessagePattern(UserServiceApi.DELETE_OAUTH_USER)
+  deleteOAuthUser(id: string) {
+    return this.authService.deleteOAuthUser(id);
+  }
 }

@@ -12,10 +12,6 @@ export class ProfileService {
     private readonly roleDaoService: RoleDaoService,
   ) {}
 
-  async createUserProfile(userId: string, name: string) {
-    return this.userProfileDaoService.createUser(userId, name);
-  }
-
   getUserProfile(
     userId: string,
   ): Promise<Partial<UserProfileModel> | undefined> {

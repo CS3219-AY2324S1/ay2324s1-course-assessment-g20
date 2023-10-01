@@ -86,4 +86,8 @@ export class AuthService {
   findOrCreateOAuthUser(user: Partial<UserModel>) {
     return this.userDaoService.findOrCreateOAuthUser(user);
   }
+
+  deleteOAuthUser(id: string) {
+    return this.userDaoService.deleteOAuthUser(id);
+  }
 }

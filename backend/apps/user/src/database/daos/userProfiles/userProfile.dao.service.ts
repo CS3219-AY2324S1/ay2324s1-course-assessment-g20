@@ -11,17 +11,6 @@ export class UserProfileDaoService {
     private readonly userProfileModel: ModelClass<UserProfileModel>,
   ) {}
 
-  createUser(
-    userId: string,
-    name: string,
-    roleId = 2,
-    preferredLanguageId = 1,
-  ) {
-    return this.userProfileModel
-      .query()
-      .insert({ userId, name, roleId, preferredLanguageId });
-  }
-
   findByUserId({
     userId,
     select,

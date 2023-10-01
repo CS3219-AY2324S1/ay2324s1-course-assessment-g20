@@ -7,21 +7,15 @@ import { UserProfileModel } from '../database/models/userProfile.model';
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @MessagePattern('create_user_profile')
-  createUserProfile(@Payload() data: Partial<UserProfileModel>) {
-    const { userId, name } = data;
-    return this.profileService.createUserProfile(userId, name);
-  }
-
   @MessagePattern('get_user_profile')
-  getUser(
+  getUserProfile(
     @Payload() id: string,
   ): Promise<Partial<UserProfileModel> | undefined> {
     return this.profileService.getUserProfile(id);
   }
 
   @MessagePattern('update_user_profile')
-  updateUser(
+  updateUserProfile(
     @Payload() data: Partial<UserProfileModel>,
   ): Promise<UserProfileModel> {
     const { userId } = data;

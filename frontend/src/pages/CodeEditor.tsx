@@ -12,6 +12,7 @@ import { editor as MonacoEditor } from 'monaco-editor';
 import { bindYjsToMonacoEditor, tsCompile } from '../utils/editorUtils';
 import { useParams } from 'react-router-dom';
 import { getSessionAndWsTicket } from '../api/collaborationServiceApi';
+import { useThrowAsyncError } from '../utils/hooks';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.
@@ -41,6 +42,8 @@ const CodeEditor = () => {
   const [editor, setEditor] = useState<MonacoEditor.IStandaloneCodeEditor | null>(null);
   const [wsTicket, setWsTicket] = useState<string | null>(null);
 
+  const throwAsyncError = useThrowAsyncError();
+
   // Fetch question information and get single-use websocket ticket to this session
   useEffect(() => {
     if (sessionId) {
@@ -50,6 +53,9 @@ const CodeEditor = () => {
           setQuestion(question);
           setWsTicket(ticket);
         })
+        .catch(() => {
+          throwAsyncError('Invalid session');
+        });
     }
   }, []);
 
@@ -86,6 +92,10 @@ const CodeEditor = () => {
   const handleEditorDidMount = (editor: MonacoEditor.IStandaloneCodeEditor) => {
     setEditor(editor);
   };
+
+  if (!sessionId) {
+    throw new Error('No session ID specified!');
+  }
 
   return (
     <Grid container>

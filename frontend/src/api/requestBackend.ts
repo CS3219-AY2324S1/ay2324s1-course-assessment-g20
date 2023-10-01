@@ -2,12 +2,12 @@ import { AxiosRequestConfig } from 'axios';
 import unauthorizedAxios from './axios/unauthorizedAxios';
 import authorizedAxios from './axios/authorizedAxios';
 
-export function requestBackend(
+export function requestBackend<T>(
   requestParams: AxiosRequestConfig,
   useAuthentication: boolean = true,
 ) {
   if (!useAuthentication) {
-    return unauthorizedAxios(requestParams);
+    return unauthorizedAxios<T>(requestParams);
   }
-  return authorizedAxios(requestParams);
+  return authorizedAxios<T>(requestParams);
 }

@@ -11,14 +11,19 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { getUserProfile, updateUserProfile, getAllLanguages, deleteUserProfile } from '../api/userApi';
+import {
+  getUserProfile,
+  updateUserProfile,
+  getAllLanguages,
+  deleteUserProfile,
+} from '../api/userApi';
 import { UserProfile } from '../@types/UserProfile';
 import { Language } from '../@types/Language';
 import { useAuth } from '../utils/hooks';
 import { useNavigate } from 'react-router-dom';
 
 const modalStyle = {
-  position: 'absolute' as 'absolute',
+  position: 'absolute' as const,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -65,7 +70,7 @@ export default function Profile() {
   const logUserOut = () => {
     authContext.signout();
     navigate('/login', { replace: true });
-  }
+  };
   const handleOpenModal = () => setisModalOpen(true);
   const handleCloseModal = () => setisModalOpen(false);
 
@@ -110,7 +115,7 @@ export default function Profile() {
               <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
                 Are you sure you want to delete your account?
               </Typography>
-              <Box display='flex'flexDirection='row'>
+              <Box display="flex" flexDirection="row">
                 <Box paddingRight={2}>
                   <Button variant="outlined" color="error" onClick={handleDeleteAccount}>
                     YES

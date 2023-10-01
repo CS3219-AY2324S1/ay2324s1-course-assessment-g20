@@ -1,12 +1,12 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import Login from '../pages/Login';
-import Dashboard from '../pages/Dashboard';
 import PublicOnlyRoutes from './PublicOnlyRoutes';
 import ProtectedRoutes from './ProtectedRoutes';
 import AuthRedirect from '../pages/AuthRedirect';
 import AppWrapper from './AppWrapper';
 import CodeEditor from '../pages/CodeEditor';
 import Profile from '../pages/Profile';
+import MainMenu from '../pages/MainMenu';
 
 const router = createBrowserRouter([
   {
@@ -26,7 +26,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/dashboard',
-            element: <Dashboard />,
+            element: <MainMenu />,
           },
           {
             path: '/question/:questionId',

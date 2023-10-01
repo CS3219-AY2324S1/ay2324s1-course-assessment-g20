@@ -45,7 +45,10 @@ export class UserController {
   @Delete()
   async deleteUser(@Req() req) {
     return await firstValueFrom(
-      this.userServiceClient.send(UserServiceApi.DELETE_OAUTH_USER, req.user.id),
+      this.userServiceClient.send(
+        UserServiceApi.DELETE_OAUTH_USER,
+        req.user.id,
+      ),
     );
   }
 }

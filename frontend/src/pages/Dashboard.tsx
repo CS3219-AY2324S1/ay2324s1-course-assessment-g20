@@ -19,7 +19,7 @@ import { EMPTY_QUESTION, IQuestion } from '../interfaces';
 import { addQuestion, deleteQuestionWithId, getQuestions } from '../api/questionBankApi';
 import { useNavigate } from 'react-router-dom';
 
-export default function Dashboasrd() {
+export default function Dashboard() {
   const navigate = useNavigate();
 
   // Styling for dashboard table

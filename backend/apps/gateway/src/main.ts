@@ -8,10 +8,13 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { RmqQueue } from '@app/types/rmqQueues';
+import { WsAdapter } from '@nestjs/platform-ws';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  app.useWebSocketAdapter(new WsAdapter(app));
 
   app.enableVersioning({
     type: VersioningType.URI,

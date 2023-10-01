@@ -80,6 +80,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/interservice-api/tsconfig.lib.json"
       }
+    },
+    "collaboration": {
+      "type": "application",
+      "root": "apps/collaboration",
+      "entryFile": "main",
+      "sourceRoot": "apps/collaboration/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/collaboration/tsconfig.app.json"
+      }
     }
   }
 }

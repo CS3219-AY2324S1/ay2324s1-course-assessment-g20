@@ -15,6 +15,7 @@ const questionServiceDatabaseOptions = {
   password: process.env.QUESTION_SERVICE_SQL_DATABASE_PASSWORD,
   database: process.env.QUESTION_SERVICE_SQL_DATABASE_NAME,
 }
+
 const matchingServiceDatabaseOptions = {
   host: process.env.MATCHING_SERVICE_SQL_DATABASE_HOST,
   port: process.env.MATCHING_SERVICE_SQL_DATABASE_PORT,
@@ -23,7 +24,20 @@ const matchingServiceDatabaseOptions = {
   database: process.env.MATCHING_SERVICE_SQL_DATABASE_NAME,
 }
 
-const databaseConnections = [authServiceDatabaseOptions, questionServiceDatabaseOptions, matchingServiceDatabaseOptions];
+const collaborationServiceDatabaseOptions = {
+  host: process.env.COLLABORATION_SERVICE_SQL_DATABASE_HOST,
+  port: process.env.COLLABORATION_SERVICE_SQL_DATABASE_PORT,
+  user: process.env.COLLABORATION_SERVICE_SQL_DATABASE_USER,
+  password: process.env.COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD,
+  database: process.env.COLLABORATION_SERVICE_SQL_DATABASE_NAME,
+}
+
+const databaseConnections = [
+  authServiceDatabaseOptions,
+  questionServiceDatabaseOptions,
+  collaborationServiceDatabaseOptions,
+  matchingServiceDatabaseOptions,
+];
 
 async function createDatabaseIfNotExist(connectionOptions) {
   const databaseName = connectionOptions.database;

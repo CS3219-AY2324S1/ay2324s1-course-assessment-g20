@@ -1,9 +1,11 @@
 // consolidated env vars
 export const BACKEND_API_HOST = import.meta.env.VITE_BACKEND_API_HOST;
+export const BACKEND_WEBSOCKET_HOST = import.meta.env.VITE_BACKEND_WEBSOCKET_HOST;
 
 // api service endpoints
 export const AUTH = '/auth';
 export const QUESTION = '/question';
+export const COLLABORATION = '/collaboration';
 export const VERSION_PREFIX = '/v1';
 
 export const backendServicesPaths = {
@@ -17,6 +19,10 @@ export const backendServicesPaths = {
     questions: `${QUESTION}/questions`,
     difficulties: `${QUESTION}/difficulties`,
     categories: `${QUESTION}/categories`,
+  },
+  collaboration: {
+    root: COLLABORATION,
+    getSessionAndWsTicket: `${COLLABORATION}/session`,
   },
 };
 

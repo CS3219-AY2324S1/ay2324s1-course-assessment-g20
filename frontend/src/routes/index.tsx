@@ -28,7 +28,7 @@ const router = createBrowserRouter([
             element: <MainMenu />,
           },
           {
-            path: '/question/:questionId',
+            path: '/session/:sessionId?',
             element: <CodeEditor />,
           },
         ],

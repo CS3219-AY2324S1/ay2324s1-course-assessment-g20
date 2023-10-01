@@ -6,4 +6,5 @@ export enum UserServiceApi {
   CREATE_USER_PROFILE = 'create_user_profile',
   GET_USER_PROFILE = 'get_user_profile',
   UPDATE_USER_PROFILE = 'update_user_profile',
+  GET_ALL_LANGUAGES = 'get_all_languages',
 }

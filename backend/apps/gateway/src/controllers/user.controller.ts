@@ -11,6 +11,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import PatchUserProfileDto from '../dtos/user/patchUserProfile.dto';
 import { firstValueFrom } from 'rxjs';
 import { Service } from '@app/interservice-api/services';
+import { UserServiceApi } from '@app/interservice-api/user';
 
 @Controller('user')
 export class UserController {
@@ -22,7 +23,7 @@ export class UserController {
   @Get()
   async getUserProfile(@Req() req) {
     const userProfile = await firstValueFrom(
-      this.userServiceClient.send('get_user_profile', req.user.id),
+      this.userServiceClient.send(UserServiceApi.GET_USER_PROFILE, req.user.id),
     ).then((profile) => ({
       name: profile.name,
       preferredLanguage: profile.preferredLanguage,
@@ -34,7 +35,7 @@ export class UserController {
   @Patch()
   async patchUserProfile(@Req() req, @Body() body: PatchUserProfileDto) {
     return await firstValueFrom(
-      this.userServiceClient.send('update_user_profile', {
+      this.userServiceClient.send(UserServiceApi.UPDATE_USER_PROFILE, {
         userId: req.user.id,
         ...body,
       }),
@@ -44,7 +45,7 @@ export class UserController {
   @Delete()
   async deleteUser(@Req() req) {
     return await firstValueFrom(
-      this.userServiceClient.send('delete_oauth_user', req.user.id),
+      this.userServiceClient.send(UserServiceApi.DELETE_OAUTH_USER, req.user.id),
     );
   }
 }

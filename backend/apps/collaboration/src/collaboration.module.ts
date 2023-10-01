@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 import { CollaborationController } from './collaboration.controller';
 import { CollaborationService } from './collaboration.service';
 import { ConfigModule } from '@app/config';
@@ -9,6 +9,25 @@ import { CollabSessionWsTicketDaoModule } from './database/daos/collabSessionWsT
 import { SessionModel } from './database/models/session.model';
 import { UserSessionModel } from './database/models/userSession.model';
 import { SessionDaoModule } from './database/daos/session/session.dao.module';
+import { ConfigService } from '@nestjs/config';
+import { ClientProxyFactory } from '@nestjs/microservices';
+import { QUESTION_SERVICE } from '@app/interservice-api/question';
+
+const microserviceOptionKeys = {
+  [QUESTION_SERVICE]: 'questionServiceOptions',
+};
+
+const createMicroserviceClientProxyProvider = (
+  microservice: string,
+  optionsKey: string,
+): Provider => ({
+  provide: microservice,
+  useFactory: (configService: ConfigService) => {
+    const microserviceOptions = configService.get(optionsKey);
+    return ClientProxyFactory.create(microserviceOptions);
+  },
+  inject: [ConfigService],
+});
 
 @Module({
   imports: [
@@ -24,6 +43,11 @@ import { SessionDaoModule } from './database/daos/session/session.dao.module';
     SessionDaoModule,
   ],
   controllers: [CollaborationController],
-  providers: [CollaborationService],
+  providers: [
+    CollaborationService,
+    ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
+      createMicroserviceClientProxyProvider(key, value),
+    ),
+  ],
 })
 export class CollaborationModule {}

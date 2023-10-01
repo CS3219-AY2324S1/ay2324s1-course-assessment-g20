@@ -5,6 +5,8 @@ import { UserSessionModel } from './userSession.model';
 export class SessionModel extends BaseModel {
   static tableName = 'sessions';
 
+  readonly questionId: string;
+
   readonly userIds: { userId: string }[];
 
   static relationMappings = () => ({

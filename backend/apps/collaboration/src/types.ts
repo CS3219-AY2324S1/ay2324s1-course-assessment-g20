@@ -3,9 +3,10 @@ import { CollabSessionWsTicketModel } from './database/models/collabSessionWsTic
 
 export type CreateSessionInfo = {
   userIds: string[];
+  questionId: string;
 };
 
 export type CreateSessionTicketInfo = Omit<
   CollabSessionWsTicketModel,
-  'expiry' & keyof BaseModel
+  'expiry' | keyof BaseModel
 >;

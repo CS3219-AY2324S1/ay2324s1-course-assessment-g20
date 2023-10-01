@@ -13,4 +13,8 @@ export class SessionDaoService {
   create(createSessionInfo: Omit<SessionModel, keyof BaseModel>) {
     return this.sessionModel.query().insertGraph(createSessionInfo);
   }
+
+  findById(sessionId: string) {
+    return this.sessionModel.query().findById(sessionId);
+  }
 }

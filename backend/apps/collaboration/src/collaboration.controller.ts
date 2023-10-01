@@ -13,9 +13,9 @@ export class CollaborationController {
     return this.collaborationService.createCollabSession(createSessionInfo);
   }
 
-  @MessagePattern(CollaborationServiceApi.GET_COLLAB_SESSION_WS_TICKET)
-  getCollabSessionWsTicket(sessionInfo: CreateSessionTicketInfo) {
-    return this.collaborationService.getCollabSessionWsTicket(sessionInfo);
+  @MessagePattern(CollaborationServiceApi.GET_SESSION_AND_WS_TICKET)
+  getSessionAndWsTicket(sessionInfo: CreateSessionTicketInfo) {
+    return this.collaborationService.getSessionAndCreateWsTicket(sessionInfo);
   }
 
   @MessagePattern(CollaborationServiceApi.CONSUME_WS_TICKET)

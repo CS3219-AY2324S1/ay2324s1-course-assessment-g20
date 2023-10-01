@@ -12,11 +12,11 @@ export class CollaborationController {
     private readonly collaborationServiceClient: ClientProxy,
   ) {}
 
-  @Get('ticket/:sessionId')
-  getCollabSessionWsTicket(@Req() req, @Param() params) {
+  @Get('session/:sessionId')
+  getSessionAndWsTicket(@Req() req, @Param('sessionId') sessionId) {
     return this.collaborationServiceClient.send(
-      CollaborationServiceApi.GET_COLLAB_SESSION_WS_TICKET,
-      { sessionId: params.sessionId, userId: req.user.id },
+      CollaborationServiceApi.GET_SESSION_AND_WS_TICKET,
+      { sessionId, userId: req.user.id },
     );
   }
 }

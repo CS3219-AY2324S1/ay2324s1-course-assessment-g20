@@ -39,7 +39,6 @@
     "@nestjs/mongoose": "^8.0.0",
     "@nestjs/passport": "^10.0.1",
     "@nestjs/platform-express": "^9.0.0",
-    "@nestjs/platform-socket.io": "^10.2.6",
     "@nestjs/platform-ws": "^10.2.6",
     "@nestjs/websockets": "^10.2.6",
     "amqp-connection-manager": "^4.1.14",

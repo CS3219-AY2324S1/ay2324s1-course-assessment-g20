@@ -2,37 +2,29 @@ import {
   WEBSOCKET_SERVICE,
   WebsocketServiceApi,
 } from '@app/interservice-api/gateway';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { LookingToMatchModel } from './database/models/lookingToMatch.model';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
-import { CreateTicketInfo } from '../types';
-import { LookingToMatchDaoService } from './database/daos/lookingToMatch/lookingToMatch.dao.service';
-import { MatchingWsTicketDaoService } from './database/daos/matchingWsTicket/matchingWsTicket.dao.service';
+import { firstValueFrom } from 'rxjs';
 
+import { LookingToMatchDaoService } from './database/daos/lookingToMatch/lookingToMatch.dao.service';
+import {
+  QuestionServiceApi,
+  QUESTION_SERVICE,
+} from '@app/interservice-api/question';
+import {
+  CollaborationServiceApi,
+  COLLABORATION_SERVICE,
+} from '@app/interservice-api/collaboration';
 @Injectable()
 export class MatchingService {
   constructor(
     @Inject(WEBSOCKET_SERVICE) private readonly webSocketClient: ClientProxy,
+    @Inject(QUESTION_SERVICE) private readonly questionClient: ClientProxy,
+    @Inject(COLLABORATION_SERVICE)
+    private readonly collaborationClient: ClientProxy,
     private readonly lookingToMatchDaoService: LookingToMatchDaoService,
-    private readonly matchingWsTicketDaoService: MatchingWsTicketDaoService,
   ) {}
-
-  async createWsTicket(sessionInfo: CreateTicketInfo) {
-    const ticket = await this.matchingWsTicketDaoService.create(sessionInfo);
-
-    return {
-      ticket: ticket.id,
-    };
-  }
-
-  async consumeWsTicket(ticketId: string) {
-    const ticket = await this.matchingWsTicketDaoService.get(ticketId);
-    if (!ticket) {
-      throw new BadRequestException('Invalid ticket!');
-    }
-    return ticket;
-  }
 
   async findMatch(matchingEntry: Partial<LookingToMatchModel>) {
     this.lookingToMatchDaoService.updateMatchingEntryIfExist({
@@ -70,17 +62,40 @@ export class MatchingService {
     this.lookingToMatchDaoService.deleteMatchingEntry(possibleMatch);
     this.lookingToMatchDaoService.deleteMatchingEntry(matchingEntry);
 
-    const collabSessionId = possibleMatch.userId + matchingEntry.userId;
+    // get random question
+    const questions = await firstValueFrom(
+      this.questionClient.send(
+        QuestionServiceApi.GET_QUESTIONS_OF_DIFFICULTY,
+        matchingEntry.questionDifficulty,
+      ),
+    );
+    const randomQuestion =
+      questions[Math.floor(Math.random() * questions.length)];
+    if (!randomQuestion) {
+      throw new Error('No question found');
+    }
+
+    const session = await firstValueFrom(
+      this.collaborationClient.send(
+        CollaborationServiceApi.CREATE_COLLAB_SESSION,
+        {
+          userIds: [possibleMatch.userId, matchingEntry.userId],
+          questionId: randomQuestion._id,
+        },
+      ),
+    );
+
+    const collabSessionId = session.id;
 
     this.webSocketClient.emit(WebsocketServiceApi.EMIT_TO_USER, {
       userId: matchingEntry.userId,
       event: 'match',
-      payload: { collabSessionId, possibleMatch },
+      payload: { sessionId: collabSessionId },
     });
     this.webSocketClient.emit(WebsocketServiceApi.EMIT_TO_USER, {
       userId: possibleMatch.userId,
       event: 'match',
-      payload: { collabSessionId, possibleMatch },
+      payload: { sessionId: collabSessionId },
     });
     this.webSocketClient.emit(
       WebsocketServiceApi.DISCONNECT_AND_DELETE_WEBSOCKET,
@@ -90,7 +105,5 @@ export class MatchingService {
       WebsocketServiceApi.DISCONNECT_AND_DELETE_WEBSOCKET,
       possibleMatch.userId,
     );
-
-    console.log('emitted');
   }
 }

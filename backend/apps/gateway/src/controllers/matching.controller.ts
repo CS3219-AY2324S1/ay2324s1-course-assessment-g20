@@ -1,22 +1,29 @@
 import {
-  MatchingServiceApi,
-  MATCHING_SERVICE,
-} from '@app/interservice-api/matching';
+  AuthServiceApi,
+  AUTH_SERVICE,
+  CreateWebsocketTicketInfo,
+  WebsocketTicket,
+} from '@app/interservice-api/auth';
 import { Controller, Get, Inject, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('matching')
 export class MatchingController {
   constructor(
-    @Inject(MATCHING_SERVICE)
-    private readonly collaborationServiceClient: ClientProxy,
+    @Inject(AUTH_SERVICE)
+    private readonly authServiceClient: ClientProxy,
   ) {}
 
   @Get('ws-ticket')
   getWsTicket(@Req() req) {
-    return this.collaborationServiceClient.send(
-      MatchingServiceApi.GET_WS_TICKET,
-      { userId: req.user.id },
+    return firstValueFrom(
+      this.authServiceClient.send<WebsocketTicket, CreateWebsocketTicketInfo>(
+        AuthServiceApi.GENERATE_WEBSOCKET_TICKET,
+        {
+          userId: req.user.id,
+        },
+      ),
     );
   }
 }

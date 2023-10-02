@@ -7,5 +7,5 @@ export default class MatchingDto {
 
   @IsString()
   @IsNotEmpty()
-  questionDifficulty: number;
+  questionDifficulty: string;
 }

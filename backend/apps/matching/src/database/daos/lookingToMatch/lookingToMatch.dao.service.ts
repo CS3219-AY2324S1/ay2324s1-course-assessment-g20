@@ -64,15 +64,4 @@ export class LookingToMatchDaoService {
       .where('userId', userId)
       .execute();
   }
-
-  async setMatchingEntriesToDisconnected(
-    matchEntries: Partial<LookingToMatchModel>[],
-  ) {
-    const userIds = matchEntries.map((matchEntry) => matchEntry.userId);
-    await this.lookingToMatchModel
-      .query()
-      .update({ isConnected: false })
-      .whereIn('userId', userIds)
-      .execute();
-  }
 }

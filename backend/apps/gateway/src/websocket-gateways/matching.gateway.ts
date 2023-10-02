@@ -2,68 +2,47 @@ import { Inject } from '@nestjs/common';
 import {
   WebSocketGateway,
   WebSocketServer,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
   SubscribeMessage,
   MessageBody,
-  WsResponse,
+  ConnectedSocket,
 } from '@nestjs/websockets';
-import { Request } from 'express';
 import { Server } from 'ws';
 import { ClientProxy } from '@nestjs/microservices';
-// import { CollabSessionWsTicketModel } from 'apps/collaboration/src/database/models/collabSessionWsTicket.model';
-import { catchError, firstValueFrom, of } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import {
   MatchingServiceApi,
   MATCHING_SERVICE,
 } from '@app/interservice-api/matching';
 import MatchingDto from '../dtos/auth/matching.dto';
 import { WebsocketMemoryService } from '../services/websocketMemory.service';
-
-const TICKET_KEY = 'ticket';
+import { BaseWebsocketGateway } from '@app/websocket';
+import { AUTH_SERVICE } from '@app/interservice-api/auth';
 
 @WebSocketGateway({ path: '/matching' })
-export class MatchingGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class MatchingGateway extends BaseWebsocketGateway {
   constructor(
+    @Inject(AUTH_SERVICE)
+    authServiceClient: ClientProxy,
     @Inject(MATCHING_SERVICE)
     private readonly matchingServiceClient: ClientProxy,
     private readonly websocketMemoryService: WebsocketMemoryService,
-  ) {}
-
-  @WebSocketServer()
-  server: Server;
+  ) {
+    super(authServiceClient);
+  }
 
   async handleConnection(connection: WebSocket, request: Request) {
-    const url = new URL(request.url, 'http://placeholder.com');
-    const ticketId = url.searchParams.get(TICKET_KEY);
-    const ticket = await firstValueFrom(
-      this.matchingServiceClient
-        .send(MatchingServiceApi.CONSUME_WS_TICKET, ticketId)
-        .pipe(catchError((e) => of(null))),
-    );
-
-    this.websocketMemoryService.addConnection(ticket.userId, connection);
-    if (!ticket) {
-      return connection.close();
-    }
-    return ticket.userId;
+    return super.handleConnection(connection, request);
   }
 
   @WebSocketServer()
   @SubscribeMessage('get_match')
   async getMatch(
     @MessageBody() data: MatchingDto,
-  ): Promise<WsResponse<string>> {
-    console.log('get_match', data);
+    @ConnectedSocket() connection: WebSocket,
+  ) {
+    this.websocketMemoryService.addConnection(data.userId, connection);
     firstValueFrom(
       await this.matchingServiceClient.emit(MatchingServiceApi.GET_MATCH, data),
-    ).then(console.log);
-
-    return { event: 'message', data: 'Hello World' };
+    );
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  handleDisconnect(): void {}
 }

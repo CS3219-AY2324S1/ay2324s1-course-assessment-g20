@@ -46,12 +46,12 @@ const createMicroserviceClientProxyProvider = (
   ],
   providers: [
     GoogleOauthStrategy,
-    ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
-      createMicroserviceClientProxyProvider(key, value),
-    ),
     YjsGateway,
     MatchingGateway,
     WebsocketMemoryService,
+    ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
+      createMicroserviceClientProxyProvider(key, value),
+    ),
   ],
 })
 export class AppModule {}

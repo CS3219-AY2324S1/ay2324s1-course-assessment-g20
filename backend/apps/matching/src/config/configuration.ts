@@ -21,10 +21,14 @@ export default function matchingConfiguration() {
   });
 
   const websocketServiceOptions = getRmqOptions(RmqQueue.WEBSOCKET);
+  const collaborationServiceOptions = getRmqOptions(RmqQueue.COLLABORATION);
+  const questionServiceOptions = getRmqOptions(RmqQueue.QUESTION);
 
   return {
     port: parseInt(process.env.MATCHING_SERVICE_PORT, 10),
     databaseConfigurationOptions,
+    collaborationServiceOptions,
+    questionServiceOptions,
     rmqUrl: process.env.RMQ_URL,
     websocketServiceOptions,
   };

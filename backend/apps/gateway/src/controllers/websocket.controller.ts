@@ -30,6 +30,5 @@ export class WebsocketController {
         data: data.payload,
       }),
     );
-    console.log('emitted');
   }
 }

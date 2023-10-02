@@ -7,6 +7,7 @@ export function useAuth() {
 
 // Hook that rethrows async errors inside of React lifecycle
 export const useThrowAsyncError = () => {
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const [_, throwInReactLifecycle] = useState();
   return (error: Error | string) => {
     throwInReactLifecycle(() => {

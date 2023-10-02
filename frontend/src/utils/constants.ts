@@ -2,6 +2,10 @@
 export const BACKEND_API_HOST = import.meta.env.VITE_BACKEND_API_HOST;
 export const BACKEND_WEBSOCKET_HOST = import.meta.env.VITE_BACKEND_WEBSOCKET_HOST;
 
+// ws room name
+export const COLLAB_ROOM_NAME = 'yjs';
+export const MATCHING_ROOM_NAME = 'matching';
+
 // api service endpoints
 export const AUTH = '/auth';
 export const QUESTION = '/question';

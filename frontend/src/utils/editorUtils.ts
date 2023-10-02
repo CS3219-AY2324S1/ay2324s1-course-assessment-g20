@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import { editor as MonacoEditor } from 'monaco-editor';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
-import { BACKEND_WEBSOCKET_HOST } from './constants';
+import { BACKEND_WEBSOCKET_HOST, COLLAB_ROOM_NAME } from './constants';
 import { MonacoBinding } from 'y-monaco';
 
 // This function transpiles TypeScript to JavaScript, allowing users to write TypeScript in the code editor
@@ -15,9 +15,8 @@ export const bindYjsToMonacoEditor = (
   wsTicket: string,
   editor: MonacoEditor.IStandaloneCodeEditor,
 ) => {
-  const ROOM_NAME = 'yjs';
   const ydocument = new Y.Doc();
-  const provider = new WebsocketProvider(BACKEND_WEBSOCKET_HOST, ROOM_NAME, ydocument, {
+  const provider = new WebsocketProvider(BACKEND_WEBSOCKET_HOST, COLLAB_ROOM_NAME, ydocument, {
     params: {
       ticket: wsTicket,
     },

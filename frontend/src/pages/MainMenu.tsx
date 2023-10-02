@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { getDifficulties } from '../api/questionBankApi';
 import { requestBackend } from '../api/requestBackend';
 import { IDifficulty } from '../interfaces';
-import { BACKEND_WEBSOCKET_HOST, HttpRequestMethod } from '../utils/constants';
+import { BACKEND_WEBSOCKET_HOST, HttpRequestMethod, MATCHING_ROOM_NAME } from '../utils/constants';
 import Dashboard from './Dashboard';
 
 let ws: WebSocket;
@@ -49,7 +49,7 @@ export default function MainMenu() {
                     method: HttpRequestMethod.GET,
                   }).then((ticket: any) => {
                     ws = new WebSocket(
-                      BACKEND_WEBSOCKET_HOST + '/matching?ticket=' + ticket.data.ticket,
+                      `${BACKEND_WEBSOCKET_HOST}/${MATCHING_ROOM_NAME}?ticket=${ticket.data.ticket}`,
                     );
                   });
                   ws.onmessage = (event) => {
@@ -80,8 +80,8 @@ export default function MainMenu() {
                   difficulty.name === 'Easy'
                     ? 'green'
                     : difficulty.name === 'Medium'
-                    ? 'orange'
-                    : 'red',
+                      ? 'orange'
+                      : 'red',
               }}
             >
               {difficulty.name}

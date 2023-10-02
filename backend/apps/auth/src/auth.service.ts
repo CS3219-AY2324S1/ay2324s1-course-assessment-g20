@@ -1,10 +1,12 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokensDaoService } from './database/daos/refreshTokens/refreshTokens.dao.service';
 import { JwtService as NestJwtService } from '@nestjs/jwt';
 import { JwtPayload, JwtTokenConfig } from '@app/types';
 import { UserDaoService } from './database/daos/users/user.dao.service';
 import { UserModel } from './database/models/user.model';
+import { CreateWebsocketTicketInfo } from '@app/interservice-api/auth';
+import { WebsocketTicketDaoService } from './database/daos/websocketTickets/websocketTicket.dao.service';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +17,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly refreshTokensDaoService: RefreshTokensDaoService,
     private readonly userDaoService: UserDaoService,
+    private readonly websocketTicketDaoService: WebsocketTicketDaoService,
   ) {
     this.tokenConfig = configService.get('jwtTokenConfig');
   }
@@ -85,5 +88,19 @@ export class AuthService {
 
   findOrCreateOAuthUser(user: Partial<UserModel>) {
     return this.userDaoService.findOrCreateOAuthUser(user);
+  }
+
+  generateWebsocketTicket(createTicketInfo: CreateWebsocketTicketInfo) {
+    return this.websocketTicketDaoService.create(createTicketInfo);
+  }
+
+  async consumeWebsocketTicket(ticketId: string) {
+    const ticket = await this.websocketTicketDaoService.get(ticketId);
+
+    if (!ticket) {
+      throw new BadRequestException('Invalid ticket!');
+    }
+
+    return this.websocketTicketDaoService.updateUsed(ticketId);
   }
 }

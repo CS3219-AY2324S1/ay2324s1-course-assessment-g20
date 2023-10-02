@@ -12,6 +12,7 @@ const collaborationConfiguration = () => {
     },
   });
 
+  const authServiceOptions = getRmqOptions(RmqQueue.AUTH);
   const questionServiceOptions = getRmqOptions(RmqQueue.QUESTION);
 
   const databaseConfigurationOptions: DatabaseConfigurationOptions = {
@@ -25,6 +26,7 @@ const collaborationConfiguration = () => {
   return {
     port: parseInt(process.env.COLLABORATION_SERVICE_PORT, 10),
     databaseConfigurationOptions,
+    authServiceOptions,
     questionServiceOptions,
     rmqUrl: process.env.RMQ_URL,
   };

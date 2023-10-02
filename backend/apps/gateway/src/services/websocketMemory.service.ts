@@ -1,17 +1,16 @@
-// Service to store and retrieve the websocket connections in memory, based on the user id.
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 
 @Injectable()
 export class WebsocketMemoryService {
-  private connections: Map<string, Socket> = new Map();
+  private connections: Map<string, WebSocket> = new Map();
 
-  addConnection(userId: string, socket: Socket) {
+  addConnection(userId: string, socket: WebSocket) {
     if (this.connections.has(userId)) {
       if (this.connections.get(userId) === socket) {
         return;
       } else {
-        this.connections.get(userId).disconnect();
+        this.connections.get(userId).close();
       }
     }
 
@@ -29,7 +28,7 @@ export class WebsocketMemoryService {
 
     const socket = this.connections.get(userId);
 
-    return socket.connected;
+    return socket.readyState === socket.OPEN;
   }
 
   removeConnection(userId: string) {

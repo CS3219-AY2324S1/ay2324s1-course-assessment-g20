@@ -10,12 +10,13 @@ import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strate
 import { YjsGateway } from './websocket-gateways/yjs.gateway';
 import { AUTH_SERVICE } from '@app/interservice-api/auth';
 import { QUESTION_SERVICE } from '@app/interservice-api/question';
-import { MatchingGateway } from './gateways/matching.gateway';
 import { WebsocketMemoryService } from './services/websocketMemory.service';
 import { MATCHING_SERVICE } from '@app/interservice-api/matching';
 import { WebsocketController } from './controllers/websocket.controller';
 import { CollaborationController } from './controllers/collaboration.controller';
 import { COLLABORATION_SERVICE } from '@app/interservice-api/collaboration';
+import { MatchingGateway } from './websocket-gateways/matching.gateway';
+import { MatchingController } from './controllers/matching.controller';
 
 const microserviceOptionKeys = {
   [AUTH_SERVICE]: 'authServiceOptions',
@@ -41,6 +42,7 @@ const createMicroserviceClientProxyProvider = (
     AuthController,
     CollaborationController,
     WebsocketController,
+    MatchingController,
   ],
   providers: [
     GoogleOauthStrategy,

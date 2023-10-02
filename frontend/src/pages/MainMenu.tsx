@@ -1,18 +1,11 @@
 import { Button, Stack, Typography } from '@mui/material';
-import { io, Socket } from 'socket.io-client';
 import { requestBackend } from '../api/requestBackend';
-import { HttpRequestMethod } from '../utils/constants';
+import { BACKEND_WEBSOCKET_HOST, HttpRequestMethod } from '../utils/constants';
 import Dashboard from './Dashboard';
-let socket: Socket = io('http://localhost:4000');
+
+let ws: WebSocket;
 
 export default function MainMenu() {
-
-  // on receive emit, console.log
-  socket.on('match', (data: any) => {
-    console.log(data);
-  });
-
-
   return (
     <>
       <Typography
@@ -30,18 +23,31 @@ export default function MainMenu() {
         <Stack display={'block'} spacing={2} direction={'row'}>
           <Button
             variant={'contained'}
-            onClick={() => {
+            onClick={async () => {
+              if (ws === undefined || ws.readyState === WebSocket.CLOSED) {
+                await requestBackend({
+                  url: '/matching/ws-ticket',
+                  method: HttpRequestMethod.GET,
+                }).then((ticket: any) => {
+                  console.log(ticket.data.ticket);
+                  ws = new WebSocket(BACKEND_WEBSOCKET_HOST + '/matching?ticket=' + ticket.data.ticket);
+
+                }
+                );
+                ws.onmessage = (event) => {
+                  const data = JSON.parse(event.data);
+                  if (data.event === 'match') {
+                    console.log(data.data);
+                  }
+                }
+              }
+
               requestBackend({
                 url: '/question/get-user',
                 method: HttpRequestMethod.GET,
-              }).then(response => {
-                console.log(socket.connected);
-                if (socket.disconnected) {
-                  socket.connect();
-                }
-                socket.emit('get_match', { userId: response.data.id!, questionDifficulty: 1 }, (data: any) => {
-                  console.log(data);
-                })
+              }).then((response: any) => {
+                console.log(response.data);
+                ws.send(JSON.stringify({ event: 'get_match', data: { userId: response.data.id!, questionDifficulty: 1 } }));
               }
               );
             }}
@@ -56,18 +62,28 @@ export default function MainMenu() {
           </Button>
           <Button
             variant={'contained'}
-            onClick={() => {
+            onClick={async () => {
+              if (ws === undefined || ws.readyState === WebSocket.CLOSED) {
+                await requestBackend({
+                  url: '/matching/ws-ticket',
+                  method: HttpRequestMethod.GET,
+                }).then((ticket: any) => {
+                  console.log(ticket.data.ticket);
+                  ws = new WebSocket(BACKEND_WEBSOCKET_HOST + '/matching?ticket=' + ticket.data.ticket);
+
+                }
+                );
+                ws.addEventListener('match', console.log)
+              }
+
               requestBackend({
                 url: '/question/get-user',
                 method: HttpRequestMethod.GET,
-              }).then(response =>
-                socket.emit('get_match', { userId: response.data.id!, questionDifficulty: 2 }, (data: any) => {
-                  console.log(data);
-                })
+              }).then((response: any) => {
+                ws.send(JSON.stringify({ event: 'get_match', data: { userId: response.data.id!, questionDifficulty: 2 } }));
+              }
               );
-            }
-
-            }
+            }}
             style={{ fontSize: '50px' }}
             sx={{
               width: 230,
@@ -79,14 +95,25 @@ export default function MainMenu() {
           </Button>
           <Button
             variant={'contained'}
-            onClick={() => {
+            onClick={async () => {
+              if (ws === undefined || ws.readyState === WebSocket.CLOSED) {
+                await requestBackend({
+                  url: '/matching/ws-ticket',
+                  method: HttpRequestMethod.GET,
+                }).then((ticket: any) => {
+                  console.log(ticket.data.ticket);
+                  ws = new WebSocket(BACKEND_WEBSOCKET_HOST + '/matching?ticket=' + ticket.data.ticket);
+
+                }
+                );
+                ws.addEventListener('match', console.log)
+              }
               requestBackend({
                 url: '/question/get-user',
                 method: HttpRequestMethod.GET,
-              }).then(response =>
-                socket.emit('get_match', { userId: response.data.id!, questionDifficulty: 3 }, (data: any) => {
-                  console.log(data);
-                })
+              }).then((response: any) => {
+                ws.send(JSON.stringify({ event: 'get_match', data: { userId: response.data.id!, questionDifficulty: 3 } }));
+              }
               );
             }}
             style={{ fontSize: '50px' }}

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ModelClass } from 'objection';
-import { LookingToMatchModel } from '../models/lookingToMatch.model';
+import { LookingToMatchModel } from '../../models/lookingToMatch.model';
 
 @Injectable()
 export class LookingToMatchDaoService {

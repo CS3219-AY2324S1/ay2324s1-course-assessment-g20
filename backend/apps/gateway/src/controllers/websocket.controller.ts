@@ -13,7 +13,7 @@ export class WebsocketController {
 
   @MessagePattern(WebsocketServiceApi.DISCONNECT_AND_DELETE_WEBSOCKET)
   deleteWebsocket(userId: string): void {
-    this.websocketMemoryService.getConnection(userId).disconnect();
+    this.websocketMemoryService.getConnection(userId).close();
     this.websocketMemoryService.removeConnection(userId);
   }
 
@@ -24,8 +24,12 @@ export class WebsocketController {
 
   @MessagePattern(WebsocketServiceApi.EMIT_TO_USER)
   emitToUser(data: { userId: string; event: string; payload: any }): void {
-    this.websocketMemoryService
-      .getConnection(data.userId)
-      .emit(data.event, data.payload);
+    this.websocketMemoryService.getConnection(data.userId).send(
+      JSON.stringify({
+        event: data.event,
+        data: data.payload,
+      }),
+    );
+    console.log('emitted');
   }
 }

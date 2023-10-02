@@ -2,18 +2,37 @@ import {
   WEBSOCKET_SERVICE,
   WebsocketServiceApi,
 } from '@app/interservice-api/gateway';
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { LookingToMatchDaoService } from './database/daos/lookingToMatch.dao.service';
 import { LookingToMatchModel } from './database/models/lookingToMatch.model';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { CreateTicketInfo } from '../types';
+import { LookingToMatchDaoService } from './database/daos/lookingToMatch/lookingToMatch.dao.service';
+import { MatchingWsTicketDaoService } from './database/daos/matchingWsTicket/matchingWsTicket.dao.service';
 
 @Injectable()
 export class MatchingService {
   constructor(
-    @Inject(WEBSOCKET_SERVICE) private readonly webSocketCLient: ClientProxy,
+    @Inject(WEBSOCKET_SERVICE) private readonly webSocketClient: ClientProxy,
     private readonly lookingToMatchDaoService: LookingToMatchDaoService,
+    private readonly matchingWsTicketDaoService: MatchingWsTicketDaoService,
   ) {}
+
+  async createWsTicket(sessionInfo: CreateTicketInfo) {
+    const ticket = await this.matchingWsTicketDaoService.create(sessionInfo);
+
+    return {
+      ticket: ticket.id,
+    };
+  }
+
+  async consumeWsTicket(ticketId: string) {
+    const ticket = await this.matchingWsTicketDaoService.get(ticketId);
+    if (!ticket) {
+      throw new BadRequestException('Invalid ticket!');
+    }
+    return ticket;
+  }
 
   async findMatch(matchingEntry: Partial<LookingToMatchModel>) {
     this.lookingToMatchDaoService.updateMatchingEntryIfExist({
@@ -34,7 +53,7 @@ export class MatchingService {
 
     if (
       !firstValueFrom(
-        this.webSocketCLient.emit(
+        this.webSocketClient.emit(
           WebsocketServiceApi.IS_CONNECTED,
           possibleMatch.userId,
         ),
@@ -53,23 +72,25 @@ export class MatchingService {
 
     const collabSessionId = possibleMatch.userId + matchingEntry.userId;
 
-    this.webSocketCLient.emit(WebsocketServiceApi.EMIT_TO_USER, {
+    this.webSocketClient.emit(WebsocketServiceApi.EMIT_TO_USER, {
       userId: matchingEntry.userId,
       event: 'match',
       payload: { collabSessionId, possibleMatch },
     });
-    this.webSocketCLient.emit(WebsocketServiceApi.EMIT_TO_USER, {
+    this.webSocketClient.emit(WebsocketServiceApi.EMIT_TO_USER, {
       userId: possibleMatch.userId,
       event: 'match',
       payload: { collabSessionId, possibleMatch },
     });
-    this.webSocketCLient.emit(
+    this.webSocketClient.emit(
       WebsocketServiceApi.DISCONNECT_AND_DELETE_WEBSOCKET,
       matchingEntry.userId,
     );
-    this.webSocketCLient.emit(
+    this.webSocketClient.emit(
       WebsocketServiceApi.DISCONNECT_AND_DELETE_WEBSOCKET,
       possibleMatch.userId,
     );
+
+    console.log('emitted');
   }
 }

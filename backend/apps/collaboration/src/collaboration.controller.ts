@@ -1,8 +1,11 @@
 import { Controller } from '@nestjs/common';
 import { CollaborationService } from './collaboration.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { CollaborationServiceApi } from '@app/interservice-api/collaboration';
-import { CreateSessionInfo, CreateSessionTicketInfo } from './types';
+import {
+  CollaborationServiceApi,
+  CreateSessionInfo,
+  GetSessionAndTicketInfo,
+} from '@app/interservice-api/collaboration';
 
 @Controller()
 export class CollaborationController {
@@ -14,12 +17,14 @@ export class CollaborationController {
   }
 
   @MessagePattern(CollaborationServiceApi.GET_SESSION_AND_WS_TICKET)
-  getSessionAndWsTicket(sessionInfo: CreateSessionTicketInfo) {
-    return this.collaborationService.getSessionAndCreateWsTicket(sessionInfo);
+  getSessionAndWsTicket(getSessionInfo: GetSessionAndTicketInfo) {
+    return this.collaborationService.getSessionAndCreateWsTicket(
+      getSessionInfo,
+    );
   }
 
-  @MessagePattern(CollaborationServiceApi.CONSUME_WS_TICKET)
-  consumeWsTicket(ticketId: string) {
-    return this.collaborationService.consumeWsTicket(ticketId);
+  @MessagePattern(CollaborationServiceApi.GET_SESSION_ID_FROM_TICKET)
+  getSessionIdFromTicket(ticketId: string) {
+    return this.collaborationService.getSessionIdFromTicket(ticketId);
   }
 }

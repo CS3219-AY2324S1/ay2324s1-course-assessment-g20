@@ -1,6 +1,7 @@
 import { BaseModel } from '@app/sql-database';
 import { Model } from 'objection';
 import { UserSessionModel } from './userSession.model';
+import { SessionTicketModel } from './sessionTicket.model';
 
 export class SessionModel extends BaseModel {
   static tableName = 'sessions';
@@ -8,6 +9,7 @@ export class SessionModel extends BaseModel {
   readonly questionId: string;
 
   readonly userIds: { userId: string }[];
+  readonly sessionTickets: { ticketId: string }[];
 
   static relationMappings = () => ({
     userIds: {
@@ -17,6 +19,15 @@ export class SessionModel extends BaseModel {
       join: {
         from: 'sessions.id',
         to: 'userSessions.sessionId',
+      },
+    },
+    sessionTickets: {
+      relation: Model.HasManyRelation,
+      modelClass: SessionTicketModel,
+      filter: (query) => query.select('ticketId'),
+      join: {
+        from: 'sessions.id',
+        to: 'sessionTickets.sessionId',
       },
     },
   });

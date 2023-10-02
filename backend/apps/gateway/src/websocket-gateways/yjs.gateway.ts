@@ -1,53 +1,45 @@
 import { Inject } from '@nestjs/common';
-import {
-  WebSocketGateway,
-  WebSocketServer,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-} from '@nestjs/websockets';
-import { Request } from 'express';
-import { Server } from 'ws';
+import { WebSocketGateway } from '@nestjs/websockets';
 import { setupWSConnection, setPersistence } from 'y-websocket/bin/utils';
 import {
   COLLABORATION_SERVICE,
   CollaborationServiceApi,
 } from '@app/interservice-api/collaboration';
 import { ClientProxy } from '@nestjs/microservices';
-import { CollabSessionWsTicketModel } from 'apps/collaboration/src/database/models/collabSessionWsTicket.model';
-import { catchError, firstValueFrom, of } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
-
-const TICKET_KEY = 'ticket';
+import { BaseWebsocketGateway } from '@app/websocket';
+import { AUTH_SERVICE } from '@app/interservice-api/auth';
 
 @WebSocketGateway({ path: '/yjs' })
-export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class YjsGateway extends BaseWebsocketGateway {
   constructor(
+    @Inject(AUTH_SERVICE)
+    authServiceClient: ClientProxy,
     @Inject(COLLABORATION_SERVICE)
     private readonly collaborationServiceClient: ClientProxy,
-  ) {}
-
-  @WebSocketServer()
-  server: Server;
+  ) {
+    super(authServiceClient);
+  }
 
   async handleConnection(connection: WebSocket, request: Request) {
-    const url = new URL(request.url, 'http://placeholder.com');
-    const ticketId = url.searchParams.get(TICKET_KEY);
-    const ticket = await firstValueFrom(
-      this.collaborationServiceClient
-        .send<CollabSessionWsTicketModel>(
-          CollaborationServiceApi.CONSUME_WS_TICKET,
-          ticketId,
-        )
-        .pipe(catchError((e) => of(null))),
-    );
+    const authenticated = await super.handleConnection(connection, request);
 
-    if (!ticket) {
-      return connection.close();
+    if (!authenticated) {
+      return false;
     }
 
+    const ticketId = YjsGateway.getTicketIdFromUrl(request);
+    const { sessionId } = await firstValueFrom(
+      this.collaborationServiceClient.send(
+        CollaborationServiceApi.GET_SESSION_ID_FROM_TICKET,
+        ticketId,
+      ),
+    );
+
     setupWSConnection(connection, request, {
-      docName: ticket.sessionId,
+      docName: sessionId,
     });
 
     const mdb = new MongodbPersistence(
@@ -90,7 +82,7 @@ export class YjsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await mdb.flushDocument(docName);
       },
     });
-  }
 
-  handleDisconnect(): void {}
+    return true;
+  }
 }

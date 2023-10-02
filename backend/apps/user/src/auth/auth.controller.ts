@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { UserModel } from '../database/models/user.model';
-import { UserServiceApi } from '@app/interservice-api/user';
+import { CreateWebsocketTicketInfo, UserServiceApi } from '@app/interservice-api/user';
 
 @Controller()
 export class AuthController {
@@ -26,5 +26,16 @@ export class AuthController {
   @MessagePattern(UserServiceApi.DELETE_OAUTH_USER)
   deleteOAuthUser(id: string) {
     return this.authService.deleteOAuthUser(id);
+  }
+
+  @MessagePattern(UserServiceApi.GENERATE_WEBSOCKET_TICKET)
+  generateWebsocketTicket(createTicketInfo: CreateWebsocketTicketInfo) {
+    return this.authService.generateWebsocketTicket(createTicketInfo);
+  }
+
+  @MessagePattern(UserServiceApi.CONSUME_WEBSOCKET_TICKET)
+  consumeWebsocketTicket(ticketId: string) {
+    console.log('calling auth consume controoler');
+    return this.authService.consumeWebsocketTicket(ticketId);
   }
 }

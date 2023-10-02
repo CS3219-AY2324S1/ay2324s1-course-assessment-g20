@@ -2569,6 +2569,11 @@ bser@2.1.1:
   dependencies:
     node-int64 "^0.4.0"
 
+bson@^1.1.4:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-1.1.6.tgz#fb819be9a60cd677e0853aee4ca712a785d6618a"
+  integrity sha512-EvVNVeGo4tHxwi8L6bPj3y3itEvStdwvvlojVxxbyYfoaxJ6keLgrTuKdyfEAszFK+H3olzBuafE0yoh0D1gdg==
+
 bson@^4.7.2:
   version "4.7.2"
   resolved "https://registry.yarnpkg.com/bson/-/bson-4.7.2.tgz#320f4ad0eaf5312dd9b45dc369cc48945e2a5f2e"
@@ -4880,6 +4885,19 @@ mongodb@4.17.1:
     "@aws-sdk/credential-providers" "^3.186.0"
     "@mongodb-js/saslprep" "^1.1.0"
 
+mongodb@^3.7.4:
+  version "3.7.4"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.7.4.tgz#119530d826361c3e12ac409b769796d6977037a4"
+  integrity sha512-K5q8aBqEXMwWdVNh94UQTwZ6BejVbFhh1uB6c5FKtPE9eUMZPUO3sRZdgIEcHSrAWmxzpG/FeODDKL388sqRmw==
+  dependencies:
+    bl "^2.2.1"
+    bson "^1.1.4"
+    denque "^1.4.1"
+    optional-require "^1.1.8"
+    safe-buffer "^5.1.2"
+  optionalDependencies:
+    saslprep "^1.0.0"
+
 mongodb@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-6.1.0.tgz#5144bee74d50746f7b0ed68dbb974f31e1b40900"
@@ -4888,6 +4906,14 @@ mongodb@^6.1.0:
     "@mongodb-js/saslprep" "^1.1.0"
     bson "^6.1.0"
     mongodb-connection-string-url "^2.6.0"
+
+mongoist@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/mongoist/-/mongoist-2.7.0.tgz#047544a5ddec30254a8df48e869f03790d01ab04"
+  integrity sha512-5OKz4esuw5sVHb2TRxX5dTKVgBqj/SlRvzPABhJNoTtTwqySM7fr3VWizbIlBF40rlQi2Mz68UmSpAtSb/7cfA==
+  dependencies:
+    debug "^4.3.4"
+    mongodb "^3.7.4"
 
 mongoose@^6.2.2:
   version "6.12.0"

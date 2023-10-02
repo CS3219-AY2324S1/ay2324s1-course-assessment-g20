@@ -11,7 +11,7 @@ import {
 import { Request } from 'express';
 import { Server } from 'ws';
 import { ClientProxy } from '@nestjs/microservices';
-import { CollabSessionWsTicketModel } from 'apps/collaboration/src/database/models/collabSessionWsTicket.model';
+// import { CollabSessionWsTicketModel } from 'apps/collaboration/src/database/models/collabSessionWsTicket.model';
 import { catchError, firstValueFrom, of } from 'rxjs';
 import {
   MatchingServiceApi,
@@ -40,10 +40,7 @@ export class MatchingGateway
     const ticketId = url.searchParams.get(TICKET_KEY);
     const ticket = await firstValueFrom(
       this.matchingServiceClient
-        .send<CollabSessionWsTicketModel>(
-          MatchingServiceApi.CONSUME_WS_TICKET,
-          ticketId,
-        )
+        .send(MatchingServiceApi.CONSUME_WS_TICKET, ticketId)
         .pipe(catchError((e) => of(null))),
     );
 

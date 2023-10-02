@@ -4,16 +4,17 @@ import { CollaborationService } from './collaboration.service';
 import { ConfigModule } from '@app/config';
 import collaborationConfiguration from './config/configuration';
 import { SqlDatabaseModule } from '@app/sql-database';
-import { CollabSessionWsTicketModel } from './database/models/collabSessionWsTicket.model';
-import { CollabSessionWsTicketDaoModule } from './database/daos/collabSessionWsTicket/collabSessionWsTicket.dao.module';
 import { SessionModel } from './database/models/session.model';
 import { UserSessionModel } from './database/models/userSession.model';
 import { SessionDaoModule } from './database/daos/session/session.dao.module';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory } from '@nestjs/microservices';
 import { QUESTION_SERVICE } from '@app/interservice-api/question';
+import { AUTH_SERVICE } from '@app/interservice-api/auth';
+import { SessionTicketModel } from './database/models/sessionTicket.model';
 
 const microserviceOptionKeys = {
+  [AUTH_SERVICE]: 'authServiceOptions',
   [QUESTION_SERVICE]: 'questionServiceOptions',
 };
 
@@ -35,11 +36,10 @@ const createMicroserviceClientProxyProvider = (
 
     // Database and DAOs
     SqlDatabaseModule.factory([
-      CollabSessionWsTicketModel,
       SessionModel,
       UserSessionModel,
+      SessionTicketModel,
     ]),
-    CollabSessionWsTicketDaoModule,
     SessionDaoModule,
   ],
   controllers: [CollaborationController],

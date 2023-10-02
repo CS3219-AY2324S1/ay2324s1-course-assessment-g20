@@ -1,36 +1,43 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateSessionInfo, CreateSessionTicketInfo } from './types';
-import { SessionModel } from './database/models/session.model';
-import { CollabSessionWsTicketDaoService } from './database/daos/collabSessionWsTicket/collabSessionWsTicket.dao.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { SessionDaoService } from './database/daos/session/session.dao.service';
-import { BaseModel } from '@app/sql-database';
 import { ClientProxy } from '@nestjs/microservices';
 import {
   QUESTION_SERVICE,
   QuestionServiceApi,
 } from '@app/interservice-api/question';
 import { firstValueFrom } from 'rxjs';
+import {
+  AUTH_SERVICE,
+  AuthServiceApi,
+  CreateWebsocketTicketInfo,
+  WebsocketTicket,
+} from '@app/interservice-api/auth';
+import {
+  CreateSessionInfo,
+  GetSessionAndTicketInfo,
+} from '@app/interservice-api/collaboration';
 
 @Injectable()
 export class CollaborationService {
   constructor(
+    @Inject(AUTH_SERVICE)
+    private readonly authServiceClient: ClientProxy,
     @Inject(QUESTION_SERVICE)
     private readonly questionServiceClient: ClientProxy,
-    private readonly collabSessionWsTicketDaoService: CollabSessionWsTicketDaoService,
     private readonly sessionDaoService: SessionDaoService,
   ) {}
 
   createCollabSession(createSessionInfo: CreateSessionInfo) {
-    const graphInfo: Omit<SessionModel, keyof BaseModel> = {
+    const graphInfo = {
       ...createSessionInfo,
       userIds: createSessionInfo.userIds.map((userId) => ({ userId })),
     };
     return this.sessionDaoService.create(graphInfo);
   }
 
-  async getSessionAndCreateWsTicket(sessionInfo: CreateSessionTicketInfo) {
+  async getSessionAndCreateWsTicket(getSessionInfo: GetSessionAndTicketInfo) {
     const session = await this.sessionDaoService.findById(
-      sessionInfo.sessionId,
+      getSessionInfo.sessionId,
     );
     const question = await firstValueFrom(
       this.questionServiceClient.send(
@@ -38,20 +45,29 @@ export class CollaborationService {
         session.questionId,
       ),
     );
-    const ticket = await this.collabSessionWsTicketDaoService.create(
-      sessionInfo,
+
+    const ticket = await firstValueFrom(
+      this.authServiceClient.send<WebsocketTicket, CreateWebsocketTicketInfo>(
+        AuthServiceApi.GENERATE_WEBSOCKET_TICKET,
+        {
+          userId: getSessionInfo.userId,
+        },
+      ),
     );
+
+    // Link ticket to session
+    await this.sessionDaoService.insertTicketForSession(
+      getSessionInfo.sessionId,
+      ticket.id,
+    );
+
     return {
       question,
       ticket: ticket.id,
     };
   }
 
-  async consumeWsTicket(ticketId: string) {
-    const ticket = await this.collabSessionWsTicketDaoService.get(ticketId);
-    if (!ticket) {
-      throw new BadRequestException('Invalid ticket!');
-    }
-    return ticket;
+  getSessionIdFromTicket(ticketId: string) {
+    return this.sessionDaoService.getSessionIdFromTicket(ticketId);
   }
 }

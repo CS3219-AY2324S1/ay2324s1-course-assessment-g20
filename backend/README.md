@@ -1,11 +1,10 @@
 ## Development Setup
-1. Ensure that you have PostgreSQL, RabbitMQ and node v18 installed.
-1. Start PostgreSQL and RabbitMQ (e.g. `brew services start rabbitmq` if installed via Homebrew on MacOS)
+1. Ensure that you have PostgreSQL, RabbitMQ, MongoDB and node v18 installed.
+1. Start PostgreSQL, RabbitMQ, and MongoDB (e.g. `brew services start rabbitmq` if installed via Homebrew on MacOS)
 1. `cd` to the `backend` directory.
 1. Run `yarn install`.
 1. Copy the `.env.example` file as `.env` (e.g. `cp .env.example .env`) and update the variables where necessary.
-1. Setup the databases via `yarn migrate:all`.
-1. Populate the databases via `yarn seed:all`.
+1. Setup and populate the databases via `yarn migrate-and-seed:all`.
 1. Open multiple terminals to the `backend` directory, and run each microservice in 'watch' mode (e.g. `yarn start:dev gateway`, `yarn start:dev question`).
 
 ## Building locally

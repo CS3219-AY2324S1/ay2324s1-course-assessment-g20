@@ -14,6 +14,8 @@ import { AUTH_SERVICE } from '@app/interservice-api/auth';
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
+  private static SESSION_INITIALIZED = 'session_initialized';
+
   constructor(
     @Inject(AUTH_SERVICE)
     authServiceClient: ClientProxy,
@@ -38,8 +40,18 @@ export class YjsGateway extends BaseWebsocketGateway {
       ),
     );
 
-    setupWSConnection(connection, request, {
-      docName: sessionId,
+    YjsGateway.setupYjs(connection, sessionId);
+    return YjsGateway.sessionInitialized(connection);
+  }
+
+  private static setupYjs(connection, docName) {
+    /**
+     * Yjs `setupWSConnection` expects a Request object for auto room detection.
+     * We are not using this feature, and can just pass in a dummy object.
+     */
+    const dummyRequest = new Request(new URL('https://placeholder.com'));
+    setupWSConnection(connection, dummyRequest, {
+      docName,
     });
 
     const mdb = new MongodbPersistence(
@@ -82,7 +94,10 @@ export class YjsGateway extends BaseWebsocketGateway {
         await mdb.flushDocument(docName);
       },
     });
+  }
 
+  private static sessionInitialized(connection: WebSocket) {
+    connection.send(YjsGateway.SESSION_INITIALIZED);
     return true;
   }
 }

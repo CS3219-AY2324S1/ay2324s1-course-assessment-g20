@@ -63,7 +63,7 @@ const CodeEditor = () => {
   // Initialize websocket connection to Yjs service
   useEffect(() => {
     if (editor && wsTicket) {
-      bindYjsToMonacoEditor(wsTicket, editor);
+      bindYjsToMonacoEditor(wsTicket, editor, throwAsyncError);
     }
   }, [editor, wsTicket]);
 

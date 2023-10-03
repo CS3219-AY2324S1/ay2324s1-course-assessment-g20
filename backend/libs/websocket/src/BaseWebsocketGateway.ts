@@ -11,6 +11,7 @@ export class BaseWebsocketGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   private static TICKET_KEY = 'ticket';
+  private static UNAUTHORIZED_MESSAGE = 'unauthorized';
 
   constructor(private readonly authServiceClient: ClientProxy) {}
 
@@ -22,7 +23,8 @@ export class BaseWebsocketGateway
   /**
    * Authenticates incoming websocket connection with accompanying connection ticket.
    *
-   * `handleConnection` returns true if connection is successful.
+   * `handleConnection` returns true if connection is successful, else closes the connection
+   * and returns false.
    */
   async handleConnection(
     connection: WebSocket,
@@ -31,8 +33,7 @@ export class BaseWebsocketGateway
     const ticketId = BaseWebsocketGateway.getTicketIdFromUrl(request);
 
     if (!ticketId) {
-      connection.close();
-      return false;
+      return BaseWebsocketGateway.closeConnection(connection);
     }
 
     const ticket = await firstValueFrom(
@@ -44,7 +45,18 @@ export class BaseWebsocketGateway
         .pipe(catchError((e) => of(null))),
     );
 
-    return !!ticket;
+    if (!ticket) {
+      return BaseWebsocketGateway.closeConnection(connection);
+    }
+
+    return true;
+  }
+
+  // Close connection and return `false` for authentication failure.
+  private static closeConnection(connection: WebSocket) {
+    connection.send(BaseWebsocketGateway.UNAUTHORIZED_MESSAGE);
+    connection.close();
+    return false;
   }
 
   handleDisconnect(): void {}

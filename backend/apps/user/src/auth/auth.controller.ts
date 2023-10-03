@@ -2,7 +2,10 @@ import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { UserModel } from '../database/models/user.model';
-import { CreateWebsocketTicketInfo, UserServiceApi } from '@app/interservice-api/user';
+import {
+  CreateWebsocketTicketInfo,
+  UserServiceApi,
+} from '@app/interservice-api/user';
 
 @Controller()
 export class AuthController {

@@ -35,12 +35,12 @@ export class BaseWebsocketGateway
       return false;
     }
 
-    const ticket = this.getTicketFromTicketId(ticketId);
+    const ticket = this.getAndConsumeTicket(ticketId);
 
     return !!ticket;
   }
 
-  async getTicketFromTicketId(ticketId: string) {
+  async getAndConsumeTicket(ticketId: string) {
     const ticket = await firstValueFrom(
       this.authServiceClient
         .send<WebsocketTicket, string>(

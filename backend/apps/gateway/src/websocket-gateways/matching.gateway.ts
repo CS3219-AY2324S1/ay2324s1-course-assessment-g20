@@ -39,7 +39,15 @@ export class MatchingGateway extends BaseWebsocketGateway {
     @MessageBody() data: MatchingDto,
     @ConnectedSocket() connection: WebSocket,
   ) {
-    const { userId } = await super.getTicketFromTicketId(data.ticket);
+    const ticket = await super.getAndConsumeTicket(data.ticket);
+
+    if (!ticket) {
+      connection.close();
+      return;
+    }
+
+    const userId = ticket.userId;
+
     this.websocketMemoryService.addConnection(userId, connection);
     firstValueFrom(
       await this.matchingServiceClient.emit(MatchingServiceApi.GET_MATCH, {

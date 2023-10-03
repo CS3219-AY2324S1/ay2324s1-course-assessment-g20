@@ -15,9 +15,9 @@ export class MatchingController {
     private readonly authServiceClient: ClientProxy,
   ) {}
 
-  @Get('ws-ticket')
-  getWsTicket(@Req() req) {
-    return firstValueFrom(
+  @Get('ticket')
+  async getWsTicket(@Req() req) {
+    const ticket = await firstValueFrom(
       this.authServiceClient.send<WebsocketTicket, CreateWebsocketTicketInfo>(
         AuthServiceApi.GENERATE_WEBSOCKET_TICKET,
         {
@@ -25,5 +25,7 @@ export class MatchingController {
         },
       ),
     );
+
+    return { id: ticket.id };
   }
 }

@@ -128,9 +128,4 @@ export class AppController {
       categoryId,
     );
   }
-
-  @Get('get-user')
-  getUser(@Req() req): Observable<{ id: string }> {
-    return req.user;
-  }
 }

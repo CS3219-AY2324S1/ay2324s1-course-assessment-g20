@@ -2,7 +2,9 @@ export interface IAuth {
   refreshToken: string;
   accessToken: string;
 }
-
+export interface IwsTicket {
+  id: string;
+}
 export interface IAuthContext {
   isAuthenticated: boolean;
   getAuthStore: () => IAuth | null;

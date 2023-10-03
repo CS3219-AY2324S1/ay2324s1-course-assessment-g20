@@ -12,7 +12,7 @@ import { AUTH_SERVICE } from '@app/interservice-api/auth';
 import { QUESTION_SERVICE } from '@app/interservice-api/question';
 import { WebsocketMemoryService } from './services/websocketMemory.service';
 import { MATCHING_SERVICE } from '@app/interservice-api/matching';
-import { WebsocketController } from './controllers/websocket.controller';
+import { MatchingWebsocketController } from './controllers/matchingWebsocket.controller';
 import { CollaborationController } from './controllers/collaboration.controller';
 import { COLLABORATION_SERVICE } from '@app/interservice-api/collaboration';
 import { MatchingGateway } from './websocket-gateways/matching.gateway';
@@ -41,7 +41,7 @@ const createMicroserviceClientProxyProvider = (
     AppController,
     AuthController,
     CollaborationController,
-    WebsocketController,
+    MatchingWebsocketController,
     MatchingController,
   ],
   providers: [

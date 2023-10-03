@@ -35,6 +35,12 @@ export class BaseWebsocketGateway
       return false;
     }
 
+    const ticket = this.getTicketFromTicketId(ticketId);
+
+    return !!ticket;
+  }
+
+  async getTicketFromTicketId(ticketId: string) {
     const ticket = await firstValueFrom(
       this.authServiceClient
         .send<WebsocketTicket, string>(
@@ -44,7 +50,7 @@ export class BaseWebsocketGateway
         .pipe(catchError((e) => of(null))),
     );
 
-    return !!ticket;
+    return ticket;
   }
 
   /* eslint-disable @typescript-eslint/no-empty-function */

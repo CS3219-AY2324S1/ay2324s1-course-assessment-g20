@@ -6,7 +6,6 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Server } from 'ws';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -40,9 +39,13 @@ export class MatchingGateway extends BaseWebsocketGateway {
     @MessageBody() data: MatchingDto,
     @ConnectedSocket() connection: WebSocket,
   ) {
-    this.websocketMemoryService.addConnection(data.userId, connection);
+    const { userId } = await super.getTicketFromTicketId(data.ticket);
+    this.websocketMemoryService.addConnection(userId, connection);
     firstValueFrom(
-      await this.matchingServiceClient.emit(MatchingServiceApi.GET_MATCH, data),
+      await this.matchingServiceClient.emit(MatchingServiceApi.GET_MATCH, {
+        userId,
+        questionDifficulty: data.questionDifficulty,
+      }),
     );
   }
 }

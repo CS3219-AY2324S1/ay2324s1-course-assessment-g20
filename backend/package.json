@@ -24,11 +24,16 @@
     "knex-script": "knex --knexfile",
     "knex": "./scripts/knex.sh",
     "migrate": "./scripts/migrate_latest.sh",
-    "migrate:all": "node ./scripts/createSqlDatabases.js && yarn migrate user",
+    "migrate:all": "yarn migrate:sql",
     "migrate:make": "./scripts/migrate_make.sh",
-    "seed:all": "yarn seed:user && yarn seed:question-categories && yarn seed:question-difficulties",
+    "migrate:sql": "node ./scripts/createSqlDatabases.js && yarn migrate user",
+    "migrate-and-seed:all": "yarn migrate:all && yarn seed:all",
+    "migrate-and-seed:sql": "yarn migrate:sql && yarn seed:sql",
+    "seed:all": "yarn seed:sql && yarn seed:mongo",
     "seed:question-difficulties": "node ./scripts/seedQuestionDifficulties.js",
     "seed:question-categories": "node ./scripts/seedQuestionCategories.js",
+    "seed:sql": "yarn seed:user",
+    "seed:mongo": "yarn seed:question-categories && yarn seed:question-difficulties",
     "seed:user": "./scripts/seed.sh user"
   },
   "dependencies": {

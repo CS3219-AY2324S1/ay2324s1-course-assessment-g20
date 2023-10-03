@@ -1,10 +1,13 @@
 import { Knex } from 'knex';
+import {
+  MOCK_USER_1_UUID,
+  MOCK_USER_2_UUID,
+  MOCK_USER_1_NAME,
+  MOCK_USER_2_NAME,
+} from './03-user.seed';
 
 const NODE_ENV = process.env.NODE_ENV;
 const IS_DEPLOYMENT = ['staging', 'production'].includes(NODE_ENV);
-
-const MOCK_USER_1_UUID = '4394cce2-7f04-41f2-8ade-8b21cad1cb20';
-const MOCK_USER_2_UUID = '030eeafc-26cc-4e16-8467-f55b818689fa';
 
 export async function seed(knex: Knex): Promise<void> {
   if (IS_DEPLOYMENT) {
@@ -19,13 +22,13 @@ export async function seed(knex: Knex): Promise<void> {
   await knex('user_profiles').insert([
     {
       userId: MOCK_USER_1_UUID,
-      name: 'Alice Tan',
+      name: MOCK_USER_1_NAME,
       preferredLanguageId: 1,
       roleId: 1,
     },
     {
       userId: MOCK_USER_2_UUID,
-      name: 'Bob Lim',
+      name: MOCK_USER_2_NAME,
       preferredLanguageId: 2,
       roleId: 2,
     },

@@ -1,9 +1,6 @@
+import 'tsconfig-paths/register';
 import { Knex } from 'knex';
-
-export enum Language {
-  JAVASCRIPT = 1,
-  TYPESCRIPT = 2,
-}
+import { Language } from '@app/types/languages';
 
 export async function seed(knex: Knex): Promise<void> {
   // Deletes ALL existing entries and reset primary key

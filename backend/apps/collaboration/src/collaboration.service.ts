@@ -1,28 +1,25 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SessionDaoService } from './database/daos/session/session.dao.service';
 import { ClientProxy } from '@nestjs/microservices';
-import {
-  QUESTION_SERVICE,
-  QuestionServiceApi,
-} from '@app/interservice-api/question';
+import { QuestionServiceApi } from '@app/interservice-api/question';
 import { firstValueFrom } from 'rxjs';
-import {
-  AUTH_SERVICE,
-  AuthServiceApi,
-  CreateWebsocketTicketInfo,
-  WebsocketTicket,
-} from '@app/interservice-api/auth';
 import {
   CreateSessionInfo,
   GetSessionAndTicketInfo,
 } from '@app/interservice-api/collaboration';
+import { Service } from '@app/interservice-api/services';
+import {
+  CreateWebsocketTicketInfo,
+  UserServiceApi,
+  WebsocketTicket,
+} from '@app/interservice-api/user';
 
 @Injectable()
 export class CollaborationService {
   constructor(
-    @Inject(AUTH_SERVICE)
-    private readonly authServiceClient: ClientProxy,
-    @Inject(QUESTION_SERVICE)
+    @Inject(Service.USER_SERVICE)
+    private readonly userServiceClient: ClientProxy,
+    @Inject(Service.QUESTION_SERVICE)
     private readonly questionServiceClient: ClientProxy,
     private readonly sessionDaoService: SessionDaoService,
   ) {}
@@ -47,8 +44,8 @@ export class CollaborationService {
     );
 
     const ticket = await firstValueFrom(
-      this.authServiceClient.send<WebsocketTicket, CreateWebsocketTicketInfo>(
-        AuthServiceApi.GENERATE_WEBSOCKET_TICKET,
+      this.userServiceClient.send<WebsocketTicket, CreateWebsocketTicketInfo>(
+        UserServiceApi.GENERATE_WEBSOCKET_TICKET,
         {
           userId: getSessionInfo.userId,
         },

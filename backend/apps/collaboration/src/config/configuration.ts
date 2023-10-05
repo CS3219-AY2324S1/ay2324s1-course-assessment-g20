@@ -1,19 +1,10 @@
+import { getRmqOptionsForQueue } from '@app/config/rmqConfiguration';
 import { DatabaseConfigurationOptions } from '@app/sql-database';
 import { RmqQueue } from '@app/types/rmqQueues';
-import { RmqOptions, Transport } from '@nestjs/microservices';
 
 const collaborationConfiguration = () => {
-  const rmqUrl = process.env.RMQ_URL;
-  const getRmqOptions = (rmqQueue: RmqQueue): RmqOptions => ({
-    transport: Transport.RMQ,
-    options: {
-      urls: [rmqUrl],
-      queue: rmqQueue,
-    },
-  });
-
-  const authServiceOptions = getRmqOptions(RmqQueue.AUTH);
-  const questionServiceOptions = getRmqOptions(RmqQueue.QUESTION);
+  const userServiceOptions = getRmqOptionsForQueue(RmqQueue.USER);
+  const questionServiceOptions = getRmqOptionsForQueue(RmqQueue.QUESTION);
 
   const databaseConfigurationOptions: DatabaseConfigurationOptions = {
     host: process.env.COLLABORATION_SERVICE_SQL_DATABASE_HOST,
@@ -26,7 +17,7 @@ const collaborationConfiguration = () => {
   return {
     port: parseInt(process.env.COLLABORATION_SERVICE_PORT, 10),
     databaseConfigurationOptions,
-    authServiceOptions,
+    userServiceOptions,
     questionServiceOptions,
     rmqUrl: process.env.RMQ_URL,
   };

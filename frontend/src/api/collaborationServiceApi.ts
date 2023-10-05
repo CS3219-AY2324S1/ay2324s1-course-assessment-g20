@@ -1,4 +1,4 @@
-import { IQuestion } from '../interfaces';
+import { IQuestion } from '../@types/question';
 import { HttpRequestMethod, backendServicesPaths } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 

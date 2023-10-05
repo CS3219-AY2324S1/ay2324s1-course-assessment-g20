@@ -1,16 +1,16 @@
-import { UpdateUserProfile } from '../@types/userProfile';
+import { Language, UpdateUserProfile, UserProfile } from '../@types/userProfile';
 import { backendServicesPaths, HttpRequestMethod } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 
 export async function getUserProfile() {
-  return requestBackend({
+  return requestBackend<UserProfile>({
     url: backendServicesPaths.user.root,
     method: HttpRequestMethod.GET,
   });
 }
 
 export async function updateUserProfile(updatedProfile: UpdateUserProfile) {
-  return requestBackend({
+  return requestBackend<UserProfile>({
     url: backendServicesPaths.user.root,
     method: HttpRequestMethod.PATCH,
     data: updatedProfile,
@@ -25,7 +25,7 @@ export async function deleteUserProfile() {
 }
 
 export async function getAllLanguages() {
-  return requestBackend({
+  return requestBackend<Language[]>({
     url: backendServicesPaths.languages.root,
     method: HttpRequestMethod.GET,
   });

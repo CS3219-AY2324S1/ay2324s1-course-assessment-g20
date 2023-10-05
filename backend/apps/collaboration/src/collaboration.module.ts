@@ -9,13 +9,12 @@ import { UserSessionModel } from './database/models/userSession.model';
 import { SessionDaoModule } from './database/daos/session/session.dao.module';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory } from '@nestjs/microservices';
-import { QUESTION_SERVICE } from '@app/interservice-api/question';
-import { AUTH_SERVICE } from '@app/interservice-api/auth';
 import { SessionTicketModel } from './database/models/sessionTicket.model';
+import { Service } from '@app/interservice-api/services';
 
 const microserviceOptionKeys = {
-  [AUTH_SERVICE]: 'authServiceOptions',
-  [QUESTION_SERVICE]: 'questionServiceOptions',
+  [Service.USER_SERVICE]: 'userServiceOptions',
+  [Service.QUESTION_SERVICE]: 'questionServiceOptions',
 };
 
 const createMicroserviceClientProxyProvider = (

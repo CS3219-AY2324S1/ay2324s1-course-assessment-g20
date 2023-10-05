@@ -1,4 +1,4 @@
-import { AuthServiceApi, WebsocketTicket } from '@app/interservice-api/auth';
+import { UserServiceApi, WebsocketTicket } from '@app/interservice-api/user';
 import { ClientProxy } from '@nestjs/microservices';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { catchError, firstValueFrom, of } from 'rxjs';
@@ -13,7 +13,7 @@ export class BaseWebsocketGateway
   private static TICKET_KEY = 'ticket';
   private static UNAUTHORIZED_MESSAGE = 'unauthorized';
 
-  constructor(private readonly authServiceClient: ClientProxy) {}
+  constructor(private readonly userServiceClient: ClientProxy) {}
 
   static getTicketIdFromUrl(request: Request) {
     const url = new URL(request.url, 'http://placeholder.com');
@@ -37,12 +37,12 @@ export class BaseWebsocketGateway
     }
 
     const ticket = await firstValueFrom(
-      this.authServiceClient
+      this.userServiceClient
         .send<WebsocketTicket, string>(
-          AuthServiceApi.CONSUME_WEBSOCKET_TICKET,
+          UserServiceApi.CONSUME_WEBSOCKET_TICKET,
           ticketId,
         )
-        .pipe(catchError((e) => of(null))),
+        .pipe(catchError(() => of(null))),
     );
 
     if (!ticket) {
@@ -59,5 +59,7 @@ export class BaseWebsocketGateway
     return false;
   }
 
-  handleDisconnect(): void {}
+  handleDisconnect(): void {
+    // No implementation
+  }
 }

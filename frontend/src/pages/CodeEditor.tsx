@@ -63,6 +63,7 @@ const CodeEditor = () => {
   // Initialize websocket connection to Yjs service
   useEffect(() => {
     if (editor && wsTicket) {
+      // Handles websocket disconnection when unauthorized (e.g. invalid ws ticket)
       bindYjsToMonacoEditor(wsTicket, editor, throwAsyncError);
     }
   }, [editor, wsTicket]);

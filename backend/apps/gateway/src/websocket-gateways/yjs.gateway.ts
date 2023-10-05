@@ -10,19 +10,19 @@ import { firstValueFrom } from 'rxjs';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import { BaseWebsocketGateway } from '@app/websocket';
-import { AUTH_SERVICE } from '@app/interservice-api/auth';
+import { Service } from '@app/interservice-api/services';
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
 
   constructor(
-    @Inject(AUTH_SERVICE)
-    authServiceClient: ClientProxy,
+    @Inject(Service.USER_SERVICE)
+    userServiceClient: ClientProxy,
     @Inject(COLLABORATION_SERVICE)
     private readonly collaborationServiceClient: ClientProxy,
   ) {
-    super(authServiceClient);
+    super(userServiceClient);
   }
 
   async handleConnection(connection: WebSocket, request: Request) {
@@ -87,7 +87,7 @@ export class YjsGateway extends BaseWebsocketGateway {
 
         persistedYdoc.destroy();
       },
-      writeState: async (docName, ydoc) => {
+      writeState: async (docName) => {
         // This is called when all connections to the document are closed.
 
         // flush document on close to have the smallest possible database

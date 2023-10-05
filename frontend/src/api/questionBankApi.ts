@@ -1,4 +1,4 @@
-import { ICategory, IDifficulty, IQuestion } from '../interfaces';
+import { ICategory, IDifficulty, IQuestion } from '../@types/question';
 import { backendServicesPaths, HttpRequestMethod } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 

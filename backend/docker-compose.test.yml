@@ -18,10 +18,10 @@ services:
     environment:
       - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
-  auth:
+  question:
     build: 
       context: .
-      dockerfile: ./apps/auth/Dockerfile
+      dockerfile: ./apps/question/Dockerfile
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
@@ -34,10 +34,10 @@ services:
     environment:
       - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
-  question:
+  user:
     build: 
       context: .
-      dockerfile: ./apps/question/Dockerfile
+      dockerfile: ./apps/user/Dockerfile
     depends_on:
       sql-migrations:
         condition: service_completed_successfully

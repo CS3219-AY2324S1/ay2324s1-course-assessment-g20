@@ -1,5 +1,4 @@
 import React, { useLayoutEffect, useState } from 'react';
-import { IAuth, IAuthContext } from '../interfaces';
 import { AUTH_TOKEN_LOCAL_STORAGE_KEY, backendServicesPaths } from '../utils/constants';
 import authorizedAxios, {
   getRequestInterceptor,
@@ -7,6 +6,7 @@ import authorizedAxios, {
 } from '../api/axios/authorizedAxios';
 import { getBackendPath } from '../utils/api';
 import { readLocalStorage, setLocalStorage } from '../utils/localStorageHelper';
+import { IAuth, IAuthContext } from '../@types/auth';
 
 export const AuthContext = React.createContext<IAuthContext>(null!);
 

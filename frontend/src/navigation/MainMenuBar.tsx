@@ -21,6 +21,9 @@ export default function MainMenuBar() {
   const options = [
     {
       title: 'Profile',
+      onClick: () => {
+        navigate('/profile');
+      },
     },
     {
       title: 'Logout',

@@ -6,17 +6,23 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigModule } from '@app/config';
 import { JwtModule } from './jwt/jwt.module';
 import { AuthController } from './controllers/auth.controller';
+import { UserController } from './controllers/user.controller';
+import { LanguagesController } from './controllers/languages.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
-import { AUTH_SERVICE } from '@app/interservice-api/auth';
-import { QUESTION_SERVICE } from '@app/interservice-api/question';
+import { Service } from '@app/interservice-api/services';
 
 @Module({
   imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
-  controllers: [AppController, AuthController],
+  controllers: [
+    AppController,
+    AuthController,
+    UserController,
+    LanguagesController,
+  ],
   providers: [
     GoogleOauthStrategy,
     {
-      provide: QUESTION_SERVICE,
+      provide: Service.QUESTION_SERVICE,
       useFactory: (configService: ConfigService) => {
         const questionServiceOptions = configService.get(
           'questionServiceOptions',
@@ -26,10 +32,10 @@ import { QUESTION_SERVICE } from '@app/interservice-api/question';
       inject: [ConfigService],
     },
     {
-      provide: AUTH_SERVICE,
+      provide: Service.USER_SERVICE,
       useFactory: (configService: ConfigService) => {
-        const authServiceOptions = configService.get('authServiceOptions');
-        return ClientProxyFactory.create(authServiceOptions);
+        const userServiceOptions = configService.get('userServiceOptions');
+        return ClientProxyFactory.create(userServiceOptions);
       },
       inject: [ConfigService],
     },

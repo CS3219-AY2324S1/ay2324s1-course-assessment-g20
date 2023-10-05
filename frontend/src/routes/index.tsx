@@ -5,6 +5,7 @@ import ProtectedRoutes from './ProtectedRoutes';
 import AuthRedirect from '../pages/AuthRedirect';
 import AppWrapper from './AppWrapper';
 import CodeEditor from '../pages/CodeEditor';
+import Profile from '../pages/Profile';
 import MainMenu from '../pages/MainMenu';
 
 const router = createBrowserRouter([
@@ -31,7 +32,15 @@ const router = createBrowserRouter([
             path: '/question/:questionId',
             element: <CodeEditor />,
           },
+          {
+            path: '/profile',
+            element: <Profile />,
+          },
         ],
+      },
+      {
+        path: '/authRedirect',
+        element: <AuthRedirect />,
       },
       { path: '*', element: <Navigate to="/login" replace /> },
     ],

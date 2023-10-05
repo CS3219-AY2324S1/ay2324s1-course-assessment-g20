@@ -11,7 +11,6 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. In the same terminal, build the docker images locally (e.g. `docker compose build`).
 
 #### Install ingress-nginx
-1. Enable ingress on minikube (e.g. `minikube addons enable ingress`)
 1. Install ingress-nginx via Helm on the minikube cluster.
     <!-- Installing directly from Helm to install ingress-nginx into a separate namespace 'nginx'. We cannot specify custom namespaces under 'dependencies' of our custom Helm chart -->
     - Add the ingress-nginx repo to Helm via `helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx`

@@ -12,12 +12,12 @@ dependencies:
     version: '0.1.0'
     repository: file://../base-microservice
 
-  - alias: auth-microservice
+  - alias: question-microservice
     name: base-microservice
     version: '0.1.0'
     repository: file://../base-microservice
 
-  - alias: question-microservice
+  - alias: user-microservice
     name: base-microservice
     version: '0.1.0'
     repository: file://../base-microservice

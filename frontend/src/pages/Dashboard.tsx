@@ -15,11 +15,11 @@ import {
 import QuestionForm from '../components/QuestionForm';
 import Popup from '../components/Popup';
 import { useEffect, useState } from 'react';
-import { EMPTY_QUESTION, IQuestion } from '../interfaces';
 import { addQuestion, deleteQuestionWithId, getQuestions } from '../api/questionBankApi';
 import { useNavigate } from 'react-router-dom';
+import { EMPTY_QUESTION, IQuestion } from '../@types/question';
 
-export default function Dashboasrd() {
+export default function Dashboard() {
   const navigate = useNavigate();
 
   // Styling for dashboard table
@@ -47,7 +47,6 @@ export default function Dashboasrd() {
     getQuestions()
       .then((response) => {
         setRows(response.data);
-        console.log('protected response', response);
       })
       .catch((error) => {
         console.error('Error:', error);

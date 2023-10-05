@@ -8,9 +8,10 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import * as ts from 'typescript';
 import { languages } from '../utils/constants';
-import { ICodeEvalOutput, IQuestion } from '../interfaces';
 import { getQuestionWithId } from '../api/questionBankApi';
 import { useParams } from 'react-router-dom';
+import { IQuestion } from '../@types/question';
+import { ICodeEvalOutput } from '../@types/codeEditor';
 
 // component built with reference to online guide: https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/
 

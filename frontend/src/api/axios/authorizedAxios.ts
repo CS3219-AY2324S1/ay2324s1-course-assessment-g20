@@ -6,10 +6,10 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios';
 import _ from 'lodash';
-import { IAuth, IAuthContext } from '../../interfaces';
 import baseAxiosConfig from './baseAxiosConfig';
 import { getBackendPath } from '../../utils/api';
 import { backendServicesPaths } from '../../utils/constants';
+import { IAuth, IAuthContext } from '../../@types/auth';
 
 interface RetryConfig extends AxiosRequestConfig {
   retry?: boolean;

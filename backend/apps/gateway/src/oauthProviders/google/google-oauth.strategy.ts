@@ -6,12 +6,16 @@ import { ConfigService } from '@nestjs/config';
 import { AuthProvider } from '@app/types/authProvider';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { AUTH_SERVICE, AuthServiceApi } from '@app/interservice-api/auth';
+import { UserServiceApi } from '@app/interservice-api/user';
+import { DEFAULT_LANGUAGE } from '@app/types/languages';
+import { DEFAULT_ROLE } from '@app/types/roles';
+import { Service } from '@app/interservice-api/services';
 
 @Injectable()
 export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
-    @Inject(AUTH_SERVICE) private readonly authServiceClient: ClientProxy,
+    @Inject(Service.USER_SERVICE)
+    private readonly userServiceClient: ClientProxy,
     configService: ConfigService,
   ) {
     const googleOauthOptions: _StrategyOptionsBase =
@@ -33,14 +37,25 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifiedCallback,
   ) {
     const { id, name, emails } = profile;
+    const defaultName = `${name.givenName} ${name.familyName}`;
+
+    const oauthUser = {
+      authProvider: AuthProvider.GOOGLE,
+      authProviderId: id,
+      email: emails[0].value,
+      oauthName: defaultName,
+      userProfile: {
+        name: defaultName,
+        preferredLanguageId: DEFAULT_LANGUAGE,
+        roleId: DEFAULT_ROLE,
+      },
+    };
 
     const user = await firstValueFrom(
-      this.authServiceClient.send(AuthServiceApi.FIND_OR_CREATE_OAUTH_USER, {
-        authProvider: AuthProvider.GOOGLE,
-        authProviderId: id,
-        email: emails[0].value,
-        oauthName: `${name.givenName} ${name.familyName}`,
-      }),
+      this.userServiceClient.send(
+        UserServiceApi.FIND_OR_CREATE_OAUTH_USER,
+        oauthUser,
+      ),
     );
 
     done(null, user);

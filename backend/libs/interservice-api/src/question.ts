@@ -10,5 +10,3 @@ export enum QuestionServiceApi {
   ADD_CATEGORY = 'add_category',
   DELETE_CATEGORY_WITH_ID = 'delete_category_with_id',
 }
-
-export const QUESTION_SERVICE = 'QUESTION_SERVICE';

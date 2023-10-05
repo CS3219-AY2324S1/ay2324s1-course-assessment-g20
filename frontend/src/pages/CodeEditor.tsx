@@ -58,6 +58,7 @@ const CodeEditor = () => {
           throwAsyncError('Invalid session');
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Initialize websocket connection to Yjs service
@@ -66,7 +67,7 @@ const CodeEditor = () => {
       // Handles websocket disconnection when unauthorized (e.g. invalid ws ticket)
       bindYjsToMonacoEditor(wsTicket, editor, throwAsyncError);
     }
-  }, [editor, wsTicket]);
+  }, [editor, wsTicket, throwAsyncError]);
 
   const handleLanguageChange = (event: SelectChangeEvent) => {
     setLanguage(event.target.value as string);

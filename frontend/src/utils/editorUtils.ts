@@ -53,7 +53,7 @@ const authenticatedYjsWebsocketProvider = (
     // Waits for connection to be authenticated and Yjs session to be initialized before starting client Yjs sync
     const { data } = event;
     if (data === YjsWebsocketServerMessage.SESSION_INITIALIZED) {
-      // @ts-expect-error
+      // @ts-expect-error: Yjs provider onOpen does not expect the event to be passed in
       yjsDefaultOnOpen();
       ws.onmessage = yjsDefaultOnMessage;
       onAuthenticateCallback(ydocument, provider);

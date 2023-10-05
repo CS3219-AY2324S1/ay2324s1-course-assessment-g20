@@ -4,7 +4,7 @@
 # for which to run knex commands in.
 if [ -z $1 ]
 then
-    echo Please specify at least one microservice name to run the latest migrations!
+    echo Please specify at least one microservice name to run the seeds for!
     exit
 fi
 

@@ -1,4 +1,4 @@
-import { ICodeEvalOutput } from '../interfaces';
+import { ICodeEvalOutput } from '../@types/codeEditor';
 import script from '../workerScript';
 
 //https://www.meziantou.net/executing-untrusted-javascript-code-in-a-browser.htm

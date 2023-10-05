@@ -34,10 +34,6 @@ services:
     env_file:
       .env
     environment:
-      - QUESTION_SERVICE_SQL_DATABASE_HOST=postgres
-      - QUESTION_SERVICE_SQL_DATABASE_PORT=5432
-      - QUESTION_SERVICE_SQL_DATABASE_USER=postgres
-      - QUESTION_SERVICE_SQL_DATABASE_PASSWORD=postgres
       - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   user:
@@ -90,10 +86,6 @@ services:
     networks:
       - backend
     environment:
-      - QUESTION_SERVICE_SQL_DATABASE_HOST=postgres
-      - QUESTION_SERVICE_SQL_DATABASE_PORT=5432
-      - QUESTION_SERVICE_SQL_DATABASE_USER=postgres
-      - QUESTION_SERVICE_SQL_DATABASE_PASSWORD=postgres
       - USER_SERVICE_SQL_DATABASE_HOST=postgres
       - USER_SERVICE_SQL_DATABASE_PORT=5432
       - USER_SERVICE_SQL_DATABASE_USER=postgres

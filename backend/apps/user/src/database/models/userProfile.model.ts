@@ -11,6 +11,9 @@ export class UserProfileModel extends BaseModel {
   readonly preferredLanguageId: number;
   readonly roleId: number;
 
+  readonly preferredLanguage: LanguageModel;
+  readonly role: RoleModel;
+
   static relationMappings = () => ({
     preferredLanguage: {
       relation: Model.BelongsToOneRelation,

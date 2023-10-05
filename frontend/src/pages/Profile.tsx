@@ -17,10 +17,9 @@ import {
   getAllLanguages,
   deleteUserProfile,
 } from '../api/userApi';
-import { UserProfile } from '../@types/UserProfile';
-import { Language } from '../@types/Language';
 import { useAuth } from '../utils/hooks';
 import { useNavigate } from 'react-router-dom';
+import { Language, UserProfile } from '../@types/userProfile';
 
 const modalStyle = {
   position: 'absolute' as const,
@@ -47,12 +46,10 @@ export default function Profile() {
 
   useEffect(() => {
     getAllLanguages().then(({ data }) => {
-      console.log(data);
       setLanguages(data);
     });
 
     getUserProfile().then(({ data }) => {
-      console.log(data);
       setUserProfile(data);
       setPreferredLanguage(data.preferredLanguage.id);
     });

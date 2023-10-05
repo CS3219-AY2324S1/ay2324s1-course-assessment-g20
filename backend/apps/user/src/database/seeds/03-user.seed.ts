@@ -11,7 +11,7 @@ const MOCK_USER_1_EMAIL = 'alicetan@gmail.com';
 const MOCK_USER_2_EMAIL = 'boblim@gmail.com';
 const MOCK_USER_1_OAUTH_ID = 'random-oauth-id-1';
 const MOCK_USER_2_OAUTH_ID = 'random-oauth-id-2';
-const MOCK_AUTH_PROVIDER = 'google';
+const MOCK_AUTH_PROVIDER = 'test_provider';
 
 export async function seed(knex: Knex): Promise<void> {
   if (IS_DEPLOYMENT) {

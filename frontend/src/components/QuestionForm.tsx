@@ -11,8 +11,8 @@ import {
   TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { ICategory, IDifficulty } from '../interfaces';
 import { getCategories, getDifficulties } from '../api/questionBankApi';
+import { ICategory, IDifficulty } from '../@types/question';
 
 interface FormProps {
   formType: string;

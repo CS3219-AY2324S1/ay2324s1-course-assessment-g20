@@ -7,8 +7,8 @@ import { AuthProvider } from '@app/types/authProvider';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { UserServiceApi } from '@app/interservice-api/user';
-import { Language } from '@app/types/languages';
-import { Role } from '@app/types/roles';
+import { DEFAULT_LANGUAGE } from '@app/types/languages';
+import { DEFAULT_ROLE } from '@app/types/roles';
 import { Service } from '@app/interservice-api/services';
 
 @Injectable()
@@ -37,16 +37,17 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifiedCallback,
   ) {
     const { id, name, emails } = profile;
+    const defaultName = `${name.givenName} ${name.familyName}`;
 
     const oauthUser = {
       authProvider: AuthProvider.GOOGLE,
       authProviderId: id,
       email: emails[0].value,
-      oauthName: `${name.givenName} ${name.familyName}`,
+      oauthName: defaultName,
       userProfile: {
-        name: `${name.givenName} ${name.familyName}`,
-        preferredLanguageId: Language.JAVASCRIPT,
-        roleId: Role.REGULAR,
+        name: defaultName,
+        preferredLanguageId: DEFAULT_LANGUAGE,
+        roleId: DEFAULT_ROLE,
       },
     };
 

@@ -1,4 +1,4 @@
-import { UpdateUserProfile } from '../@types/UpdateUserProfile';
+import { UpdateUserProfile } from '../@types/userProfile';
 import { backendServicesPaths, HttpRequestMethod } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 

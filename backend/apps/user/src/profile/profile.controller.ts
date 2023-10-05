@@ -19,9 +19,6 @@ export class ProfileController {
   updateUserProfile(
     @Payload() data: Partial<UserProfileModel>,
   ): Promise<UserProfileModel> {
-    const { userId } = data;
-    const userProfile = { ...data };
-    delete userProfile.userId;
-    return this.profileService.updateUserProfile(userId, userProfile);
+    return this.profileService.updateUserProfile(data);
   }
 }

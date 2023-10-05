@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { MongoClient } = require('mongodb');
-const difficultiesJson = require('../data/question-difficulties.json');
+const difficultiesJson = require('../../data/question-difficulties.json');
 
 const uri = 'mongodb://127.0.0.1:27017/';
 

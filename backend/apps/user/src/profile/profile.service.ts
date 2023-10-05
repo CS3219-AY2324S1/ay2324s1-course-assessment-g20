@@ -15,11 +15,16 @@ export class ProfileService {
   getUserProfile(
     userId: string,
   ): Promise<Partial<UserProfileModel> | undefined> {
-    const result = this.userProfileDaoService.findByUserId({
-      userId,
-      withGraphFetched: true,
-    });
-    return result;
+    return this.userProfileDaoService
+      .findByUserId({
+        userId,
+        withGraphFetched: true,
+      })
+      .then((profile) => ({
+        name: profile.name,
+        preferredLanguage: profile.preferredLanguage,
+        role: profile.role,
+      }));
   }
 
   private validateForeignKeys = async (
@@ -39,9 +44,12 @@ export class ProfileService {
   };
 
   async updateUserProfile(
-    userId: string,
-    userProfile: Partial<UserProfileModel>,
+    data: Partial<UserProfileModel>,
   ): Promise<UserProfileModel> {
+    const { userId } = data;
+    const userProfile = { ...data };
+    delete userProfile.userId;
+
     await this.validateForeignKeys(userProfile);
     return this.userProfileDaoService.updateByUserId(userId, userProfile);
   }

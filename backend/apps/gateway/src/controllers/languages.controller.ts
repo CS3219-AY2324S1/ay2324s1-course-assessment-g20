@@ -1,4 +1,5 @@
 import { Service } from '@app/interservice-api/services';
+import { UserServiceApi } from '@app/interservice-api/user';
 import { Controller, Get, Inject, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -13,7 +14,10 @@ export class LanguagesController {
   @Get()
   async getLanguages(@Req() req) {
     const languages = await firstValueFrom(
-      this.userServiceClient.send('get_all_languages', req.user.id),
+      this.userServiceClient.send(
+        UserServiceApi.GET_ALL_LANGUAGES,
+        req.user.id,
+      ),
     );
     return languages;
   }

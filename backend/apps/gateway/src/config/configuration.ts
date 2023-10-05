@@ -1,6 +1,6 @@
 import { _StrategyOptionsBase } from 'passport-google-oauth20';
-import { getRmqOptionsForQueue } from '@app/config/rmqConfiguration';
-import { RmqQueue } from '@app/types/rmqQueues';
+import { getRmqOptionsForQueue } from '@app/microservice/utils';
+import { RmqQueue } from '@app/microservice/utils';
 
 const gatewayConfiguration = () => {
   const googleOauthOptions: _StrategyOptionsBase = {

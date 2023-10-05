@@ -4,13 +4,13 @@ import { setupWSConnection, setPersistence } from 'y-websocket/bin/utils';
 import {
   COLLABORATION_SERVICE,
   CollaborationServiceApi,
-} from '@app/interservice-api/collaboration';
+} from '@app/microservice/interservice-api/collaboration';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import { BaseWebsocketGateway } from '@app/websocket';
-import { Service } from '@app/interservice-api/services';
+import { Service } from '@app/microservice/interservice-api/services';
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {

@@ -6,7 +6,7 @@ import { JwtPayload, JwtTokenConfig } from '@app/types';
 import { UserDaoService } from '../database/daos/users/user.dao.service';
 import { UserModel } from '../database/models/user.model';
 import { WebsocketTicketDaoService } from '../database/daos/websocketTickets/websocketTicket.dao.service';
-import { CreateWebsocketTicketInfo } from '@app/interservice-api/user';
+import { CreateWebsocketTicketInfo } from '@app/microservice/interservice-api/user';
 
 @Injectable()
 export class AuthService {

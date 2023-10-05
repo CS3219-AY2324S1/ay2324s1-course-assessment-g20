@@ -1,6 +1,6 @@
-import { getRmqOptionsForQueue } from '@app/config/rmqConfiguration';
+import { getRmqOptionsForQueue } from '@app/microservice/utils';
 import { DatabaseConfigurationOptions } from '@app/sql-database';
-import { RmqQueue } from '@app/types/rmqQueues';
+import { RmqQueue } from '@app/microservice/utils';
 
 const collaborationConfiguration = () => {
   const userServiceOptions = getRmqOptionsForQueue(RmqQueue.USER);

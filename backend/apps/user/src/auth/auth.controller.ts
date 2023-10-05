@@ -5,7 +5,7 @@ import { UserModel } from '../database/models/user.model';
 import {
   CreateWebsocketTicketInfo,
   UserServiceApi,
-} from '@app/interservice-api/user';
+} from '@app/microservice/interservice-api/user';
 
 @Controller()
 export class AuthController {

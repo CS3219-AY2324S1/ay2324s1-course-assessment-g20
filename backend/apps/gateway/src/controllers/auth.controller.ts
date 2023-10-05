@@ -15,8 +15,8 @@ import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
 import RefreshDto from '../dtos/auth/refresh.dto';
-import { UserServiceApi } from '@app/interservice-api/user';
-import { Service } from '@app/interservice-api/services';
+import { Service } from '@app/microservice/interservice-api/services';
+import { UserServiceApi } from '@app/microservice/interservice-api/user';
 
 @Controller('auth')
 export class AuthController {

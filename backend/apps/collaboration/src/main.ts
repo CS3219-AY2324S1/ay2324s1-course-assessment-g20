@@ -1,8 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { CollaborationModule } from './collaboration.module';
 import collaborationConfiguration from './config/configuration';
-import { RmqQueue } from '@app/types/rmqQueues';
-import { getRmqOptionsForQueue } from '@app/config/rmqConfiguration';
+import { RmqQueue, getRmqOptionsForQueue } from '@app/microservice/utils';
 
 async function bootstrap() {
   const { port } = collaborationConfiguration();

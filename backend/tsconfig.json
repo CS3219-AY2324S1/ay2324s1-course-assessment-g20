@@ -42,11 +42,11 @@
       "@app/types/*": [
         "libs/types/src/*"
       ],
-      "@app/interservice-api": [
-        "libs/interservice-api/src"
+      "@app/microservice": [
+        "libs/microservice/src"
       ],
-      "@app/interservice-api/*": [
-        "libs/interservice-api/src/*"
+      "@app/microservice/*": [
+        "libs/microservice/src/*"
       ],
       "@app/websocket": [
         "libs/websocket/src"

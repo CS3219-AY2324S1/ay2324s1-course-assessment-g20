@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ModelClass } from 'objection';
 import { WebsocketTicketModel } from '../../models/websocketTicket.model';
-import { CreateWebsocketTicketInfo } from '@app/interservice-api/user';
+import { CreateWebsocketTicketInfo } from '@app/microservice/interservice-api/user';
 
 @Injectable()
 export class WebsocketTicketDaoService {

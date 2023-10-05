@@ -1,4 +1,7 @@
-import { UserServiceApi, WebsocketTicket } from '@app/interservice-api/user';
+import {
+  UserServiceApi,
+  WebsocketTicket,
+} from '@app/microservice/interservice-api/user';
 import { ClientProxy } from '@nestjs/microservices';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { catchError, firstValueFrom, of } from 'rxjs';

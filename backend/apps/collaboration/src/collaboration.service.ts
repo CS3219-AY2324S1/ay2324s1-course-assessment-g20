@@ -1,18 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SessionDaoService } from './database/daos/session/session.dao.service';
 import { ClientProxy } from '@nestjs/microservices';
-import { QuestionServiceApi } from '@app/interservice-api/question';
 import { firstValueFrom } from 'rxjs';
 import {
   CreateSessionInfo,
   GetSessionAndTicketInfo,
-} from '@app/interservice-api/collaboration';
-import { Service } from '@app/interservice-api/services';
+} from '@app/microservice/interservice-api/collaboration';
+import { Service } from '@app/microservice/interservice-api/services';
+import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
 import {
   CreateWebsocketTicketInfo,
   UserServiceApi,
   WebsocketTicket,
-} from '@app/interservice-api/user';
+} from '@app/microservice/interservice-api/user';
 
 @Injectable()
 export class CollaborationService {

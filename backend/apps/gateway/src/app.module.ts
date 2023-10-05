@@ -9,9 +9,9 @@ import { AuthController } from './controllers/auth.controller';
 import { UserController } from './controllers/user.controller';
 import { LanguagesController } from './controllers/languages.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
-import { Service } from '@app/interservice-api/services';
 import { YjsGateway } from './websocket-gateways/yjs.gateway';
 import { CollaborationController } from './controllers/collaboration.controller';
+import { Service } from '@app/microservice/interservice-api/services';
 
 const microserviceOptionKeys = {
   [Service.QUESTION_SERVICE]: 'questionServiceOptions',

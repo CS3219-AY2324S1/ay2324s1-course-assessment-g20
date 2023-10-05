@@ -1,7 +1,7 @@
 import {
   COLLABORATION_SERVICE,
   CollaborationServiceApi,
-} from '@app/interservice-api/collaboration';
+} from '@app/microservice/interservice-api/collaboration';
 import { Controller, Get, Inject, Param, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 

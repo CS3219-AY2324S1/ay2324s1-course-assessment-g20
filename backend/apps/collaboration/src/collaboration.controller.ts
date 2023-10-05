@@ -5,7 +5,7 @@ import {
   CollaborationServiceApi,
   CreateSessionInfo,
   GetSessionAndTicketInfo,
-} from '@app/interservice-api/collaboration';
+} from '@app/microservice/interservice-api/collaboration';
 
 @Controller()
 export class CollaborationController {

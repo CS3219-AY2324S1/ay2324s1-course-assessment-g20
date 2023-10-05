@@ -1,4 +1,4 @@
-import { Module, Provider } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { CollaborationController } from './collaboration.controller';
 import { CollaborationService } from './collaboration.service';
 import { ConfigModule } from '@app/config';
@@ -7,27 +7,14 @@ import { SqlDatabaseModule } from '@app/sql-database';
 import { SessionModel } from './database/models/session.model';
 import { UserSessionModel } from './database/models/userSession.model';
 import { SessionDaoModule } from './database/daos/session/session.dao.module';
-import { ConfigService } from '@nestjs/config';
-import { ClientProxyFactory } from '@nestjs/microservices';
 import { SessionTicketModel } from './database/models/sessionTicket.model';
-import { Service } from '@app/interservice-api/services';
+import { Service } from '@app/microservice/interservice-api/services';
+import { createMicroserviceClientProxyProvider } from '@app/microservice/utils';
 
 const microserviceOptionKeys = {
   [Service.USER_SERVICE]: 'userServiceOptions',
   [Service.QUESTION_SERVICE]: 'questionServiceOptions',
 };
-
-const createMicroserviceClientProxyProvider = (
-  microservice: string,
-  optionsKey: string,
-): Provider => ({
-  provide: microservice,
-  useFactory: (configService: ConfigService) => {
-    const microserviceOptions = configService.get(optionsKey);
-    return ClientProxyFactory.create(microserviceOptions);
-  },
-  inject: [ConfigService],
-});
 
 @Module({
   imports: [

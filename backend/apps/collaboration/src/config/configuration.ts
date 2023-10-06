@@ -1,18 +1,17 @@
 import { getRmqOptionsForQueue } from '@app/microservice/utils';
-import { DatabaseConfigurationOptions } from '@app/sql-database';
+import {
+  DatabaseConfigurationOptions,
+  getDatabaseConfigurationForService,
+} from '@app/sql-database';
 import { RmqQueue } from '@app/microservice/utils';
+import { Service } from '@app/microservice/interservice-api/services';
 
 const collaborationConfiguration = () => {
   const userServiceOptions = getRmqOptionsForQueue(RmqQueue.USER);
   const questionServiceOptions = getRmqOptionsForQueue(RmqQueue.QUESTION);
 
-  const databaseConfigurationOptions: DatabaseConfigurationOptions = {
-    host: process.env.COLLABORATION_SERVICE_SQL_DATABASE_HOST,
-    port: process.env.COLLABORATION_SERVICE_SQL_DATABASE_PORT,
-    user: process.env.COLLABORATION_SERVICE_SQL_DATABASE_USER,
-    password: process.env.COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD,
-    database: process.env.COLLABORATION_SERVICE_SQL_DATABASE_NAME,
-  };
+  const databaseConfigurationOptions: DatabaseConfigurationOptions =
+    getDatabaseConfigurationForService(Service.COLLABORATION_SERVICE);
 
   return {
     port: parseInt(process.env.COLLABORATION_SERVICE_PORT, 10),

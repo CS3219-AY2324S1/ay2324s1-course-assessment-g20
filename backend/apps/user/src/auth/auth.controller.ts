@@ -38,7 +38,6 @@ export class AuthController {
 
   @MessagePattern(UserServiceApi.CONSUME_WEBSOCKET_TICKET)
   consumeWebsocketTicket(ticketId: string) {
-    console.log('calling auth consume controoler');
     return this.authService.consumeWebsocketTicket(ticketId);
   }
 }

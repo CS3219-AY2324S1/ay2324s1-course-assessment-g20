@@ -1,3 +1,5 @@
+import { Service } from '@app/microservice/interservice-api/services';
+import { getDatabaseConfigurationForService } from '@app/sql-database';
 import * as dotenv from 'dotenv';
 import { knexSnakeCaseMappers } from 'objection';
 
@@ -5,16 +7,13 @@ const NODE_ENV = process.env.NODE_ENV;
 const IS_DEPLOYMENT = ['staging', 'production'].includes(NODE_ENV);
 
 dotenv.config({ path: `../../.env${NODE_ENV ? `.${NODE_ENV}` : ''}` });
+const databaseConfigurationOptions = getDatabaseConfigurationForService(
+  Service.COLLABORATION_SERVICE,
+);
 
 const knexConfig = {
   client: 'pg',
-  connection: {
-    host: process.env.COLLABORATION_SERVICE_SQL_DATABASE_HOST,
-    port: process.env.COLLABORATION_SERVICE_SQL_DATABASE_PORT,
-    user: process.env.COLLABORATION_SERVICE_SQL_DATABASE_USER,
-    password: process.env.COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD,
-    database: process.env.COLLABORATION_SERVICE_SQL_DATABASE_NAME,
-  },
+  connection: databaseConfigurationOptions,
   migrations: {
     directory: './src/database/migrations',
     loadExtensions: IS_DEPLOYMENT ? ['.js'] : ['.ts'],

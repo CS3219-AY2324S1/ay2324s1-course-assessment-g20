@@ -107,4 +107,10 @@ export class AuthService {
 
     return this.websocketTicketDaoService.updateUsed(ticketId);
   }
+
+  validateUsersExist(userIds: string[]) {
+    return this.userDaoService
+      .findByIds(userIds)
+      .then((users) => users.length === userIds.length);
+  }
 }

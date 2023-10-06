@@ -24,4 +24,8 @@ export class UserDaoService {
   async deleteOAuthUser(id: string) {
     return await this.userModel.query().deleteById(id);
   }
+
+  findByIds(userIds: string[]) {
+    return this.userModel.query().findByIds(userIds);
+  }
 }

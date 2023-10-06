@@ -10,6 +10,7 @@ export enum UserServiceApi {
   // Websocket related authentication
   GENERATE_WEBSOCKET_TICKET = 'generate_websocket_ticket',
   CONSUME_WEBSOCKET_TICKET = 'consume_websocket_ticket',
+  VALIDATE_USERS_EXISTS = 'validate_users_exists',
 
   // User profile related
   DELETE_OAUTH_USER = 'delete_oauth_user',

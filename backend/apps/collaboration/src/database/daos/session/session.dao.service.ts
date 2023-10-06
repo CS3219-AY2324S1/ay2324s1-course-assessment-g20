@@ -19,8 +19,18 @@ export class SessionDaoService {
     return this.sessionModel.query().insertGraph(createSessionInfo);
   }
 
-  findById(sessionId: string) {
-    return this.sessionModel.query().findById(sessionId);
+  findById({
+    sessionId,
+    withGraphFetched = false,
+  }: {
+    sessionId: string;
+    withGraphFetched: boolean;
+  }) {
+    const query = this.sessionModel.query().findById(sessionId);
+    if (withGraphFetched) {
+      query.withGraphFetched('[userIds]');
+    }
+    return query;
   }
 
   insertTicketForSession(sessionId: string, ticketId: string) {

@@ -40,4 +40,9 @@ export class AuthController {
   consumeWebsocketTicket(ticketId: string) {
     return this.authService.consumeWebsocketTicket(ticketId);
   }
+
+  @MessagePattern(UserServiceApi.VALIDATE_USERS_EXISTS)
+  validateUsersExists(userIds: string[]) {
+    return this.authService.validateUsersExist(userIds);
+  }
 }

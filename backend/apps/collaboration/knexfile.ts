@@ -1,3 +1,4 @@
+import 'tsconfig-paths/register';
 import { Service } from '@app/microservice/interservice-api/services';
 import { getDatabaseConfigurationForService } from '@app/sql-database';
 import * as dotenv from 'dotenv';

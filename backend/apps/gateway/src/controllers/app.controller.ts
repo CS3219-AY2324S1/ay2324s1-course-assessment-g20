@@ -10,11 +10,11 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { Public } from '../jwt/jwtPublic.decorator';
-import { QuestionServiceApi } from '@app/interservice-api/question';
-import { Service } from '@app/interservice-api/services';
 import QuestionDto from '../dtos/question/question.dto';
 import DifficultyDto from '../dtos/question/difficulty.dto';
 import CategoryDto from '../dtos/question/category.dto';
+import { Service } from '@app/microservice/interservice-api/services';
+import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
 
 @Controller('question')
 export class AppController {

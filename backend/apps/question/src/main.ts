@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { QuestionModule } from './question.module';
 import questionConfiguration from './config/configuration';
-import { getRmqOptionsForQueue } from '@app/config/rmqConfiguration';
-import { RmqQueue } from '@app/types/rmqQueues';
+import { getRmqOptionsForQueue } from '@app/microservice/utils';
+import { RmqQueue } from '@app/microservice/utils';
 
 async function bootstrap() {
   const { port } = questionConfiguration();

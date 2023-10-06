@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import PatchUserProfileDto from '../dtos/user/patchUserProfile.dto';
-import { Service } from '@app/interservice-api/services';
-import { UserServiceApi } from '@app/interservice-api/user';
+import { Service } from '@app/microservice/interservice-api/services';
+import { UserServiceApi } from '@app/microservice/interservice-api/user';
 
 @Controller('user')
 export class UserController {

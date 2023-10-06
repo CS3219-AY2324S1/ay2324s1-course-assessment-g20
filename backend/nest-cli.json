@@ -63,13 +63,31 @@
         "tsConfigPath": "libs/types/tsconfig.lib.json"
       }
     },
-    "interservice-api": {
+    "microservice": {
       "type": "library",
-      "root": "libs/interservice-api",
+      "root": "libs/microservice",
       "entryFile": "index",
-      "sourceRoot": "libs/interservice-api/src",
+      "sourceRoot": "libs/microservice/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/interservice-api/tsconfig.lib.json"
+        "tsConfigPath": "libs/microservice/tsconfig.lib.json"
+      }
+    },
+    "collaboration": {
+      "type": "application",
+      "root": "apps/collaboration",
+      "entryFile": "main",
+      "sourceRoot": "apps/collaboration/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/collaboration/tsconfig.app.json"
+      }
+    },
+    "websocket": {
+      "type": "library",
+      "root": "libs/websocket",
+      "entryFile": "index",
+      "sourceRoot": "libs/websocket/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/websocket/tsconfig.lib.json"
       }
     }
   }

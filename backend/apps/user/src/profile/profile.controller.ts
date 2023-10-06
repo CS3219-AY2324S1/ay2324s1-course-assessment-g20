@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserProfileModel } from '../database/models/userProfile.model';
-import { UserServiceApi } from '@app/interservice-api/user';
+import { UserServiceApi } from '@app/microservice/interservice-api/user';
 
 @Controller()
 export class ProfileController {

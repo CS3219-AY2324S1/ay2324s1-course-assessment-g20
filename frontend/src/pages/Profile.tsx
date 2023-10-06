@@ -51,7 +51,7 @@ export default function Profile() {
 
     getUserProfile().then(({ data }) => {
       setUserProfile(data);
-      setPreferredLanguage(data.preferredLanguage.id);
+      setPreferredLanguage(data.preferredLanguage?.name ?? '');
     });
   }, []);
 

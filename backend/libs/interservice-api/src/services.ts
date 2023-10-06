@@ -1,4 +1,0 @@
-export enum Service {
-  QUESTION_SERVICE = 'QUESTION',
-  USER_SERVICE = 'USER_SERVICE',
-}

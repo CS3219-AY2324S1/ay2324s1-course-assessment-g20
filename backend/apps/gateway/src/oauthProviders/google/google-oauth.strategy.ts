@@ -6,10 +6,10 @@ import { ConfigService } from '@nestjs/config';
 import { AuthProvider } from '@app/types/authProvider';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { UserServiceApi } from '@app/interservice-api/user';
 import { DEFAULT_LANGUAGE } from '@app/types/languages';
 import { DEFAULT_ROLE } from '@app/types/roles';
-import { Service } from '@app/interservice-api/services';
+import { Service } from '@app/microservice/interservice-api/services';
+import { UserServiceApi } from '@app/microservice/interservice-api/user';
 
 @Injectable()
 export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {

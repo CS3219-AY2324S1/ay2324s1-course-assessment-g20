@@ -1,15 +1,22 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './controllers/app.controller';
-import { ClientProxyFactory } from '@nestjs/microservices';
 import gatewayConfiguration from './config/configuration';
-import { ConfigService } from '@nestjs/config';
 import { ConfigModule } from '@app/config';
 import { JwtModule } from './jwt/jwt.module';
 import { AuthController } from './controllers/auth.controller';
 import { UserController } from './controllers/user.controller';
 import { LanguagesController } from './controllers/languages.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
-import { Service } from '@app/interservice-api/services';
+import { YjsGateway } from './websocket-gateways/yjs.gateway';
+import { CollaborationController } from './controllers/collaboration.controller';
+import { Service } from '@app/microservice/interservice-api/services';
+import { createMicroserviceClientProxyProvider } from '@app/microservice/utils';
+
+const microserviceOptionKeys = {
+  [Service.QUESTION_SERVICE]: 'questionServiceOptions',
+  [Service.USER_SERVICE]: 'userServiceOptions',
+  [Service.COLLABORATION_SERVICE]: 'collaborationServiceOptions',
+};
 
 @Module({
   imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
@@ -18,27 +25,14 @@ import { Service } from '@app/interservice-api/services';
     AuthController,
     UserController,
     LanguagesController,
+    CollaborationController,
   ],
   providers: [
     GoogleOauthStrategy,
-    {
-      provide: Service.QUESTION_SERVICE,
-      useFactory: (configService: ConfigService) => {
-        const questionServiceOptions = configService.get(
-          'questionServiceOptions',
-        );
-        return ClientProxyFactory.create(questionServiceOptions);
-      },
-      inject: [ConfigService],
-    },
-    {
-      provide: Service.USER_SERVICE,
-      useFactory: (configService: ConfigService) => {
-        const userServiceOptions = configService.get('userServiceOptions');
-        return ClientProxyFactory.create(userServiceOptions);
-      },
-      inject: [ConfigService],
-    },
+    YjsGateway,
+    ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
+      createMicroserviceClientProxyProvider(key, value),
+    ),
   ],
 })
 export class AppModule {}

@@ -4,7 +4,7 @@ import { MessagePattern } from '@nestjs/microservices';
 import { Difficulty } from './schemas/difficulty.schema';
 import { Category } from './schemas/category.schema';
 import { QuestionWithCategoryAndDifficulty } from './interface';
-import { QuestionServiceApi } from 'libs/config/interservice-api/src/question';
+import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
 
 @Controller()
 export class QuestionController {

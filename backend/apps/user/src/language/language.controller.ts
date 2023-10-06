@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { LanguageService } from './language.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { UserServiceApi } from '@app/interservice-api/user';
+import { UserServiceApi } from '@app/microservice/interservice-api/user';
 
 @Controller()
 export class LanguageController {

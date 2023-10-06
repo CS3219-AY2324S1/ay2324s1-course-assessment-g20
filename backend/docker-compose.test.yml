@@ -1,22 +1,25 @@
 version: "3"
 services:
-  gateway:
-    build: 
-      context: .
-      dockerfile: ./apps/gateway/Dockerfile
-    depends_on:
-      sql-migrations:
-        condition: service_completed_successfully
-      rabbitmq:
-        condition: service_healthy
-    ports:
-      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
-    networks:
-      - backend
-    env_file:
-      .env.test
-    environment:
-      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
+  # NOTE: We don't have to run the gateway container since we create an instance
+  # during our NestJS tests.
+
+  # gateway:
+  #   build: 
+  #     context: .
+  #     dockerfile: ./apps/gateway/Dockerfile
+  #   depends_on:
+  #     sql-migrations:
+  #       condition: service_completed_successfully
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   ports:
+  #     - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+  #   networks:
+  #     - backend
+  #   env_file:
+  #     .env.test
+  #   environment:
+  #     - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   question:
     build: 
@@ -38,6 +41,22 @@ services:
     build: 
       context: .
       dockerfile: ./apps/user/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+    env_file:
+      .env.test
+    environment:
+      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
+
+  collaboration:
+    build: 
+      context: .
+      dockerfile: ./apps/collaboration/Dockerfile
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
@@ -91,8 +110,8 @@ services:
     networks:
       - backend
     ports:
-      - 5672:5672
-      # - 15672:15672
+      - 5673:5672 # To not conflict with local RMQ if test is ran locally
+      - 15672:15672
 
 networks:
   backend:

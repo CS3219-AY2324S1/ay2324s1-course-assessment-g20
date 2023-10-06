@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "build:ci": "nest build && nest build user && nest build question",
+    "build:ci": "nest build && nest build user && nest build question && nest build collaboration",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "format:ci": "prettier --list-different \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
@@ -23,7 +23,7 @@
     "prepare": "cd .. && husky install backend/.husky",
     "knex-script": "knex --knexfile",
     "knex": "./scripts/knex/knex.sh",
-    "migrate:sql:all": "node ./scripts/knex/createSqlDatabases.js && yarn migrate:sql user",
+    "migrate:sql:all": "node ./scripts/knex/createSqlDatabases.js && yarn migrate:sql user && yarn migrate:sql collaboration",
     "migrate:sql": "./scripts/knex/migrate_latest.sh",
     "migrate:sql:make": "./scripts/knex/migrate_make.sh",
     "seed:all": "yarn seed:sql:all && yarn seed:mongo:all",
@@ -44,6 +44,8 @@
     "@nestjs/mongoose": "^8.0.0",
     "@nestjs/passport": "^10.0.1",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/platform-ws": "^10.2.6",
+    "@nestjs/websockets": "^10.2.6",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.3",
     "class-transformer": "^0.5.1",
@@ -58,7 +60,10 @@
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "y-mongodb-provider": "^0.1.7",
+    "y-websocket": "^1.5.0",
+    "yjs": "^13.6.8"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
@@ -109,7 +114,8 @@
       "^@app/sql-database(|/.*)$": "<rootDir>/libs/sql-database/src/$1",
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
       "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1",
-      "^@app/interservice-api(|/.*)$": "<rootDir>/libs/interservice-api/src/$1"
+      "^@app/microservice(|/.*)$": "<rootDir>/libs/microservice/src/$1",
+      "^@app/websocket(|/.*)$": "<rootDir>/libs/websocket/src/$1"
     }
   }
 }

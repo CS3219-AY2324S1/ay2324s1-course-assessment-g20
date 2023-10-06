@@ -56,6 +56,26 @@ services:
       - USER_SERVICE_SQL_DATABASE_PASSWORD=postgres
       - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
+  collaboration:
+    build: 
+      context: .
+      dockerfile: ./apps/collaboration/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+    env_file:
+      .env
+    environment:
+      - COLLABORATION_SERVICE_SQL_DATABASE_HOST=postgres
+      - COLLABORATION_SERVICE_SQL_DATABASE_PORT=5432
+      - COLLABORATION_SERVICE_SQL_DATABASE_USER=postgres
+      - COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD=postgres
+      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
+
   postgres:
     image: postgres:14.1-alpine
     restart: always

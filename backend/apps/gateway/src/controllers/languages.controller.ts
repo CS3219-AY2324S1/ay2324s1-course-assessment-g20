@@ -1,5 +1,5 @@
-import { Service } from '@app/interservice-api/services';
-import { UserServiceApi } from '@app/interservice-api/user';
+import { Service } from '@app/microservice/interservice-api/services';
+import { UserServiceApi } from '@app/microservice/interservice-api/user';
 import { Controller, Get, Inject, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';

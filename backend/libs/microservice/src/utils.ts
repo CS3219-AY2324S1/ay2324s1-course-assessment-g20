@@ -10,6 +10,8 @@ export enum RmqQueue {
   QUESTION = 'question_queue',
   USER = 'user_queue',
   COLLABORATION = 'collaboration_queue',
+  WEBSOCKET = 'websocket_queue',
+  MATCHING = 'matching_queue',
 }
 
 export const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {

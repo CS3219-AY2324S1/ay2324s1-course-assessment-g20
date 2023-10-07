@@ -36,6 +36,11 @@ export class QuestionController {
     return this.questionService.getQuestionWithId(questionId);
   }
 
+  @MessagePattern(QuestionServiceApi.GET_QUESTIONS_OF_DIFFICULTY)
+  getQuestionsOfDifficulty(difficulty: string) {
+    return this.questionService.getQuestionsOfDifficulty(difficulty);
+  }
+
   // DIFFICULTIES
 
   @MessagePattern(QuestionServiceApi.GET_DIFFICULTIES)

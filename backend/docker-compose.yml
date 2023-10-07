@@ -45,6 +45,17 @@ services:
         condition: service_completed_successfully
       rabbitmq:
         condition: service_healthy
+      - QUESTION_SERVICE_SQL_DATABASE_HOST=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_PORT=5432
+      - QUESTION_SERVICE_SQL_DATABASE_USER=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_PASSWORD=postgres
+  matching:
+    build: 
+      context: .
+      dockerfile: ./apps/matching/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
     networks:
       - backend
     env_file:
@@ -76,6 +87,15 @@ services:
       - COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD=postgres
       - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
+<<<<<<< Updated upstream
+=======
+=======
+      - MATCHING_SERVICE_SQL_DATABASE_HOST=postgres
+      - MATCHING_SERVICE_SQL_DATABASE_PORT=5432
+      - MATCHING_SERVICE_SQL_DATABASE_USER=postgres
+      - MATCHING_SERVICE_SQL_DATABASE_PASSWORD=postgres
+>>>>>>> 05f47ca (Implement matching service)
+>>>>>>> Stashed changes
   postgres:
     image: postgres:14.1-alpine
     restart: always
@@ -93,7 +113,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+    # expose port 5432 to be accessible from outside the container via 1111 on localhost
+    expose:
+      - 5432
+    ports: 
+      - 1111:5432
   sql-migrations:
     build: 
       context: .
@@ -106,10 +130,25 @@ services:
     networks:
       - backend
     environment:
+<<<<<<< HEAD
       - USER_SERVICE_SQL_DATABASE_HOST=postgres
       - USER_SERVICE_SQL_DATABASE_PORT=5432
       - USER_SERVICE_SQL_DATABASE_USER=postgres
       - USER_SERVICE_SQL_DATABASE_PASSWORD=postgres
+=======
+      - AUTH_SERVICE_SQL_DATABASE_HOST=postgres
+      - AUTH_SERVICE_SQL_DATABASE_PORT=5432
+      - AUTH_SERVICE_SQL_DATABASE_USER=postgres
+      - AUTH_SERVICE_SQL_DATABASE_PASSWORD=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_HOST=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_PORT=5432
+      - QUESTION_SERVICE_SQL_DATABASE_USER=postgres
+      - QUESTION_SERVICE_SQL_DATABASE_PASSWORD=postgres
+      - MATCHING_SERVICE_SQL_DATABASE_HOST=postgres
+      - MATCHING_SERVICE_SQL_DATABASE_PORT=5432
+      - MATCHING_SERVICE_SQL_DATABASE_USER=postgres
+      - MATCHING_SERVICE_SQL_DATABASE_PASSWORD=postgres
+>>>>>>> 05f47ca (Implement matching service)
 
   rabbitmq:
     image: rabbitmq:management

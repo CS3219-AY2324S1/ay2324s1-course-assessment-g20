@@ -39,6 +39,12 @@ export class BaseWebsocketGateway
       return BaseWebsocketGateway.closeConnection(connection);
     }
 
+    const ticket = this.getTicketFromTicketId(ticketId);
+
+    return !!ticket;
+  }
+
+  async getTicketFromTicketId(ticketId: string) {
     const ticket = await firstValueFrom(
       this.userServiceClient
         .send<WebsocketTicket, string>(
@@ -48,11 +54,7 @@ export class BaseWebsocketGateway
         .pipe(catchError(() => of(null))),
     );
 
-    if (!ticket) {
-      return BaseWebsocketGateway.closeConnection(connection);
-    }
-
-    return true;
+    return ticket;
   }
 
   // Close connection and return `false` for authentication failure.

@@ -14,15 +14,18 @@ const gatewayConfiguration = () => {
   const collaborationServiceOptions = getRmqOptionsForQueue(
     RmqQueue.COLLABORATION,
   );
+  const matchingServiceOptions = getRmqOptionsForQueue(RmqQueue.MATCHING);
 
   return {
     port: parseInt(process.env.API_GATEWAY_PORT, 10),
+    host: process.env.QUESTION_SERVICE_SQL_DATABASE_HOST,
     corsOrigin: process.env.CORS_ORIGIN,
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
     questionServiceOptions,
     userServiceOptions,
     collaborationServiceOptions,
     googleOauthOptions,
+    matchingServiceOptions,
   };
 };
 

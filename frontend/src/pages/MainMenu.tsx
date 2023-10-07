@@ -1,8 +1,8 @@
 import { Button, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { IDifficulty } from '../@types/question';
 import { getMatchingTicket } from '../api/matchingApi';
 import { getDifficulties } from '../api/questionBankApi';
-import { IDifficulty } from '../interfaces';
 import { getMatchingWebSocket } from '../websocketUtils/matching';
 import Dashboard from './Dashboard';
 
@@ -38,6 +38,8 @@ export default function MainMenu() {
       ws.onopen = () => {
         ws.onmessage = (event) => {
           const data = JSON.parse(event.data);
+          console.log(data);
+
           if (data.event === 'match') {
             // TODO: Redirect to collaboration code editor page
             console.log(data.data);

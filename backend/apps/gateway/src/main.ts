@@ -3,12 +3,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
-import {
-  MicroserviceOptions,
-  RmqOptions,
-  Transport,
-} from '@nestjs/microservices';
-import { RmqQueue } from '@app/microservice/utils';
+import { MicroserviceOptions, RmqOptions } from '@nestjs/microservices';
+import { getRmqOptionsForQueue, RmqQueue } from '@app/microservice/utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -39,14 +35,9 @@ async function bootstrap() {
   }
 
   const port = configService.get('port');
-  const rmqUrl = configService.get('rmqUrl');
 
   app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.RMQ,
-    options: {
-      urls: [rmqUrl],
-      queue: RmqQueue.WEBSOCKET,
-    },
+    ...getRmqOptionsForQueue(RmqQueue.WEBSOCKET),
   } as RmqOptions);
 
   await app.startAllMicroservices();

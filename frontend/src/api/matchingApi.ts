@@ -1,4 +1,4 @@
-import { IwsTicket } from '../interfaces';
+import { IwsTicket } from '../@types/question';
 import { backendServicesPaths, HttpRequestMethod } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 

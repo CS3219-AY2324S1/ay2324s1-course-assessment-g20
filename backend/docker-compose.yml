@@ -86,16 +86,6 @@ services:
       - COLLABORATION_SERVICE_SQL_DATABASE_USER=postgres
       - COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD=postgres
       - RMQ_URL=amqp://guest:guest@rabbitmq:5672
-
-<<<<<<< Updated upstream
-=======
-=======
-      - MATCHING_SERVICE_SQL_DATABASE_HOST=postgres
-      - MATCHING_SERVICE_SQL_DATABASE_PORT=5432
-      - MATCHING_SERVICE_SQL_DATABASE_USER=postgres
-      - MATCHING_SERVICE_SQL_DATABASE_PASSWORD=postgres
->>>>>>> 05f47ca (Implement matching service)
->>>>>>> Stashed changes
   postgres:
     image: postgres:14.1-alpine
     restart: always
@@ -130,12 +120,10 @@ services:
     networks:
       - backend
     environment:
-<<<<<<< HEAD
       - USER_SERVICE_SQL_DATABASE_HOST=postgres
       - USER_SERVICE_SQL_DATABASE_PORT=5432
       - USER_SERVICE_SQL_DATABASE_USER=postgres
       - USER_SERVICE_SQL_DATABASE_PASSWORD=postgres
-=======
       - AUTH_SERVICE_SQL_DATABASE_HOST=postgres
       - AUTH_SERVICE_SQL_DATABASE_PORT=5432
       - AUTH_SERVICE_SQL_DATABASE_USER=postgres
@@ -148,7 +136,6 @@ services:
       - MATCHING_SERVICE_SQL_DATABASE_PORT=5432
       - MATCHING_SERVICE_SQL_DATABASE_USER=postgres
       - MATCHING_SERVICE_SQL_DATABASE_PASSWORD=postgres
->>>>>>> 05f47ca (Implement matching service)
 
   rabbitmq:
     image: rabbitmq:management

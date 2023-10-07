@@ -15,6 +15,8 @@ import DifficultyDto from '../dtos/question/difficulty.dto';
 import CategoryDto from '../dtos/question/category.dto';
 import { Service } from '@app/microservice/interservice-api/services';
 import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
+import { Roles } from '../roles.decorator';
+import { Role } from '@app/types/roles';
 
 @Controller('question')
 export class AppController {
@@ -34,7 +36,7 @@ export class AppController {
     );
   }
 
-  @Public()
+  @Roles(Role.MAINTAINER)
   @Post('questions')
   addQuestion(
     @Body('question') question: QuestionDto,
@@ -45,7 +47,7 @@ export class AppController {
     );
   }
 
-  @Public()
+  @Roles(Role.MAINTAINER)
   @Delete('questions/:id')
   deleteQuestionWithId(@Param('id') questionId: string): Observable<string> {
     return this.questionServiceClient.send(
@@ -74,7 +76,7 @@ export class AppController {
     );
   }
 
-  @Public()
+  @Roles(Role.MAINTAINER)
   @Post('difficulties')
   addDifficulty(
     @Body('difficulty') difficulty: DifficultyDto,
@@ -85,7 +87,7 @@ export class AppController {
     );
   }
 
-  @Public()
+  @Roles(Role.MAINTAINER)
   @Delete('difficulties/:id')
   deleteDifficultyWithId(
     @Param('id') difficultyId: string,
@@ -106,7 +108,7 @@ export class AppController {
     );
   }
 
-  @Public()
+  @Roles(Role.MAINTAINER)
   @Post('categories')
   addCategory(
     @Body('category') category: CategoryDto,
@@ -117,7 +119,7 @@ export class AppController {
     );
   }
 
-  @Public()
+  @Roles(Role.MAINTAINER)
   @Delete('categories/:id')
   deleteCategoryWithId(@Param('id') categoryId: string): Observable<string> {
     return this.questionServiceClient.send(

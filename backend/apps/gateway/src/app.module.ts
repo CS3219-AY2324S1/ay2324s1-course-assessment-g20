@@ -11,6 +11,7 @@ import { YjsGateway } from './websocket-gateways/yjs.gateway';
 import { CollaborationController } from './controllers/collaboration.controller';
 import { Service } from '@app/microservice/interservice-api/services';
 import { createMicroserviceClientProxyProvider } from '@app/microservice/utils';
+import { RolesModule } from './roles/roles.module';
 
 const microserviceOptionKeys = {
   [Service.QUESTION_SERVICE]: 'questionServiceOptions',
@@ -19,7 +20,11 @@ const microserviceOptionKeys = {
 };
 
 @Module({
-  imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
+  imports: [
+    ConfigModule.loadConfiguration(gatewayConfiguration),
+    JwtModule,
+    RolesModule,
+  ],
   controllers: [
     AppController,
     AuthController,

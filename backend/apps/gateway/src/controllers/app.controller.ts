@@ -15,7 +15,7 @@ import DifficultyDto from '../dtos/question/difficulty.dto';
 import CategoryDto from '../dtos/question/category.dto';
 import { Service } from '@app/microservice/interservice-api/services';
 import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
-import { Roles } from '../roles.decorator';
+import { Roles } from '../roles/roles.decorator';
 import { Role } from '@app/types/roles';
 
 @Controller('question')
@@ -36,8 +36,8 @@ export class AppController {
     );
   }
 
-  @Roles(Role.MAINTAINER)
   @Post('questions')
+  @Roles(Role.MAINTAINER)
   addQuestion(
     @Body('question') question: QuestionDto,
   ): Observable<QuestionDto> {
@@ -47,8 +47,8 @@ export class AppController {
     );
   }
 
-  @Roles(Role.MAINTAINER)
   @Delete('questions/:id')
+  @Roles(Role.MAINTAINER)
   deleteQuestionWithId(@Param('id') questionId: string): Observable<string> {
     return this.questionServiceClient.send(
       QuestionServiceApi.DELETE_QUESTION_WITH_ID,
@@ -76,8 +76,8 @@ export class AppController {
     );
   }
 
-  @Roles(Role.MAINTAINER)
   @Post('difficulties')
+  @Roles(Role.MAINTAINER)
   addDifficulty(
     @Body('difficulty') difficulty: DifficultyDto,
   ): Observable<DifficultyDto> {
@@ -87,8 +87,8 @@ export class AppController {
     );
   }
 
-  @Roles(Role.MAINTAINER)
   @Delete('difficulties/:id')
+  @Roles(Role.MAINTAINER)
   deleteDifficultyWithId(
     @Param('id') difficultyId: string,
   ): Observable<string> {
@@ -108,8 +108,8 @@ export class AppController {
     );
   }
 
-  @Roles(Role.MAINTAINER)
   @Post('categories')
+  @Roles(Role.MAINTAINER)
   addCategory(
     @Body('category') category: CategoryDto,
   ): Observable<CategoryDto> {
@@ -119,8 +119,8 @@ export class AppController {
     );
   }
 
-  @Roles(Role.MAINTAINER)
   @Delete('categories/:id')
+  @Roles(Role.MAINTAINER)
   deleteCategoryWithId(@Param('id') categoryId: string): Observable<string> {
     return this.questionServiceClient.send(
       QuestionServiceApi.DELETE_CATEGORY_WITH_ID,

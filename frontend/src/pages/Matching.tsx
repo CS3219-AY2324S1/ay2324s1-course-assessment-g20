@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
-import WaitingScreen from '../components/WaitingScreen';
+import SearchingScreen from '../components/SearchingScreen';
 import { useState } from 'react';
 
 export default function Matching() {
@@ -30,12 +30,12 @@ export default function Matching() {
       <Typography align="center" component={'span'}>
         <Stack display={'block'} spacing={2} direction={'row'}>
           {searchingVisibility && (
-            <WaitingScreen
+            <SearchingScreen
               title="SEARCHING FOR PARTNER - "
               difficulty={difficultyLevel}
-              openPopup={true}
-              setOpenPopup={handlePopupOnClose}
-            ></WaitingScreen>
+              openScreen={true}
+              setCloseScreen={handlePopupOnClose}
+            ></SearchingScreen>
           )}
           <Button
             variant={'contained'}

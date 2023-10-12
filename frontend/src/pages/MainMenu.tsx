@@ -48,14 +48,13 @@ export default function MainMenu() {
         };
       };
     }
-    await getMatchingTicket().then((response) => {
-      ws.send(
-        JSON.stringify({
-          event: 'get_match',
-          data: { ticket: response.data.id, questionDifficulty: difficulty._id },
-        }),
-      );
-    });
+
+    ws.send(
+      JSON.stringify({
+        event: 'get_match',
+        data: { questionDifficulty: difficulty._id },
+      }),
+    );
   };
 
   return (

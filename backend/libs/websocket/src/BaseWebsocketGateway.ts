@@ -5,6 +5,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { catchError, firstValueFrom, of } from 'rxjs';
+import { AuthenticatedWebsocket } from './types';
 
 /**
  * BaseWebsocketGateway class which handles authentication via a custom ticketing
@@ -30,7 +31,7 @@ export class BaseWebsocketGateway
    * and returns false.
    */
   async handleConnection(
-    connection: WebSocket,
+    connection: AuthenticatedWebsocket,
     request: Request,
   ): Promise<boolean> {
     const ticketId = BaseWebsocketGateway.getTicketIdFromUrl(request);
@@ -39,12 +40,6 @@ export class BaseWebsocketGateway
       return BaseWebsocketGateway.closeConnection(connection);
     }
 
-    const ticket = this.getTicketFromTicketId(ticketId);
-
-    return !!ticket;
-  }
-
-  async getTicketFromTicketId(ticketId: string) {
     const ticket = await firstValueFrom(
       this.userServiceClient
         .send<WebsocketTicket, string>(
@@ -54,11 +49,16 @@ export class BaseWebsocketGateway
         .pipe(catchError(() => of(null))),
     );
 
-    return ticket;
+    if (!ticket) {
+      return BaseWebsocketGateway.closeConnection(connection);
+    }
+
+    connection.ticket = ticket;
+    return true;
   }
 
   // Close connection and return `false` for authentication failure.
-  private static closeConnection(connection: WebSocket) {
+  private static closeConnection(connection: AuthenticatedWebsocket) {
     connection.send(BaseWebsocketGateway.UNAUTHORIZED_MESSAGE);
     connection.close();
     return false;

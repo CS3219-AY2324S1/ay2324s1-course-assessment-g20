@@ -9,7 +9,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
-import { BaseWebsocketGateway } from '@app/websocket';
+import { AuthenticatedWebsocket, BaseWebsocketGateway } from '@app/websocket';
 import { Service } from '@app/microservice/interservice-api/services';
 
 @WebSocketGateway({ path: '/yjs' })
@@ -25,7 +25,7 @@ export class YjsGateway extends BaseWebsocketGateway {
     super(userServiceClient);
   }
 
-  async handleConnection(connection: WebSocket, request: Request) {
+  async handleConnection(connection: AuthenticatedWebsocket, request: Request) {
     const authenticated = await super.handleConnection(connection, request);
 
     if (!authenticated) {

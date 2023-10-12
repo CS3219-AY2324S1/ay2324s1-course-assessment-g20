@@ -9,7 +9,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { MatchingServiceApi } from '@app/microservice/interservice-api/matching';
 import MatchingDto from '../dtos/auth/matching.dto';
 import { WebsocketMemoryService } from '../services/websocketMemory.service';
-import { BaseWebsocketGateway } from '@app/websocket';
+import { AuthenticatedWebsocket, BaseWebsocketGateway } from '@app/websocket';
 import { Service } from '@app/microservice/interservice-api/services';
 
 @WebSocketGateway({ path: '/matching' })
@@ -27,9 +27,9 @@ export class MatchingGateway extends BaseWebsocketGateway {
   @SubscribeMessage('get_match')
   async getMatch(
     @MessageBody() data: MatchingDto,
-    @ConnectedSocket() connection: WebSocket,
+    @ConnectedSocket() connection: AuthenticatedWebsocket,
   ) {
-    const { userId } = await super.getTicketFromTicketId(data.ticket);
+    const { userId } = connection.ticket;
     this.websocketMemoryService.addConnection(userId, connection);
     this.matchingServiceClient.emit(MatchingServiceApi.GET_MATCH, {
       userId,

@@ -101,7 +101,7 @@ export class AuthService {
   async consumeWebsocketTicket(ticketId: string) {
     const ticket = await this.websocketTicketDaoService.get(ticketId);
 
-    if (!ticket) {
+    if (!ticket || ticket.isUsed) {
       throw new BadRequestException('Invalid ticket!');
     }
 

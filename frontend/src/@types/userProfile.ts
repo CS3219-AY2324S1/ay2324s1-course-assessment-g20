@@ -1,17 +1,10 @@
-export type Role = {
-  id: number;
-  name: string;
-};
-
-export type Language = {
-  id: number;
-  name: string;
-};
+import { Language } from "./language";
+import { Role } from "./role";
 
 export type UserProfile = {
-  name?: string;
-  preferredLanguage?: Language;
-  role?: Role;
+  name: string;
+  preferredLanguage: Language;
+  role: Role;
 };
 
 export type UpdateUserProfile = {
@@ -19,3 +12,11 @@ export type UpdateUserProfile = {
   preferredLanguageId?: number;
   roleId?: number;
 };
+
+export interface IProfileContext {
+  name: string;
+  preferredLanguageId: number;
+  roleId: number;
+  isMaintainer: boolean;
+  updateProfile: (newProfile: UpdateUserProfile) => void;
+}

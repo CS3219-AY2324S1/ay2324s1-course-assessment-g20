@@ -18,9 +18,11 @@ import { useEffect, useState } from 'react';
 import { addQuestion, deleteQuestionWithId, getQuestions } from '../api/questionBankApi';
 import { useNavigate } from 'react-router-dom';
 import { EMPTY_QUESTION, IQuestion } from '../@types/question';
+import { useProfile } from '../hooks/useProfile';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { isMaintainer } = useProfile();
 
   // Styling for dashboard table
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -207,7 +209,7 @@ export default function Dashboard() {
                       setOpenPopup={handlePopupOnClose}
                     ></Popup>
                   )}
-                  <Button
+                  {isMaintainer && <Button
                     variant={'contained'}
                     onClick={() => handleDeleteOnClick(row._id)}
                     sx={{
@@ -217,7 +219,7 @@ export default function Dashboard() {
                     }}
                   >
                     DELETE
-                  </Button>
+                  </Button>}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <Button
@@ -253,7 +255,7 @@ export default function Dashboard() {
             isValidated={isValidated}
           ></QuestionForm>
         )}
-        <Button
+        {isMaintainer && <Button
           variant={'contained'}
           onClick={handleButtonFormClick}
           style={{ fontSize: '18px' }}
@@ -263,7 +265,7 @@ export default function Dashboard() {
           }}
         >
           Add Question
-        </Button>
+        </Button>}
       </Typography>
     </Box>
   );

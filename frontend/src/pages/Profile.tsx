@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   FormControl,
-  InputLabel,
   MenuItem,
   Modal,
   Paper,
@@ -12,14 +11,13 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
-  getUserProfile,
-  updateUserProfile,
   getAllLanguages,
   deleteUserProfile,
 } from '../api/userApi';
 import { useAuth } from '../utils/hooks';
 import { useNavigate } from 'react-router-dom';
-import { Language, UserProfile } from '../@types/userProfile';
+import { Language } from '../@types/language';
+import { useProfile } from '../hooks/useProfile';
 
 const modalStyle = {
   position: 'absolute' as const,
@@ -38,27 +36,23 @@ const modalStyle = {
 
 export default function Profile() {
   const authContext = useAuth();
+  const { name, preferredLanguageId, updateProfile } = useProfile();
   const navigate = useNavigate();
-  const [preferredLanguage, setPreferredLanguage] = useState<string>('');
   const [languages, setLanguages] = useState<Language[]>([]);
-  const [userProfile, setUserProfile] = useState<UserProfile>({});
   const [isModalOpen, setisModalOpen] = useState(false);
 
   useEffect(() => {
-    getAllLanguages().then(({ data }) => {
-      setLanguages(data);
-    });
-
-    getUserProfile().then(({ data }) => {
-      setUserProfile(data);
-      setPreferredLanguage(data.preferredLanguage?.name ?? '');
-    });
+    const fetchAndSetLanguages = async () => {
+      await getAllLanguages().then(({ data }) => {
+        setLanguages(data);
+      });
+    }
+    fetchAndSetLanguages();
   }, []);
 
   const handlePreferredLanguageChange = (event: SelectChangeEvent) => {
     const newPreferredLanguage = event.target.value;
-    setPreferredLanguage(newPreferredLanguage);
-    updateUserProfile({ preferredLanguageId: newPreferredLanguage as unknown as number });
+    updateProfile({ preferredLanguageId: newPreferredLanguage as unknown as number });
   };
   const handleDeleteAccount = async () => {
     await deleteUserProfile();
@@ -75,17 +69,18 @@ export default function Profile() {
     <Box display="flex" flexDirection="column" alignItems="center" padding="2rem">
       <Paper elevation={3} sx={{ padding: '2rem', width: '50%' }}>
         <Box display="flex" flexDirection="column">
-          <Typography fontSize={20} variant="h1" fontWeight={20} paddingBottom={3} align="center">
-            {userProfile.name}
+          <Typography fontSize={30} fontWeight={10} paddingBottom={3} align="center">
+            {name}
           </Typography>
           <Box paddingBottom={3}>
+            <Typography fontSize={16} fontWeight={5} paddingBottom={1} sx={{ opacity: 0.6 }}>
+              Preferred Language
+            </Typography>
             <FormControl fullWidth>
-              <InputLabel id="preferred-language-label">Preferred Language</InputLabel>
               <Select
                 labelId="preferred-language-label"
                 id="preferred-language-select"
-                value={preferredLanguage}
-                label="Preferred Language"
+                value={preferredLanguageId.toString()}
                 onChange={handlePreferredLanguageChange}
               >
                 {languages.map((language: Language) => (

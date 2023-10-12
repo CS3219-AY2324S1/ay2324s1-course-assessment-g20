@@ -209,17 +209,19 @@ export default function Dashboard() {
                       setOpenPopup={handlePopupOnClose}
                     ></Popup>
                   )}
-                  {isMaintainer && <Button
-                    variant={'contained'}
-                    onClick={() => handleDeleteOnClick(row._id)}
-                    sx={{
-                      width: 80,
-                      height: 35,
-                      backgroundColor: 'red',
-                    }}
-                  >
-                    DELETE
-                  </Button>}
+                  {isMaintainer && (
+                    <Button
+                      variant={'contained'}
+                      onClick={() => handleDeleteOnClick(row._id)}
+                      sx={{
+                        width: 80,
+                        height: 35,
+                        backgroundColor: 'red',
+                      }}
+                    >
+                      DELETE
+                    </Button>
+                  )}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <Button
@@ -255,17 +257,19 @@ export default function Dashboard() {
             isValidated={isValidated}
           ></QuestionForm>
         )}
-        {isMaintainer && <Button
-          variant={'contained'}
-          onClick={handleButtonFormClick}
-          style={{ fontSize: '18px' }}
-          sx={{
-            width: 180,
-            height: 50,
-          }}
-        >
-          Add Question
-        </Button>}
+        {isMaintainer && (
+          <Button
+            variant={'contained'}
+            onClick={handleButtonFormClick}
+            style={{ fontSize: '18px' }}
+            sx={{
+              width: 180,
+              height: 50,
+            }}
+          >
+            Add Question
+          </Button>
+        )}
       </Typography>
     </Box>
   );

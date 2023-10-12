@@ -1,5 +1,5 @@
-import { Language } from "./language";
-import { Role } from "./role";
+import { Language } from './language';
+import { Role } from './role';
 
 export type UserProfile = {
   name: string;

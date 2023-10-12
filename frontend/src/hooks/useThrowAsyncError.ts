@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 
 // Hook that rethrows async errors inside of React lifecycle
 export const useThrowAsyncError = () => {

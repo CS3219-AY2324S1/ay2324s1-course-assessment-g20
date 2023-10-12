@@ -10,10 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import {
-  getAllLanguages,
-  deleteUserProfile,
-} from '../api/userApi';
+import { getAllLanguages, deleteUserProfile } from '../api/userApi';
 import { useAuth } from '../utils/hooks';
 import { useNavigate } from 'react-router-dom';
 import { Language } from '../@types/language';
@@ -46,7 +43,7 @@ export default function Profile() {
       await getAllLanguages().then(({ data }) => {
         setLanguages(data);
       });
-    }
+    };
     fetchAndSetLanguages();
   }, []);
 

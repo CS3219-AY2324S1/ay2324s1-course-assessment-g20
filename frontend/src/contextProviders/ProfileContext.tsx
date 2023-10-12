@@ -27,31 +27,31 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
         setRoleId(data.role?.id ?? 2);
         setIsMaintainer(data.role?.name === 'MAINTAINER');
       });
-    }
+    };
     fetchAndSetProfile();
   }, []);
 
   const updateProfile = (newProfile: UpdateUserProfile) => {
     updateUserProfile(newProfile)
-    .then((res) => {
-      if (res.status === 200) {
-        enqueueSnackbar('Profile updated!', { variant: 'success' })
-        if (newProfile.name) {
-          setName(newProfile.name);
+      .then((res) => {
+        if (res.status === 200) {
+          enqueueSnackbar('Profile updated!', { variant: 'success' });
+          if (newProfile.name) {
+            setName(newProfile.name);
+          }
+          if (newProfile.preferredLanguageId) {
+            setPreferredLanguageId(newProfile.preferredLanguageId);
+          }
+        } else {
+          enqueueSnackbar('Error when updating profile', { variant: 'error' });
         }
-        if (newProfile.preferredLanguageId) {
-          setPreferredLanguageId(newProfile.preferredLanguageId);
-        }
-      } else {
-        enqueueSnackbar('Error when updating profile', { variant: 'error' })
-      }
-    })
-    .catch(() => {
-      enqueueSnackbar('Error when updating profile', { variant: 'error' })
-    });
-  }
+      })
+      .catch(() => {
+        enqueueSnackbar('Error when updating profile', { variant: 'error' });
+      });
+  };
 
-  const value = { name, preferredLanguageId, roleId, isMaintainer, updateProfile }
+  const value = { name, preferredLanguageId, roleId, isMaintainer, updateProfile };
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
 };

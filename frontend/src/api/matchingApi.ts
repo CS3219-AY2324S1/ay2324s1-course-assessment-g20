@@ -1,9 +1,9 @@
-import { IwsTicket } from '../@types/question';
+import { IWsTicket } from '../@types/auth';
 import { backendServicesPaths, HttpRequestMethod } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 
 export async function getMatchingTicket() {
-  return requestBackend<IwsTicket>({
+  return requestBackend<IWsTicket>({
     url: backendServicesPaths.matching.ticket,
     method: HttpRequestMethod.GET,
   });

@@ -8,23 +8,23 @@ import { WebsocketMemoryService as MatchingWebsocketService } from '../services/
 @Public()
 export class MatchingWebsocketController {
   constructor(
-    private readonly MatchingWebsocketService: MatchingWebsocketService,
+    private readonly matchingWebsocketService: MatchingWebsocketService,
   ) {}
 
   @MessagePattern(WebsocketServiceApi.DISCONNECT_AND_DELETE_WEBSOCKET)
   deleteWebsocket(userId: string): void {
-    this.MatchingWebsocketService.getConnection(userId).close();
-    this.MatchingWebsocketService.removeConnection(userId);
+    this.matchingWebsocketService.getConnection(userId).close();
+    this.matchingWebsocketService.removeConnection(userId);
   }
 
   @MessagePattern(WebsocketServiceApi.IS_CONNECTED)
   isConnected(userId: string): boolean {
-    return this.MatchingWebsocketService.isConnected(userId);
+    return this.matchingWebsocketService.isConnected(userId);
   }
 
   @MessagePattern(WebsocketServiceApi.EMIT_TO_USER)
   emitToUser(data: { userId: string; event: string; payload: any }): void {
-    this.MatchingWebsocketService.getConnection(data.userId).send(
+    this.matchingWebsocketService.getConnection(data.userId).send(
       JSON.stringify({
         event: data.event,
         data: data.payload,

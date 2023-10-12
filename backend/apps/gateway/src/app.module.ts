@@ -30,7 +30,6 @@ const microserviceOptionKeys = {
     UserController,
     LanguagesController,
     CollaborationController,
-    CollaborationController,
     MatchingWebsocketController,
     MatchingController,
   ],

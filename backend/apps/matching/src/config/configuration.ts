@@ -1,14 +1,13 @@
+import { Service } from '@app/microservice/interservice-api/services';
 import { getRmqOptionsForQueue, RmqQueue } from '@app/microservice/utils';
-import { DatabaseConfigurationOptions } from '@app/sql-database';
+import {
+  DatabaseConfigurationOptions,
+  getDatabaseConfigurationForService,
+} from '@app/sql-database';
 
 export default function matchingConfiguration() {
-  const databaseConfigurationOptions: DatabaseConfigurationOptions = {
-    host: process.env.MATCHING_SERVICE_SQL_DATABASE_HOST,
-    port: process.env.MATCHING_SERVICE_SQL_DATABASE_PORT,
-    user: process.env.MATCHING_SERVICE_SQL_DATABASE_USER,
-    password: process.env.MATCHING_SERVICE_SQL_DATABASE_PASSWORD,
-    database: process.env.MATCHING_SERVICE_SQL_DATABASE_NAME,
-  };
+  const databaseConfigurationOptions: DatabaseConfigurationOptions =
+    getDatabaseConfigurationForService(Service.MATCHING_SERVICE);
 
   const websocketServiceOptions = getRmqOptionsForQueue(RmqQueue.WEBSOCKET);
   const collaborationServiceOptions = getRmqOptionsForQueue(
@@ -21,7 +20,6 @@ export default function matchingConfiguration() {
     databaseConfigurationOptions,
     collaborationServiceOptions,
     questionServiceOptions,
-    rmqUrl: process.env.RMQ_URL,
     websocketServiceOptions,
   };
 }

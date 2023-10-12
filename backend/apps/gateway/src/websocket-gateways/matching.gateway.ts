@@ -1,13 +1,11 @@
 import { Inject } from '@nestjs/common';
 import {
   WebSocketGateway,
-  WebSocketServer,
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
 import { MatchingServiceApi } from '@app/microservice/interservice-api/matching';
 import MatchingDto from '../dtos/auth/matching.dto';
 import { WebsocketMemoryService } from '../services/websocketMemory.service';
@@ -26,11 +24,6 @@ export class MatchingGateway extends BaseWebsocketGateway {
     super(authServiceClient);
   }
 
-  async handleConnection(connection: WebSocket, request: Request) {
-    return super.handleConnection(connection, request);
-  }
-
-  @WebSocketServer()
   @SubscribeMessage('get_match')
   async getMatch(
     @MessageBody() data: MatchingDto,
@@ -38,11 +31,9 @@ export class MatchingGateway extends BaseWebsocketGateway {
   ) {
     const { userId } = await super.getTicketFromTicketId(data.ticket);
     this.websocketMemoryService.addConnection(userId, connection);
-    firstValueFrom(
-      await this.matchingServiceClient.emit(MatchingServiceApi.GET_MATCH, {
-        userId,
-        questionDifficulty: data.questionDifficulty,
-      }),
-    );
+    this.matchingServiceClient.emit(MatchingServiceApi.GET_MATCH, {
+      userId,
+      questionDifficulty: data.questionDifficulty,
+    });
   }
 }

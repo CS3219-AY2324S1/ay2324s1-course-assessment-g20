@@ -6,123 +6,106 @@ import {
   Inject,
   Param,
   Delete,
+  OnModuleInit,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { ClientGrpc } from '@nestjs/microservices';
 import { Public } from '../jwt/jwtPublic.decorator';
 import QuestionDto from '../dtos/question/question.dto';
 import DifficultyDto from '../dtos/question/difficulty.dto';
 import CategoryDto from '../dtos/question/category.dto';
+import { QuestionController as QuestionService } from 'apps/question/src/question.controller';
+import { getPromisifiedGrpcService } from '@app/microservice/utils';
 import { Service } from '@app/microservice/interservice-api/services';
-import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
 
 @Controller('question')
-export class AppController {
+export class AppController implements OnModuleInit {
+  private questionService: QuestionService;
+
   constructor(
-    @Inject(Service.QUESTION_SERVICE)
-    private readonly questionServiceClient: ClientProxy,
+    @Inject(Service.QUESTION_SERVICE) private questionServiceClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.questionService = getPromisifiedGrpcService<QuestionService>(
+      this.questionServiceClient,
+      'QuestionService',
+    );
+  }
 
   // QUESTIONS
 
   @Public()
   @Get('questions')
-  getQuestions(): Observable<QuestionDto[]> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.GET_QUESTIONS,
-      {},
-    );
+  getQuestions() {
+    return this.questionService
+      .getQuestions({})
+      .then(({ questions }) => questions);
   }
 
   @Public()
   @Post('questions')
-  addQuestion(
-    @Body('question') question: QuestionDto,
-  ): Observable<QuestionDto> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.ADD_QUESTION,
-      question,
-    );
+  addQuestion(@Body('question') question: QuestionDto) {
+    return this.questionService.addQuestion(question);
   }
 
   @Public()
   @Delete('questions/:id')
-  deleteQuestionWithId(@Param('id') questionId: string): Observable<string> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.DELETE_QUESTION_WITH_ID,
-      questionId,
-    );
+  deleteQuestionWithId(@Param('id') id: string): Promise<string> {
+    return this.questionService
+      .deleteQuestionWithId({ id })
+      .then(({ id }) => id);
   }
 
   @Public()
   @Get('questions/:id')
-  getQuestionWithId(@Param('id') questionId: string): Observable<QuestionDto> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.GET_QUESTION_WITH_ID,
-      questionId,
-    );
+  getQuestionWithId(@Param('id') id: string) {
+    return this.questionService.getQuestionWithId({ id });
   }
 
   // DIFFICULTIES
 
   @Public()
   @Get('difficulties')
-  getDifficulties(): Observable<DifficultyDto[]> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.GET_DIFFICULTIES,
-      {},
-    );
+  getDifficulties() {
+    return this.questionService
+      .getDifficulties({})
+      .then(({ difficulties }) => difficulties);
   }
 
   @Public()
   @Post('difficulties')
-  addDifficulty(
-    @Body('difficulty') difficulty: DifficultyDto,
-  ): Observable<DifficultyDto> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.ADD_DIFFICULTY,
-      difficulty,
-    );
+  addDifficulty(@Body('difficulty') difficulty: DifficultyDto) {
+    return this.questionService.addDifficulty(difficulty);
   }
 
   @Public()
   @Delete('difficulties/:id')
-  deleteDifficultyWithId(
-    @Param('id') difficultyId: string,
-  ): Observable<string> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.DELETE_DIFFICULTY_WITH_ID,
-      difficultyId,
-    );
+  deleteDifficultyWithId(@Param('id') id: string): Promise<string> {
+    return this.questionService
+      .deleteDifficultyWithId({ id })
+      .then(({ id }) => id);
   }
 
   // CATEGORIES
 
   @Get('categories')
-  getCategories(): Observable<CategoryDto[]> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.GET_CATEGORIES,
-      {},
-    );
+  getCategories() {
+    return this.questionService
+      .getCategories({})
+      .then(({ categories }) => categories);
   }
 
   @Public()
   @Post('categories')
-  addCategory(
-    @Body('category') category: CategoryDto,
-  ): Observable<CategoryDto> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.ADD_CATEGORY,
-      category,
-    );
+  addCategory(@Body('category') category: CategoryDto) {
+    return this.questionService.addCategory(category);
   }
 
   @Public()
   @Delete('categories/:id')
-  deleteCategoryWithId(@Param('id') categoryId: string): Observable<string> {
-    return this.questionServiceClient.send(
-      QuestionServiceApi.DELETE_CATEGORY_WITH_ID,
-      categoryId,
-    );
+  deleteCategoryWithId(@Param('id') id: string): Promise<string> {
+    return this.questionService
+      .deleteCategoryWithId({ id })
+      .then(({ id }) => id);
   }
 }

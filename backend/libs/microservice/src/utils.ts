@@ -12,7 +12,6 @@ import { join } from 'path';
 import { Service } from './interservice-api/services';
 
 export enum RmqQueue {
-  QUESTION = 'question_queue',
   COLLABORATION = 'collaboration_queue',
 }
 
@@ -65,6 +64,10 @@ const SERVICE_TO_PROTO_OPTIONS_MAP = new Map<Service, GrpcOptions['options']>([
   [
     Service.USER_SERVICE,
     { package: 'UserPackage', protoPath: getFullProtoPath('user') },
+  ],
+  [
+    Service.QUESTION_SERVICE,
+    { package: 'QuestionPackage', protoPath: getFullProtoPath('question') },
   ],
 ]);
 

@@ -9,19 +9,12 @@ import { UserSessionModel } from './database/models/userSession.model';
 import { SessionDaoModule } from './database/daos/session/session.dao.module';
 import { SessionTicketModel } from './database/models/sessionTicket.model';
 import { Service } from '@app/microservice/interservice-api/services';
-import {
-  createMicroserviceClientProxyProvider,
-  registerGrpcClients,
-} from '@app/microservice/utils';
-
-const microserviceOptionKeys = {
-  [Service.QUESTION_SERVICE]: 'questionServiceOptions',
-};
+import { registerGrpcClients } from '@app/microservice/utils';
 
 @Module({
   imports: [
     ConfigModule.loadConfiguration(collaborationConfiguration),
-    registerGrpcClients([Service.USER_SERVICE]),
+    registerGrpcClients([Service.USER_SERVICE, Service.QUESTION_SERVICE]),
 
     // Database and DAOs
     SqlDatabaseModule.factory([
@@ -32,11 +25,6 @@ const microserviceOptionKeys = {
     SessionDaoModule,
   ],
   controllers: [CollaborationController],
-  providers: [
-    CollaborationService,
-    ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
-      createMicroserviceClientProxyProvider(key, value),
-    ),
-  ],
+  providers: [CollaborationService],
 })
 export class CollaborationModule {}

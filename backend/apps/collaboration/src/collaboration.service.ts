@@ -5,27 +5,27 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { SessionDaoService } from './database/daos/session/session.dao.service';
-import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { ClientGrpc } from '@nestjs/microservices';
 import {
   CreateSessionInfo,
   GetSessionAndTicketInfo,
 } from '@app/microservice/interservice-api/collaboration';
 import { Service } from '@app/microservice/interservice-api/services';
-import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
 import { SessionModel } from './database/models/session.model';
 import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
+import { QuestionController as QuestionService } from 'apps/question/src/question.controller';
 import { getPromisifiedGrpcService } from '@app/microservice/utils';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
   private userAuthService: UserAuthService;
+  private questionService: QuestionService;
 
   constructor(
-    @Inject(Service.QUESTION_SERVICE)
-    private readonly questionServiceClient: ClientProxy,
     @Inject(Service.USER_SERVICE)
     private readonly userServiceClient: ClientGrpc,
+    @Inject(Service.QUESTION_SERVICE)
+    private readonly questionServiceClient: ClientGrpc,
     private readonly sessionDaoService: SessionDaoService,
   ) {}
 
@@ -33,6 +33,10 @@ export class CollaborationService implements OnModuleInit {
     this.userAuthService = getPromisifiedGrpcService<UserAuthService>(
       this.userServiceClient,
       'UserAuthService',
+    );
+    this.questionService = getPromisifiedGrpcService<QuestionService>(
+      this.questionServiceClient,
+      'QuestionService',
     );
   }
 
@@ -57,12 +61,9 @@ export class CollaborationService implements OnModuleInit {
     await this.validateUsersExist([getSessionInfo.userId]);
     this.validateUsersBelongInSession(session, [getSessionInfo.userId]);
 
-    const question = await firstValueFrom(
-      this.questionServiceClient.send(
-        QuestionServiceApi.GET_QUESTION_WITH_ID,
-        session.questionId,
-      ),
-    );
+    const question = await this.questionService.getQuestionWithId({
+      id: session.questionId,
+    });
 
     const ticket = await this.userAuthService.generateWebsocketTicket({
       userId: getSessionInfo.userId,

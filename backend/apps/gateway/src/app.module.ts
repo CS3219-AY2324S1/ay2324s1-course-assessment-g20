@@ -16,7 +16,6 @@ import {
 } from '@app/microservice/utils';
 
 const microserviceOptionKeys = {
-  [Service.QUESTION_SERVICE]: 'questionServiceOptions',
   [Service.COLLABORATION_SERVICE]: 'collaborationServiceOptions',
 };
 
@@ -24,7 +23,7 @@ const microserviceOptionKeys = {
   imports: [
     ConfigModule.loadConfiguration(gatewayConfiguration),
     JwtModule,
-    registerGrpcClients([Service.USER_SERVICE]),
+    registerGrpcClients([Service.USER_SERVICE, Service.QUESTION_SERVICE]),
   ],
   controllers: [
     AppController,

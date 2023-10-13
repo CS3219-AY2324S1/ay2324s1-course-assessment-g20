@@ -1,22 +1,37 @@
+import { Service } from '@app/microservice/interservice-api/services';
+import { getPromisifiedGrpcService } from '@app/microservice/utils';
 import {
-  COLLABORATION_SERVICE,
-  CollaborationServiceApi,
-} from '@app/microservice/interservice-api/collaboration';
-import { Controller, Get, Inject, Param, Req } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+  Controller,
+  Get,
+  Inject,
+  OnModuleInit,
+  Param,
+  Req,
+} from '@nestjs/common';
+import { ClientGrpc } from '@nestjs/microservices';
+import { CollaborationController as CollaborationService } from 'apps/collaboration/src/collaboration.controller';
 
 @Controller('collaboration')
-export class CollaborationController {
+export class CollaborationController implements OnModuleInit {
+  private collaborationService: CollaborationService;
+
   constructor(
-    @Inject(COLLABORATION_SERVICE)
-    private readonly collaborationServiceClient: ClientProxy,
+    @Inject(Service.COLLABORATION_SERVICE)
+    private collaborationServiceClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.collaborationService = getPromisifiedGrpcService<CollaborationService>(
+      this.collaborationServiceClient,
+      'CollaborationService',
+    );
+  }
 
   @Get('session/:sessionId')
   getSessionAndWsTicket(@Req() req, @Param('sessionId') sessionId) {
-    return this.collaborationServiceClient.send(
-      CollaborationServiceApi.GET_SESSION_AND_WS_TICKET,
-      { sessionId, userId: req.user.id },
-    );
+    return this.collaborationService.getSessionAndWsTicket({
+      sessionId,
+      userId: req.user.id,
+    });
   }
 }

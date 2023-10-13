@@ -11,8 +11,10 @@ import {
 import { join } from 'path';
 import { Service } from './interservice-api/services';
 
+// RMQ
+// TODO: RMQ logic left here for matching service implementation
 export enum RmqQueue {
-  COLLABORATION = 'collaboration_queue',
+  PLACHOLDER = 'placeholder_queue',
 }
 
 export const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {
@@ -29,6 +31,19 @@ export const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {
   };
 };
 
+export const createMicroserviceClientProxyProvider = (
+  microservice: string,
+  optionsKey: string,
+): Provider => ({
+  provide: microservice,
+  useFactory: (configService: ConfigService) => {
+    const microserviceOptions = configService.get(optionsKey);
+    return ClientProxyFactory.create(microserviceOptions);
+  },
+  inject: [ConfigService],
+});
+
+// gRPC
 export const registerGrpcClients = (microservices: Service[]) =>
   ClientsModule.registerAsync(
     microservices.map((microservice) => ({
@@ -69,19 +84,14 @@ const SERVICE_TO_PROTO_OPTIONS_MAP = new Map<Service, GrpcOptions['options']>([
     Service.QUESTION_SERVICE,
     { package: 'QuestionPackage', protoPath: getFullProtoPath('question') },
   ],
+  [
+    Service.COLLABORATION_SERVICE,
+    {
+      package: 'CollaborationPackage',
+      protoPath: getFullProtoPath('collaboration'),
+    },
+  ],
 ]);
-
-export const createMicroserviceClientProxyProvider = (
-  microservice: string,
-  optionsKey: string,
-): Provider => ({
-  provide: microservice,
-  useFactory: (configService: ConfigService) => {
-    const microserviceOptions = configService.get(optionsKey);
-    return ClientProxyFactory.create(microserviceOptions);
-  },
-  inject: [ConfigService],
-});
 
 export const getPromisifiedGrpcService = <T extends object>(
   client: ClientGrpc,

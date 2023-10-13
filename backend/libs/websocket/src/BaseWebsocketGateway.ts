@@ -1,8 +1,8 @@
+import { getPromisifiedGrpcService } from '@app/microservice/utils';
 import { OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
-import { promisify } from '@app/microservice/utils';
 
 /**
  * BaseWebsocketGateway class which handles authentication via a custom ticketing
@@ -16,7 +16,7 @@ export class BaseWebsocketGateway
 
   private userAuthService: UserAuthService;
 
-  constructor(private readonly client: ClientGrpc) {}
+  constructor(private readonly userServiceClient: ClientGrpc) {}
 
   static getTicketIdFromUrl(request: Request) {
     const url = new URL(request.url, 'http://placeholder.com');
@@ -24,8 +24,9 @@ export class BaseWebsocketGateway
   }
 
   onModuleInit() {
-    this.userAuthService = promisify(
-      this.client.getService<UserAuthService>('UserAuthService'),
+    this.userAuthService = getPromisifiedGrpcService<UserAuthService>(
+      this.userServiceClient,
+      'UserAuthService',
     );
   }
 

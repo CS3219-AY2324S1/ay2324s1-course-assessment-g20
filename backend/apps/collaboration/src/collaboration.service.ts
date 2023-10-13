@@ -15,7 +15,7 @@ import { Service } from '@app/microservice/interservice-api/services';
 import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
 import { SessionModel } from './database/models/session.model';
 import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
-import { promisify } from '@app/microservice/utils';
+import { getPromisifiedGrpcService } from '@app/microservice/utils';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
@@ -24,14 +24,15 @@ export class CollaborationService implements OnModuleInit {
   constructor(
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionServiceClient: ClientProxy,
-    @Inject('USER_PACKAGE')
-    private readonly client: ClientGrpc,
+    @Inject(Service.USER_SERVICE)
+    private readonly userServiceClient: ClientGrpc,
     private readonly sessionDaoService: SessionDaoService,
   ) {}
 
   onModuleInit() {
-    this.userAuthService = promisify(
-      this.client.getService<UserAuthService>('UserAuthService'),
+    this.userAuthService = getPromisifiedGrpcService<UserAuthService>(
+      this.userServiceClient,
+      'UserAuthService',
     );
   }
 

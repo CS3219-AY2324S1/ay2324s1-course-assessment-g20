@@ -3,6 +3,7 @@ syntax = "proto3";
 package UserPackage;
 
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
 import "common.proto";
 
 service UserAuthService {
@@ -15,6 +16,15 @@ service UserAuthService {
   rpc ValidateUsersExists (common.IDs) returns (google.protobuf.BoolValue);
 }
 
+service UserLanguageService {
+  rpc GetAllLanguages (google.protobuf.Empty) returns (GetAllLanguagesResponse);
+}
+
+service UserProfileService {
+    rpc GetUserProfile (common.ID) returns (UserProfile);
+    rpc UpdateUserProfile (UserProfile) returns (UserProfile);
+}
+
 message User {
     string id = 1;
     string authProvider = 2;
@@ -25,9 +35,12 @@ message User {
 }
 
 message UserProfile {
-    string name = 1;
-    int32 preferredLanguageId = 2;
-    int32 roleId = 3;
+    string userId = 1;
+    string name = 2;
+    int32 preferredLanguageId = 3;
+    int32 roleId = 4;
+    Language preferredLanguage = 5;
+    Role role = 6;
 }
 
 message RefreshTokenRequest {
@@ -47,4 +60,18 @@ message WebsocketTicket {
 message JwtTokens {
     string accessToken = 1;
     string refreshToken = 2;
+}
+
+message Language {
+    int32 id = 1;
+    string name = 2;
+}
+
+message Role {
+    int32 id = 1;
+    string name = 2;
+}
+
+message GetAllLanguagesResponse {
+    repeated Language languages = 1;
 }

@@ -8,7 +8,8 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { DEFAULT_LANGUAGE } from '@app/types/languages';
 import { DEFAULT_ROLE } from '@app/types/roles';
 import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
-import { promisify } from '@app/microservice/utils';
+import { getPromisifiedGrpcService } from '@app/microservice/utils';
+import { Service } from '@app/microservice/interservice-api/services';
 
 @Injectable()
 export class GoogleOauthStrategy
@@ -18,7 +19,7 @@ export class GoogleOauthStrategy
   private userAuthService: UserAuthService;
 
   constructor(
-    @Inject('USER_PACKAGE') private client: ClientGrpc,
+    @Inject(Service.USER_SERVICE) private userServiceClient: ClientGrpc,
     configService: ConfigService,
   ) {
     const googleOauthOptions: _StrategyOptionsBase =
@@ -34,8 +35,9 @@ export class GoogleOauthStrategy
   }
 
   onModuleInit() {
-    this.userAuthService = promisify(
-      this.client.getService<UserAuthService>('UserAuthService'),
+    this.userAuthService = getPromisifiedGrpcService<UserAuthService>(
+      this.userServiceClient,
+      'UserAuthService',
     );
   }
 

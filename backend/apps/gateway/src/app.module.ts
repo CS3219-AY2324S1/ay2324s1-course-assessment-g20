@@ -17,7 +17,6 @@ import {
 
 const microserviceOptionKeys = {
   [Service.QUESTION_SERVICE]: 'questionServiceOptions',
-  [Service.USER_SERVICE]: 'userServiceOptions',
   [Service.COLLABORATION_SERVICE]: 'collaborationServiceOptions',
 };
 

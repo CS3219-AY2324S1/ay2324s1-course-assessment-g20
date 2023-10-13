@@ -1,6 +1,7 @@
 import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+  ClientGrpc,
   ClientProxyFactory,
   ClientsModule,
   GrpcOptions,
@@ -12,7 +13,6 @@ import { Service } from './interservice-api/services';
 
 export enum RmqQueue {
   QUESTION = 'question_queue',
-  USER = 'user_queue',
   COLLABORATION = 'collaboration_queue',
 }
 
@@ -39,7 +39,7 @@ export const registerGrpcClients = (microservices: Service[]) =>
        */
       useFactory: async (configService: ConfigService) =>
         getGrpcOptions(microservice),
-      name: `USER_PACKAGE`,
+      name: microservice,
       inject: [ConfigService],
     })),
   );
@@ -80,7 +80,12 @@ export const createMicroserviceClientProxyProvider = (
   inject: [ConfigService],
 });
 
-export const promisify = <T extends object>(service: T) => {
+export const getPromisifiedGrpcService = <T extends object>(
+  client: ClientGrpc,
+  rpcService: string,
+) => promisify(client.getService<T>(rpcService));
+
+const promisify = <T extends object>(service: T) => {
   return new Proxy(service, {
     get: (service, methodName: string) => {
       return async (...params) => {

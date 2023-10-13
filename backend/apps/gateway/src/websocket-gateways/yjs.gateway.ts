@@ -10,6 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import { BaseWebsocketGateway } from '@app/websocket';
+import { Service } from '@app/microservice/interservice-api/services';
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
@@ -18,9 +19,9 @@ export class YjsGateway extends BaseWebsocketGateway {
   constructor(
     @Inject(COLLABORATION_SERVICE)
     private readonly collaborationServiceClient: ClientProxy,
-    @Inject('USER_PACKAGE') client: ClientGrpc,
+    @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
   ) {
-    super(client);
+    super(userServiceClient);
   }
 
   async handleConnection(connection: WebSocket, request: Request) {

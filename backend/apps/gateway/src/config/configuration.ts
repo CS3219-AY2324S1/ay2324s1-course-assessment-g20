@@ -10,7 +10,6 @@ const gatewayConfiguration = () => {
   };
 
   const questionServiceOptions = getRmqOptionsForQueue(RmqQueue.QUESTION);
-  const userServiceOptions = getRmqOptionsForQueue(RmqQueue.USER);
   const collaborationServiceOptions = getRmqOptionsForQueue(
     RmqQueue.COLLABORATION,
   );
@@ -20,7 +19,6 @@ const gatewayConfiguration = () => {
     corsOrigin: process.env.CORS_ORIGIN,
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
     questionServiceOptions,
-    userServiceOptions,
     collaborationServiceOptions,
     googleOauthOptions,
   };

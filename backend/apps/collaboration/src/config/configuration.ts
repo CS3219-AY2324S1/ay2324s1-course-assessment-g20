@@ -7,7 +7,6 @@ import { RmqQueue } from '@app/microservice/utils';
 import { Service } from '@app/microservice/interservice-api/services';
 
 const collaborationConfiguration = () => {
-  const userServiceOptions = getRmqOptionsForQueue(RmqQueue.USER);
   const questionServiceOptions = getRmqOptionsForQueue(RmqQueue.QUESTION);
 
   const databaseConfigurationOptions: DatabaseConfigurationOptions =
@@ -16,7 +15,6 @@ const collaborationConfiguration = () => {
   return {
     port: parseInt(process.env.COLLABORATION_SERVICE_PORT, 10),
     databaseConfigurationOptions,
-    userServiceOptions,
     questionServiceOptions,
     rmqUrl: process.env.RMQ_URL,
   };

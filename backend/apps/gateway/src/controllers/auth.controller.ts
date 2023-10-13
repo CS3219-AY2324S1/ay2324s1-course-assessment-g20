@@ -16,7 +16,8 @@ import { ConfigService } from '@nestjs/config';
 import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
 import RefreshDto from '../dtos/auth/refresh.dto';
 import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
-import { promisify } from '@app/microservice/utils';
+import { getPromisifiedGrpcService } from '@app/microservice/utils';
+import { Service } from '@app/microservice/interservice-api/services';
 
 @Controller('auth')
 export class AuthController implements OnModuleInit {
@@ -24,12 +25,13 @@ export class AuthController implements OnModuleInit {
 
   constructor(
     private readonly configService: ConfigService,
-    @Inject('USER_PACKAGE') private client: ClientGrpc,
+    @Inject(Service.USER_SERVICE) private userServiceClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
-    this.userAuthService = promisify(
-      this.client.getService<UserAuthService>('UserAuthService'),
+    this.userAuthService = getPromisifiedGrpcService<UserAuthService>(
+      this.userServiceClient,
+      'UserAuthService',
     );
   }
 

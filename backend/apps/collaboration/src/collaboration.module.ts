@@ -15,7 +15,6 @@ import {
 } from '@app/microservice/utils';
 
 const microserviceOptionKeys = {
-  [Service.USER_SERVICE]: 'userServiceOptions',
   [Service.QUESTION_SERVICE]: 'questionServiceOptions',
 };
 

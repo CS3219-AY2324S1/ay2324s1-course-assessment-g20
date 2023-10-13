@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { CollaborationModule } from './collaboration.module';
 import collaborationConfiguration from './config/configuration';
 import { getGrpcOptions } from '@app/microservice/utils';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
 
 async function bootstrap() {
   const { port } = collaborationConfiguration();

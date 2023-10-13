@@ -5,14 +5,17 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import { BaseWebsocketGateway } from '@app/websocket';
-import { Service } from '@app/microservice/interservice-api/services';
-import { CollaborationController as CollaborationService } from 'apps/collaboration/src/collaboration.controller';
-import { getPromisifiedGrpcService } from '@app/microservice/utils';
+import { Service } from '@app/microservice/services';
+import {
+  COLLABORATION_SERVICE_NAME,
+  CollaborationServiceClient,
+} from '@app/microservice/interfaces/collaboration';
+import { firstValueFrom } from 'rxjs';
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
-  private collaborationService: CollaborationService;
+  private collaborationService: CollaborationServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
@@ -24,10 +27,10 @@ export class YjsGateway extends BaseWebsocketGateway {
 
   onModuleInit() {
     super.onModuleInit();
-    this.collaborationService = getPromisifiedGrpcService<CollaborationService>(
-      this.collaborationServiceClient,
-      'CollaborationService',
-    );
+    this.collaborationService =
+      this.collaborationServiceClient.getService<CollaborationServiceClient>(
+        COLLABORATION_SERVICE_NAME,
+      );
   }
 
   async handleConnection(connection: WebSocket, request: Request) {
@@ -38,8 +41,9 @@ export class YjsGateway extends BaseWebsocketGateway {
     }
 
     const ticketId = YjsGateway.getTicketIdFromUrl(request);
-    const { sessionId } =
-      await this.collaborationService.getSessionIdFromTicket({ id: ticketId });
+    const { sessionId } = await firstValueFrom(
+      this.collaborationService.getSessionIdFromTicket({ id: ticketId }),
+    );
 
     YjsGateway.setupYjs(connection, sessionId);
     return YjsGateway.sessionInitialized(connection);

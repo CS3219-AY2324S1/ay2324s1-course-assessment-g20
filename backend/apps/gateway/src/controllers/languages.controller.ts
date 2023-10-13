@@ -1,28 +1,31 @@
-import { Service } from '@app/microservice/interservice-api/services';
-import { getPromisifiedGrpcService } from '@app/microservice/utils';
+import {
+  USER_LANGUAGE_SERVICE_NAME,
+  UserLanguageServiceClient,
+} from '@app/microservice/interfaces/user';
+import { Service } from '@app/microservice/services';
 import { Controller, Get, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import { LanguageController as UserLanguageService } from 'apps/user/src/language/language.controller';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('languages')
 export class LanguagesController implements OnModuleInit {
-  private userLanguageService: UserLanguageService;
+  private userLanguageService: UserLanguageServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE) private userServiceClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
-    this.userLanguageService = getPromisifiedGrpcService<UserLanguageService>(
-      this.userServiceClient,
-      'UserLanguageService',
-    );
+    this.userLanguageService =
+      this.userServiceClient.getService<UserLanguageServiceClient>(
+        USER_LANGUAGE_SERVICE_NAME,
+      );
   }
 
   @Get()
   getLanguages() {
-    return this.userLanguageService
-      .getAllLanguages({})
-      .then((resp) => resp.languages);
+    return firstValueFrom(this.userLanguageService.getAllLanguages({})).then(
+      (resp) => resp.languages,
+    );
   }
 }

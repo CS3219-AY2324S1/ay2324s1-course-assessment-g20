@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { QuestionModule } from './question.module';
 import questionConfiguration from './config/configuration';
 import { getGrpcOptions } from '@app/microservice/utils';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
 
 async function bootstrap() {
   const { port } = questionConfiguration();

@@ -2,7 +2,7 @@ import {
   DatabaseConfigurationOptions,
   getDatabaseConfigurationForService,
 } from '@app/sql-database';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
 
 const collaborationConfiguration = () => {
   const databaseConfigurationOptions: DatabaseConfigurationOptions =

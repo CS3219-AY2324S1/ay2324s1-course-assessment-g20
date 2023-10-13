@@ -1,5 +1,8 @@
-import { Service } from '@app/microservice/interservice-api/services';
-import { getPromisifiedGrpcService } from '@app/microservice/utils';
+import {
+  COLLABORATION_SERVICE_NAME,
+  CollaborationServiceClient,
+} from '@app/microservice/interfaces/collaboration';
+import { Service } from '@app/microservice/services';
 import {
   Controller,
   Get,
@@ -9,11 +12,10 @@ import {
   Req,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import { CollaborationController as CollaborationService } from 'apps/collaboration/src/collaboration.controller';
 
 @Controller('collaboration')
 export class CollaborationController implements OnModuleInit {
-  private collaborationService: CollaborationService;
+  private collaborationService: CollaborationServiceClient;
 
   constructor(
     @Inject(Service.COLLABORATION_SERVICE)
@@ -21,10 +23,10 @@ export class CollaborationController implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.collaborationService = getPromisifiedGrpcService<CollaborationService>(
-      this.collaborationServiceClient,
-      'CollaborationService',
-    );
+    this.collaborationService =
+      this.collaborationServiceClient.getService<CollaborationServiceClient>(
+        COLLABORATION_SERVICE_NAME,
+      );
   }
 
   @Get('session/:sessionId')

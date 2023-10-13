@@ -15,13 +15,17 @@ import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
 import RefreshDto from '../dtos/auth/refresh.dto';
-import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
-import { getPromisifiedGrpcService } from '@app/microservice/utils';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
+import {
+  USER_AUTH_SERVICE_NAME,
+  User,
+  UserAuthServiceClient,
+} from '@app/microservice/interfaces/user';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('auth')
 export class AuthController implements OnModuleInit {
-  private userAuthService: UserAuthService;
+  private userAuthService: UserAuthServiceClient;
 
   constructor(
     private readonly configService: ConfigService,
@@ -29,10 +33,10 @@ export class AuthController implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.userAuthService = getPromisifiedGrpcService<UserAuthService>(
-      this.userServiceClient,
-      'UserAuthService',
-    );
+    this.userAuthService =
+      this.userServiceClient.getService<UserAuthServiceClient>(
+        USER_AUTH_SERVICE_NAME,
+      );
   }
 
   @Public()
@@ -46,8 +50,9 @@ export class AuthController implements OnModuleInit {
   @Get('google/redirect')
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-    const { accessToken, refreshToken } =
-      await this.userAuthService.generateJwts(req.user);
+    const { accessToken, refreshToken } = await firstValueFrom(
+      this.userAuthService.generateJwts(req.user as User),
+    );
 
     const redirectUrl = `${this.configService.get(
       'corsOrigin',

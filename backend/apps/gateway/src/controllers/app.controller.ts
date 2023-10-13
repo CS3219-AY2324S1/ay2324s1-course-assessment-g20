@@ -13,23 +13,26 @@ import { Public } from '../jwt/jwtPublic.decorator';
 import QuestionDto from '../dtos/question/question.dto';
 import DifficultyDto from '../dtos/question/difficulty.dto';
 import CategoryDto from '../dtos/question/category.dto';
-import { QuestionController as QuestionService } from 'apps/question/src/question.controller';
-import { getPromisifiedGrpcService } from '@app/microservice/utils';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
+import {
+  QUESTION_SERVICE_NAME,
+  QuestionServiceClient,
+} from '@app/microservice/interfaces/question';
+import { map } from 'rxjs';
 
 @Controller('question')
 export class AppController implements OnModuleInit {
-  private questionService: QuestionService;
+  private questionService: QuestionServiceClient;
 
   constructor(
     @Inject(Service.QUESTION_SERVICE) private questionServiceClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
-    this.questionService = getPromisifiedGrpcService<QuestionService>(
-      this.questionServiceClient,
-      'QuestionService',
-    );
+    this.questionService =
+      this.questionServiceClient.getService<QuestionServiceClient>(
+        QUESTION_SERVICE_NAME,
+      );
   }
 
   // QUESTIONS
@@ -39,7 +42,7 @@ export class AppController implements OnModuleInit {
   getQuestions() {
     return this.questionService
       .getQuestions({})
-      .then(({ questions }) => questions);
+      .pipe(map(({ questions }) => questions));
   }
 
   @Public()
@@ -50,10 +53,10 @@ export class AppController implements OnModuleInit {
 
   @Public()
   @Delete('questions/:id')
-  deleteQuestionWithId(@Param('id') id: string): Promise<string> {
+  deleteQuestionWithId(@Param('id') id: string) {
     return this.questionService
       .deleteQuestionWithId({ id })
-      .then(({ id }) => id);
+      .pipe(map(({ id }) => id));
   }
 
   @Public()
@@ -69,7 +72,7 @@ export class AppController implements OnModuleInit {
   getDifficulties() {
     return this.questionService
       .getDifficulties({})
-      .then(({ difficulties }) => difficulties);
+      .pipe(map(({ difficulties }) => difficulties));
   }
 
   @Public()
@@ -80,10 +83,10 @@ export class AppController implements OnModuleInit {
 
   @Public()
   @Delete('difficulties/:id')
-  deleteDifficultyWithId(@Param('id') id: string): Promise<string> {
+  deleteDifficultyWithId(@Param('id') id: string) {
     return this.questionService
       .deleteDifficultyWithId({ id })
-      .then(({ id }) => id);
+      .pipe(map(({ id }) => id));
   }
 
   // CATEGORIES
@@ -92,7 +95,7 @@ export class AppController implements OnModuleInit {
   getCategories() {
     return this.questionService
       .getCategories({})
-      .then(({ categories }) => categories);
+      .pipe(map(({ categories }) => categories));
   }
 
   @Public()
@@ -103,9 +106,9 @@ export class AppController implements OnModuleInit {
 
   @Public()
   @Delete('categories/:id')
-  deleteCategoryWithId(@Param('id') id: string): Promise<string> {
+  deleteCategoryWithId(@Param('id') id: string) {
     return this.questionService
       .deleteCategoryWithId({ id })
-      .then(({ id }) => id);
+      .pipe(map(({ id }) => id));
   }
 }

@@ -1,65 +1,55 @@
 import { Controller } from '@nestjs/common';
 import { QuestionService } from './question.service';
-import { GrpcMethod } from '@nestjs/microservices';
 import { Difficulty } from './schemas/difficulty.schema';
 import { Category } from './schemas/category.schema';
-import { QuestionWithCategoryAndDifficulty } from './interface';
-
-const QuestionServiceGrpcMethod: MethodDecorator =
-  GrpcMethod('QuestionService');
+import {
+  GetCategoriesResponse,
+  GetDifficultiesResponse,
+  GetQuestionsResponse,
+  Question,
+  QuestionServiceController,
+  QuestionServiceControllerMethods,
+} from '@app/microservice/interfaces/question';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Controller()
-export class QuestionController {
+@QuestionServiceControllerMethods()
+export class QuestionController implements QuestionServiceController {
   constructor(private readonly questionService: QuestionService) {}
 
   // QUESTIONS
 
-  @QuestionServiceGrpcMethod
-  getQuestions({}): Promise<{
-    questions: QuestionWithCategoryAndDifficulty[];
-  }> {
+  getQuestions(): Promise<GetQuestionsResponse> {
     return this.questionService
       .getQuestions()
       .then((questions) => ({ questions }));
   }
 
-  @QuestionServiceGrpcMethod
-  addQuestion(
-    question: QuestionWithCategoryAndDifficulty,
-  ): Promise<QuestionWithCategoryAndDifficulty> {
+  addQuestion(question: Question): Promise<Question> {
     return this.questionService.addQuestion(question);
   }
 
-  @QuestionServiceGrpcMethod
-  deleteQuestionWithId({ id }: { id: string }): Promise<{ id: string }> {
+  deleteQuestionWithId({ id }: { id: string }): Promise<ID> {
     return this.questionService.deleteQuestionWithId(id).then((id) => ({ id }));
   }
 
-  @QuestionServiceGrpcMethod
-  getQuestionWithId({
-    id,
-  }: {
-    id: string;
-  }): Promise<QuestionWithCategoryAndDifficulty> {
+  getQuestionWithId({ id }: ID): Promise<Question> {
     return this.questionService.getQuestionWithId(id);
   }
 
   // DIFFICULTIES
 
-  @QuestionServiceGrpcMethod
-  getDifficulties({}): Promise<{ difficulties: Difficulty[] }> {
+  getDifficulties(): Promise<GetDifficultiesResponse> {
     return this.questionService
       .getDifficulties()
       .then((difficulties) => ({ difficulties }));
   }
 
-  @QuestionServiceGrpcMethod
   addDifficulty(difficulty: Difficulty): Promise<Difficulty> {
     return this.questionService.addDifficulty(difficulty);
   }
 
-  @QuestionServiceGrpcMethod
-  deleteDifficultyWithId({ id }: { id: string }): Promise<{ id: string }> {
+  deleteDifficultyWithId({ id }: ID): Promise<ID> {
     return this.questionService
       .deleteDifficultyWithId(id)
       .then((id) => ({ id }));
@@ -67,20 +57,17 @@ export class QuestionController {
 
   // CATEGORIES
 
-  @QuestionServiceGrpcMethod
-  getCategories({}): Promise<{ categories: Category[] }> {
+  getCategories(): Promise<GetCategoriesResponse> {
     return this.questionService
       .getCategories()
       .then((categories) => ({ categories }));
   }
 
-  @QuestionServiceGrpcMethod
   addCategory(category: Category): Promise<Category> {
     return this.questionService.addCategory(category);
   }
 
-  @QuestionServiceGrpcMethod
-  deleteCategoryWithId({ id }: { id: string }): Promise<{ id: string }> {
+  deleteCategoryWithId({ id }: ID): Promise<ID> {
     return this.questionService.deleteCategoryWithId(id).then((id) => ({ id }));
   }
 }

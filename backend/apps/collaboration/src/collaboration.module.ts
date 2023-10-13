@@ -8,7 +8,7 @@ import { SessionModel } from './database/models/session.model';
 import { UserSessionModel } from './database/models/userSession.model';
 import { SessionDaoModule } from './database/daos/session/session.dao.module';
 import { SessionTicketModel } from './database/models/sessionTicket.model';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
 import { registerGrpcClients } from '@app/microservice/utils';
 
 @Module({

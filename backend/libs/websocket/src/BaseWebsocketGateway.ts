@@ -1,8 +1,11 @@
-import { getPromisifiedGrpcService } from '@app/microservice/utils';
+import {
+  USER_AUTH_SERVICE_NAME,
+  UserAuthServiceClient,
+} from '@app/microservice/interfaces/user';
 import { OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
-import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
+import { firstValueFrom } from 'rxjs';
 
 /**
  * BaseWebsocketGateway class which handles authentication via a custom ticketing
@@ -14,7 +17,7 @@ export class BaseWebsocketGateway
   private static TICKET_KEY = 'ticket';
   private static UNAUTHORIZED_MESSAGE = 'unauthorized';
 
-  private userAuthService: UserAuthService;
+  private userAuthService: UserAuthServiceClient;
 
   constructor(private readonly userServiceClient: ClientGrpc) {}
 
@@ -24,10 +27,10 @@ export class BaseWebsocketGateway
   }
 
   onModuleInit() {
-    this.userAuthService = getPromisifiedGrpcService<UserAuthService>(
-      this.userServiceClient,
-      'UserAuthService',
-    );
+    this.userAuthService =
+      this.userServiceClient.getService<UserAuthServiceClient>(
+        USER_AUTH_SERVICE_NAME,
+      );
   }
 
   /**
@@ -46,9 +49,11 @@ export class BaseWebsocketGateway
       return BaseWebsocketGateway.closeConnection(connection);
     }
 
-    const ticket = await this.userAuthService.consumeWebsocketTicket({
-      id: ticketId,
-    });
+    const ticket = await firstValueFrom(
+      this.userAuthService.consumeWebsocketTicket({
+        id: ticketId,
+      }),
+    );
 
     if (!ticket) {
       return BaseWebsocketGateway.closeConnection(connection);

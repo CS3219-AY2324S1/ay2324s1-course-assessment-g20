@@ -7,16 +7,19 @@ import { AuthProvider } from '@app/types/authProvider';
 import { ClientGrpc } from '@nestjs/microservices';
 import { DEFAULT_LANGUAGE } from '@app/types/languages';
 import { DEFAULT_ROLE } from '@app/types/roles';
-import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
-import { getPromisifiedGrpcService } from '@app/microservice/utils';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
+import {
+  USER_AUTH_SERVICE_NAME,
+  UserAuthServiceClient,
+} from '@app/microservice/interfaces/user';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class GoogleOauthStrategy
   extends PassportStrategy(Strategy, 'google')
   implements OnModuleInit
 {
-  private userAuthService: UserAuthService;
+  private userAuthService: UserAuthServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE) private userServiceClient: ClientGrpc,
@@ -35,10 +38,10 @@ export class GoogleOauthStrategy
   }
 
   onModuleInit() {
-    this.userAuthService = getPromisifiedGrpcService<UserAuthService>(
-      this.userServiceClient,
-      'UserAuthService',
-    );
+    this.userAuthService =
+      this.userServiceClient.getService<UserAuthServiceClient>(
+        USER_AUTH_SERVICE_NAME,
+      );
   }
 
   async validate(
@@ -62,7 +65,9 @@ export class GoogleOauthStrategy
       },
     };
 
-    const user = await this.userAuthService.findOrCreateOauthUser(oauthUser);
+    const user = await firstValueFrom(
+      this.userAuthService.findOrCreateOauthUser(oauthUser),
+    );
 
     done(null, user);
   }

@@ -33,7 +33,8 @@
     "seed:mongo:question-categories": "node ./scripts/mongo/seedQuestionCategories.js",
     "seed:mongo:all": "yarn seed:mongo:question-categories && yarn seed:mongo:question-difficulties",
     "migrate-and-seed:all": "yarn migrate:sql:all && yarn seed:all",
-    "migrate-and-seed:sql": "yarn migrate:sql:all && yarn seed:sql:all"
+    "migrate-and-seed:sql": "yarn migrate:sql:all && yarn seed:sql:all",
+    "protoc": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./libs/microservice/src/interfaces --ts_proto_opt=nestJs=true,exportCommonSymbols=false,useDate=true,snakeToCamel=false ./libs/microservice/src/interservice-proto/*.proto -I ./libs/microservice/src/interservice-proto"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.9.5",
@@ -90,6 +91,7 @@
     "ts-jest": "28.0.8",
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
+    "ts-proto": "^1.162.1",
     "tsconfig-paths": "4.1.0",
     "typescript": "^4.7.4"
   },

@@ -1,7 +1,6 @@
 import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-  ClientGrpc,
   ClientProxyFactory,
   ClientsModule,
   GrpcOptions,
@@ -9,7 +8,7 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { join } from 'path';
-import { Service } from './interservice-api/services';
+import { Service } from './services';
 
 // RMQ
 // TODO: RMQ logic left here for matching service implementation
@@ -92,18 +91,3 @@ const SERVICE_TO_PROTO_OPTIONS_MAP = new Map<Service, GrpcOptions['options']>([
     },
   ],
 ]);
-
-export const getPromisifiedGrpcService = <T extends object>(
-  client: ClientGrpc,
-  rpcService: string,
-) => promisify(client.getService<T>(rpcService));
-
-const promisify = <T extends object>(service: T) => {
-  return new Proxy(service, {
-    get: (service, methodName: string) => {
-      return async (...params) => {
-        return await service[methodName](...params).toPromise();
-      };
-    },
-  });
-};

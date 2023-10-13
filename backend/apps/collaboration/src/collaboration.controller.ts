@@ -1,33 +1,36 @@
 import { Controller } from '@nestjs/common';
 import { CollaborationService } from './collaboration.service';
-import { GrpcMethod } from '@nestjs/microservices';
 import {
-  CreateSessionInfo,
-  GetSessionAndTicketInfo,
-} from '@app/microservice/interservice-api/collaboration';
-
-const CollaborationServiceGrpcMethod: MethodDecorator = GrpcMethod(
-  'CollaborationService',
-);
+  CollaborationServiceController,
+  CollaborationServiceControllerMethods,
+  CreateCollabSessionRequest,
+  GetSessionAndWsTicketRequest,
+  GetSessionAndWsTicketResponse,
+  GetSessionIdFromTicketResponse,
+} from '@app/microservice/interfaces/collaboration';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Controller()
-export class CollaborationController {
+@CollaborationServiceControllerMethods()
+export class CollaborationController implements CollaborationServiceController {
   constructor(private readonly collaborationService: CollaborationService) {}
 
-  @CollaborationServiceGrpcMethod
-  createCollabSession(createSessionInfo: CreateSessionInfo) {
+  createCollabSession(createSessionInfo: CreateCollabSessionRequest) {
     return this.collaborationService.createCollabSession(createSessionInfo);
   }
 
-  @CollaborationServiceGrpcMethod
-  getSessionAndWsTicket(getSessionInfo: GetSessionAndTicketInfo) {
+  getSessionAndWsTicket(
+    getSessionInfo: GetSessionAndWsTicketRequest,
+  ): Promise<GetSessionAndWsTicketResponse> {
     return this.collaborationService.getSessionAndCreateWsTicket(
       getSessionInfo,
     );
   }
 
-  @CollaborationServiceGrpcMethod
-  getSessionIdFromTicket({ id }: { id: string }) {
+  // NOTE: Added async here to pass compiler typechecks
+  async getSessionIdFromTicket({
+    id,
+  }: ID): Promise<GetSessionIdFromTicketResponse> {
     return this.collaborationService.getSessionIdFromTicket(id);
   }
 }

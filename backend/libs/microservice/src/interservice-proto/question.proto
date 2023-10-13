@@ -33,7 +33,7 @@ message GetCategoriesResponse {
 }
 
 message Question {
-  string _id = 1;
+  optional string _id = 1;
   string title = 2;
   string description = 3;
   repeated string categories = 4;
@@ -41,11 +41,11 @@ message Question {
 }
 
 message Difficulty {
-  string _id = 1;
+  optional string _id = 1;
   string name = 2;
 }
 
 message Category {
-  string _id = 1;
+  optional string _id = 1;
   string name = 2;
 }

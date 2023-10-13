@@ -1,17 +1,16 @@
 import { Controller } from '@nestjs/common';
 import { LanguageService } from './language.service';
-import { GrpcMethod } from '@nestjs/microservices';
-
-const UserLanguageServiceGrpcMethod: MethodDecorator = GrpcMethod(
-  'UserLanguageService',
-);
+import {
+  UserLanguageServiceController,
+  UserLanguageServiceControllerMethods,
+} from '@app/microservice/interfaces/user';
 
 @Controller()
-export class LanguageController {
+@UserLanguageServiceControllerMethods()
+export class LanguageController implements UserLanguageServiceController {
   constructor(private readonly languageService: LanguageService) {}
 
-  @UserLanguageServiceGrpcMethod
-  getAllLanguages({}) {
+  getAllLanguages() {
     return this.languageService
       .getAllLanguages()
       .then((languages) => ({ languages }));

@@ -1,28 +1,22 @@
 import { Controller } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { GrpcMethod } from '@nestjs/microservices';
-import { UserProfileModel } from '../database/models/userProfile.model';
-
-const UserProfileServiceGrpcMethod: MethodDecorator =
-  GrpcMethod('UserProfileService');
+import {
+  UserProfile,
+  UserProfileServiceController,
+  UserProfileServiceControllerMethods,
+} from '@app/microservice/interfaces/user';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Controller()
-export class ProfileController {
+@UserProfileServiceControllerMethods()
+export class ProfileController implements UserProfileServiceController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @UserProfileServiceGrpcMethod
-  getUserProfile({
-    id,
-  }: {
-    id: string;
-  }): Promise<Partial<UserProfileModel> | undefined> {
+  getUserProfile({ id }: ID) {
     return this.profileService.getUserProfile(id);
   }
 
-  @UserProfileServiceGrpcMethod
-  updateUserProfile(
-    data: Partial<UserProfileModel>,
-  ): Promise<UserProfileModel> {
+  updateUserProfile(data: UserProfile) {
     return this.profileService.updateUserProfile(data);
   }
 }

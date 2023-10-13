@@ -10,29 +10,32 @@ import {
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import PatchUserProfileDto from '../dtos/user/patchUserProfile.dto';
-import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
-import { ProfileController as UserProfileService } from 'apps/user/src/profile/profile.controller';
-import { getPromisifiedGrpcService } from '@app/microservice/utils';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
+import {
+  USER_AUTH_SERVICE_NAME,
+  USER_PROFILE_SERVICE_NAME,
+  UserAuthServiceClient,
+  UserProfileServiceClient,
+} from '@app/microservice/interfaces/user';
 
 @Controller('user')
 export class UserController implements OnModuleInit {
-  private userAuthService: UserAuthService;
-  private userProfileService: UserProfileService;
+  private userAuthService: UserAuthServiceClient;
+  private userProfileService: UserProfileServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE) private userServiceClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
-    this.userAuthService = getPromisifiedGrpcService<UserAuthService>(
-      this.userServiceClient,
-      'UserAuthService',
-    );
-    this.userProfileService = getPromisifiedGrpcService<UserProfileService>(
-      this.userServiceClient,
-      'UserProfileService',
-    );
+    this.userAuthService =
+      this.userServiceClient.getService<UserAuthServiceClient>(
+        USER_AUTH_SERVICE_NAME,
+      );
+    this.userProfileService =
+      this.userServiceClient.getService<UserProfileServiceClient>(
+        USER_PROFILE_SERVICE_NAME,
+      );
   }
 
   @Get()

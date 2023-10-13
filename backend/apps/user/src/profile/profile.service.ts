@@ -3,6 +3,7 @@ import { UserProfileDaoService } from '../database/daos/userProfiles/userProfile
 import { UserProfileModel } from '../database/models/userProfile.model';
 import { LanguageDaoService } from '../database/daos/languages/language.dao.service';
 import { RoleDaoService } from '../database/daos/roles/role.dao.service';
+import { Role } from '@app/types/roles';
 
 @Injectable()
 export class ProfileService {
@@ -51,6 +52,16 @@ export class ProfileService {
     delete userProfile.userId;
 
     await this.validateForeignKeys(userProfile);
+    const currentProfile = await this.getUserProfile(userId);
+    if (
+      currentProfile.roleId === Role.REGULAR &&
+      userProfile.roleId === Role.MAINTAINER
+    ) {
+      throw new HttpException(
+        `Unauthorized operation: cannot upgrade status to maintainer`,
+        401,
+      );
+    }
     return this.userProfileDaoService.updateByUserId(userId, userProfile);
   }
 }

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package common;
+
+message ID {
+    string id = 1;
+}
+
+message IDs {
+    repeated string ids = 1;
+}

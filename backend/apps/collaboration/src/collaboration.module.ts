@@ -9,7 +9,10 @@ import { UserSessionModel } from './database/models/userSession.model';
 import { SessionDaoModule } from './database/daos/session/session.dao.module';
 import { SessionTicketModel } from './database/models/sessionTicket.model';
 import { Service } from '@app/microservice/interservice-api/services';
-import { createMicroserviceClientProxyProvider } from '@app/microservice/utils';
+import {
+  createMicroserviceClientProxyProvider,
+  registerGrpcClients,
+} from '@app/microservice/utils';
 
 const microserviceOptionKeys = {
   [Service.USER_SERVICE]: 'userServiceOptions',
@@ -19,6 +22,7 @@ const microserviceOptionKeys = {
 @Module({
   imports: [
     ConfigModule.loadConfiguration(collaborationConfiguration),
+    registerGrpcClients([Service.USER_SERVICE]),
 
     // Database and DAOs
     SqlDatabaseModule.factory([

@@ -3,28 +3,35 @@ import {
   Controller,
   Get,
   Inject,
+  OnModuleInit,
   Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { Public } from '../jwt/jwtPublic.decorator';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { ClientGrpc } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
 import RefreshDto from '../dtos/auth/refresh.dto';
-import { Service } from '@app/microservice/interservice-api/services';
-import { UserServiceApi } from '@app/microservice/interservice-api/user';
+import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
+import { promisify } from '@app/microservice/utils';
 
 @Controller('auth')
-export class AuthController {
+export class AuthController implements OnModuleInit {
+  private userAuthService: UserAuthService;
+
   constructor(
-    @Inject(Service.USER_SERVICE)
-    private readonly userServiceClient: ClientProxy,
     private readonly configService: ConfigService,
+    @Inject('USER_PACKAGE') private client: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.userAuthService = promisify(
+      this.client.getService<UserAuthService>('UserAuthService'),
+    );
+  }
 
   @Public()
   @Get('google')
@@ -37,9 +44,9 @@ export class AuthController {
   @Get('google/redirect')
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-    const { accessToken, refreshToken } = await firstValueFrom(
-      this.userServiceClient.send(UserServiceApi.GENERATE_JWTS, req.user),
-    );
+    const { accessToken, refreshToken } =
+      await this.userAuthService.generateJwts(req.user);
+
     const redirectUrl = `${this.configService.get(
       'corsOrigin',
     )}/authRedirect?accessToken=${accessToken}&refreshToken=${refreshToken}`;
@@ -50,9 +57,8 @@ export class AuthController {
   @Public()
   @Post('refresh')
   async refreshTokenFlow(@Body() body: RefreshDto) {
-    return this.userServiceClient.send(
-      UserServiceApi.GENERATE_JWTS_FROM_REFRESH_TOKEN,
-      body.refreshToken,
-    );
+    return this.userAuthService.generateJwtsFromRefreshToken({
+      refreshToken: body.refreshToken,
+    });
   }
 }

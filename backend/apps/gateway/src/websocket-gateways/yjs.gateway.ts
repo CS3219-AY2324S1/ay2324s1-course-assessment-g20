@@ -5,24 +5,22 @@ import {
   COLLABORATION_SERVICE,
   CollaborationServiceApi,
 } from '@app/microservice/interservice-api/collaboration';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import { BaseWebsocketGateway } from '@app/websocket';
-import { Service } from '@app/microservice/interservice-api/services';
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
 
   constructor(
-    @Inject(Service.USER_SERVICE)
-    userServiceClient: ClientProxy,
     @Inject(COLLABORATION_SERVICE)
     private readonly collaborationServiceClient: ClientProxy,
+    @Inject('USER_PACKAGE') client: ClientGrpc,
   ) {
-    super(userServiceClient);
+    super(client);
   }
 
   async handleConnection(connection: WebSocket, request: Request) {

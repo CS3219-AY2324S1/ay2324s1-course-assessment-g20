@@ -1,6 +1,11 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  OnModuleInit,
+} from '@nestjs/common';
 import { SessionDaoService } from './database/daos/session/session.dao.service';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import {
   CreateSessionInfo,
@@ -8,22 +13,27 @@ import {
 } from '@app/microservice/interservice-api/collaboration';
 import { Service } from '@app/microservice/interservice-api/services';
 import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
-import {
-  CreateWebsocketTicketInfo,
-  UserServiceApi,
-  WebsocketTicket,
-} from '@app/microservice/interservice-api/user';
 import { SessionModel } from './database/models/session.model';
+import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
+import { promisify } from '@app/microservice/utils';
 
 @Injectable()
-export class CollaborationService {
+export class CollaborationService implements OnModuleInit {
+  private userAuthService: UserAuthService;
+
   constructor(
-    @Inject(Service.USER_SERVICE)
-    private readonly userServiceClient: ClientProxy,
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionServiceClient: ClientProxy,
+    @Inject('USER_PACKAGE')
+    private readonly client: ClientGrpc,
     private readonly sessionDaoService: SessionDaoService,
   ) {}
+
+  onModuleInit() {
+    this.userAuthService = promisify(
+      this.client.getService<UserAuthService>('UserAuthService'),
+    );
+  }
 
   async createCollabSession(createSessionInfo: CreateSessionInfo) {
     this.validateNumUsers(createSessionInfo.userIds, 2);
@@ -53,14 +63,9 @@ export class CollaborationService {
       ),
     );
 
-    const ticket = await firstValueFrom(
-      this.userServiceClient.send<WebsocketTicket, CreateWebsocketTicketInfo>(
-        UserServiceApi.GENERATE_WEBSOCKET_TICKET,
-        {
-          userId: getSessionInfo.userId,
-        },
-      ),
-    );
+    const ticket = await this.userAuthService.generateWebsocketTicket({
+      userId: getSessionInfo.userId,
+    });
 
     // Link ticket to session
     await this.sessionDaoService.insertTicketForSession(
@@ -87,12 +92,10 @@ export class CollaborationService {
   }
 
   private async validateUsersExist(userIds: string[]) {
-    const validateBothUsers = await firstValueFrom(
-      this.userServiceClient.send<boolean>(
-        UserServiceApi.VALIDATE_USERS_EXISTS,
-        userIds,
-      ),
-    );
+    const validateBothUsers = await this.userAuthService
+      .validateUsersExists({ ids: userIds })
+      .then(({ value }) => value);
+
     if (!validateBothUsers) {
       throw new BadRequestException('Invalid userId(s) provided!');
     }

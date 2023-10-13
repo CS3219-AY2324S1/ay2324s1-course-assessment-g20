@@ -10,7 +10,7 @@ export class UserModel extends BaseModel {
   readonly authProviderId: string;
   readonly oauthName: string;
   readonly email: string;
-  readonly userProfile: UserProfileModel;
+  readonly userProfile: Partial<UserProfileModel>;
 
   static relationMappings = () => ({
     userProfile: {

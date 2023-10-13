@@ -1,48 +1,50 @@
 import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { MessagePattern } from '@nestjs/microservices';
+import { GrpcMethod } from '@nestjs/microservices';
 import { UserModel } from '../database/models/user.model';
-import {
-  CreateWebsocketTicketInfo,
-  UserServiceApi,
-} from '@app/microservice/interservice-api/user';
+import { CreateWebsocketTicketInfo } from '@app/microservice/interservice-api/user';
+
+const UserAuthServiceGrpcMethod: MethodDecorator =
+  GrpcMethod('UserAuthService');
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @MessagePattern(UserServiceApi.GENERATE_JWTS)
+  @UserAuthServiceGrpcMethod
   generateJwts(user) {
     return this.authService.generateJwts(user);
   }
 
-  @MessagePattern(UserServiceApi.GENERATE_JWTS_FROM_REFRESH_TOKEN)
-  generateJwtsFromRefreshToken(refreshToken) {
+  @UserAuthServiceGrpcMethod
+  generateJwtsFromRefreshToken({ refreshToken }: { refreshToken: string }) {
     return this.authService.generateJwtsFromRefreshToken(refreshToken);
   }
 
-  @MessagePattern(UserServiceApi.FIND_OR_CREATE_OAUTH_USER)
+  @UserAuthServiceGrpcMethod
   findOrCreateOauthUser(user: Partial<UserModel>) {
     return this.authService.findOrCreateOAuthUser(user);
   }
 
-  @MessagePattern(UserServiceApi.DELETE_OAUTH_USER)
-  deleteOAuthUser(id: string) {
+  @UserAuthServiceGrpcMethod
+  deleteOAuthUser({ id }: { id: string }) {
     return this.authService.deleteOAuthUser(id);
   }
 
-  @MessagePattern(UserServiceApi.GENERATE_WEBSOCKET_TICKET)
-  generateWebsocketTicket(createTicketInfo: CreateWebsocketTicketInfo) {
+  @UserAuthServiceGrpcMethod
+  async generateWebsocketTicket(createTicketInfo: CreateWebsocketTicketInfo) {
     return this.authService.generateWebsocketTicket(createTicketInfo);
   }
 
-  @MessagePattern(UserServiceApi.CONSUME_WEBSOCKET_TICKET)
-  consumeWebsocketTicket(ticketId: string) {
-    return this.authService.consumeWebsocketTicket(ticketId);
+  @UserAuthServiceGrpcMethod
+  consumeWebsocketTicket({ id }: { id: string }) {
+    return this.authService.consumeWebsocketTicket(id);
   }
 
-  @MessagePattern(UserServiceApi.VALIDATE_USERS_EXISTS)
-  validateUsersExists(userIds: string[]) {
-    return this.authService.validateUsersExist(userIds);
+  @UserAuthServiceGrpcMethod
+  validateUsersExists({ ids }: { ids: string[] }) {
+    return this.authService
+      .validateUsersExist(ids)
+      .then((value) => ({ value }));
   }
 }

@@ -1,21 +1,24 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, _StrategyOptionsBase } from 'passport-google-oauth20';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { VerifiedCallback } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthProvider } from '@app/types/authProvider';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { ClientGrpc } from '@nestjs/microservices';
 import { DEFAULT_LANGUAGE } from '@app/types/languages';
 import { DEFAULT_ROLE } from '@app/types/roles';
-import { Service } from '@app/microservice/interservice-api/services';
-import { UserServiceApi } from '@app/microservice/interservice-api/user';
+import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
+import { promisify } from '@app/microservice/utils';
 
 @Injectable()
-export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
+export class GoogleOauthStrategy
+  extends PassportStrategy(Strategy, 'google')
+  implements OnModuleInit
+{
+  private userAuthService: UserAuthService;
+
   constructor(
-    @Inject(Service.USER_SERVICE)
-    private readonly userServiceClient: ClientProxy,
+    @Inject('USER_PACKAGE') private client: ClientGrpc,
     configService: ConfigService,
   ) {
     const googleOauthOptions: _StrategyOptionsBase =
@@ -28,6 +31,12 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
       ...googleOauthOptions,
       scope: ['email', 'profile'],
     });
+  }
+
+  onModuleInit() {
+    this.userAuthService = promisify(
+      this.client.getService<UserAuthService>('UserAuthService'),
+    );
   }
 
   async validate(
@@ -51,12 +60,7 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
       },
     };
 
-    const user = await firstValueFrom(
-      this.userServiceClient.send(
-        UserServiceApi.FIND_OR_CREATE_OAUTH_USER,
-        oauthUser,
-      ),
-    );
+    const user = await this.userAuthService.findOrCreateOauthUser(oauthUser);
 
     done(null, user);
   }

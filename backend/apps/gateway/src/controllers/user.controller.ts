@@ -4,20 +4,32 @@ import {
   Delete,
   Get,
   Inject,
+  OnModuleInit,
   Patch,
   Req,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import PatchUserProfileDto from '../dtos/user/patchUserProfile.dto';
 import { Service } from '@app/microservice/interservice-api/services';
 import { UserServiceApi } from '@app/microservice/interservice-api/user';
+import { AuthController as UserAuthService } from 'apps/user/src/auth/auth.controller';
+import { promisify } from '@app/microservice/utils';
 
 @Controller('user')
-export class UserController {
+export class UserController implements OnModuleInit {
+  private userAuthService: UserAuthService;
+
   constructor(
     @Inject(Service.USER_SERVICE)
     private readonly userServiceClient: ClientProxy,
+    @Inject('USER_PACKAGE') private client: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.userAuthService = promisify(
+      this.client.getService<UserAuthService>('UserAuthService'),
+    );
+  }
 
   @Get()
   getUserProfile(@Req() req) {
@@ -37,9 +49,6 @@ export class UserController {
 
   @Delete()
   deleteUser(@Req() req) {
-    return this.userServiceClient.send(
-      UserServiceApi.DELETE_OAUTH_USER,
-      req.user.id,
-    );
+    return this.userAuthService.deleteOAuthUser({ id: req.user.id });
   }
 }

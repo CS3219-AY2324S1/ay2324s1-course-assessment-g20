@@ -10,7 +10,10 @@ import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strate
 import { YjsGateway } from './websocket-gateways/yjs.gateway';
 import { CollaborationController } from './controllers/collaboration.controller';
 import { Service } from '@app/microservice/interservice-api/services';
-import { createMicroserviceClientProxyProvider } from '@app/microservice/utils';
+import {
+  createMicroserviceClientProxyProvider,
+  registerGrpcClients,
+} from '@app/microservice/utils';
 
 const microserviceOptionKeys = {
   [Service.QUESTION_SERVICE]: 'questionServiceOptions',
@@ -19,7 +22,11 @@ const microserviceOptionKeys = {
 };
 
 @Module({
-  imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
+  imports: [
+    ConfigModule.loadConfiguration(gatewayConfiguration),
+    JwtModule,
+    registerGrpcClients([Service.USER_SERVICE]),
+  ],
   controllers: [
     AppController,
     AuthController,

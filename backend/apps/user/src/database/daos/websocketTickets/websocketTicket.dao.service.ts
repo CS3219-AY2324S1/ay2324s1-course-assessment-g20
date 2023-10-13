@@ -18,10 +18,16 @@ export class WebsocketTicketDaoService {
   }
 
   create(createTicketInfo: CreateWebsocketTicketInfo) {
-    return this.websocketsTicketModel.query().insert({
-      userId: createTicketInfo.userId,
-      expiry: WebsocketTicketDaoService.getTicketExpiryTime(),
-    });
+    return this.websocketsTicketModel
+      .query()
+      .insert({
+        userId: createTicketInfo.userId,
+        expiry: WebsocketTicketDaoService.getTicketExpiryTime(),
+      })
+      .then((ws) => ({
+        id: ws.id,
+        expiry: ws.expiry.toISOString(),
+      }));
   }
 
   get(ticketId: string) {

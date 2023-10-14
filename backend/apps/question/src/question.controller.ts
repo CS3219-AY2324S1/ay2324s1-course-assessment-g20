@@ -1,39 +1,40 @@
 import { Controller } from '@nestjs/common';
 import { QuestionService } from './question.service';
-import { MessagePattern } from '@nestjs/microservices';
 import { Difficulty } from './schemas/difficulty.schema';
 import { Category } from './schemas/category.schema';
-import { QuestionWithCategoryAndDifficulty } from './interface';
-import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
+import {
+  GetCategoriesResponse,
+  GetDifficultiesResponse,
+  GetQuestionsResponse,
+  Question,
+  QuestionServiceController,
+  QuestionServiceControllerMethods,
+} from '@app/microservice/interfaces/question';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Controller()
-export class QuestionController {
+@QuestionServiceControllerMethods()
+export class QuestionController implements QuestionServiceController {
   constructor(private readonly questionService: QuestionService) {}
 
   // QUESTIONS
 
-  @MessagePattern(QuestionServiceApi.GET_QUESTIONS)
-  getQuestions(): Promise<QuestionWithCategoryAndDifficulty[]> {
-    return this.questionService.getQuestions();
+  getQuestions(): Promise<GetQuestionsResponse> {
+    return this.questionService
+      .getQuestions()
+      .then((questions) => ({ questions }));
   }
 
-  @MessagePattern(QuestionServiceApi.ADD_QUESTION)
-  addQuestion(
-    question: QuestionWithCategoryAndDifficulty,
-  ): Promise<QuestionWithCategoryAndDifficulty> {
+  addQuestion(question: Question): Promise<Question> {
     return this.questionService.addQuestion(question);
   }
 
-  @MessagePattern(QuestionServiceApi.DELETE_QUESTION_WITH_ID)
-  deleteQuestionWithId(questionId: string): Promise<string> {
-    return this.questionService.deleteQuestionWithId(questionId);
+  deleteQuestionWithId({ id }: { id: string }): Promise<ID> {
+    return this.questionService.deleteQuestionWithId(id).then((id) => ({ id }));
   }
 
-  @MessagePattern(QuestionServiceApi.GET_QUESTION_WITH_ID)
-  getQuestionWithId(
-    questionId: string,
-  ): Promise<QuestionWithCategoryAndDifficulty> {
-    return this.questionService.getQuestionWithId(questionId);
+  getQuestionWithId({ id }: ID): Promise<Question> {
+    return this.questionService.getQuestionWithId(id);
   }
 
   @MessagePattern(QuestionServiceApi.GET_QUESTIONS_OF_DIFFICULTY)
@@ -43,35 +44,35 @@ export class QuestionController {
 
   // DIFFICULTIES
 
-  @MessagePattern(QuestionServiceApi.GET_DIFFICULTIES)
-  getDifficulties(): Promise<Difficulty[]> {
-    return this.questionService.getDifficulties();
+  getDifficulties(): Promise<GetDifficultiesResponse> {
+    return this.questionService
+      .getDifficulties()
+      .then((difficulties) => ({ difficulties }));
   }
 
-  @MessagePattern(QuestionServiceApi.ADD_DIFFICULTY)
   addDifficulty(difficulty: Difficulty): Promise<Difficulty> {
     return this.questionService.addDifficulty(difficulty);
   }
 
-  @MessagePattern(QuestionServiceApi.DELETE_DIFFICULTY_WITH_ID)
-  deleteDifficultyWithId(difficultyId: string): Promise<string> {
-    return this.questionService.deleteDifficultyWithId(difficultyId);
+  deleteDifficultyWithId({ id }: ID): Promise<ID> {
+    return this.questionService
+      .deleteDifficultyWithId(id)
+      .then((id) => ({ id }));
   }
 
   // CATEGORIES
 
-  @MessagePattern(QuestionServiceApi.GET_CATEGORIES)
-  getCategories(): Promise<Category[]> {
-    return this.questionService.getCategories();
+  getCategories(): Promise<GetCategoriesResponse> {
+    return this.questionService
+      .getCategories()
+      .then((categories) => ({ categories }));
   }
 
-  @MessagePattern(QuestionServiceApi.ADD_CATEGORY)
   addCategory(category: Category): Promise<Category> {
     return this.questionService.addCategory(category);
   }
 
-  @MessagePattern(QuestionServiceApi.DELETE_CATEGORY_WITH_ID)
-  deleteCategoryWithId(categoryId: string): Promise<string> {
-    return this.questionService.deleteCategoryWithId(categoryId);
+  deleteCategoryWithId({ id }: ID): Promise<ID> {
+    return this.questionService.deleteCategoryWithId(id).then((id) => ({ id }));
   }
 }

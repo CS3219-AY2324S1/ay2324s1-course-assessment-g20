@@ -4,8 +4,8 @@ import { Model } from 'mongoose';
 import { Question } from './schemas/question.schema';
 import { Category } from './schemas/category.schema';
 import { Difficulty } from './schemas/difficulty.schema';
-import { QuestionWithCategoryAndDifficulty } from './interface';
 import { QuestionCategory } from './schemas/question-category.schema';
+import { Question as QuestionWithCategoryAndDifficulty } from '@app/microservice/interfaces/question';
 
 @Injectable()
 export class QuestionService {
@@ -67,7 +67,7 @@ export class QuestionService {
       description: questionWithCategoriesAndDifficulty.description,
       difficulty: difficultyObject,
     });
-    const newQuestion = (await newQuestionObject.save()).toObject();
+    const newQuestion = (await newQuestionObject.save()).toObject() as Question;
 
     // Create question categories
     await this.createQuestionCategories(newQuestion, categoryObjects);

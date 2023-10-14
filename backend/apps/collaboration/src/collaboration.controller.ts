@@ -1,30 +1,36 @@
 import { Controller } from '@nestjs/common';
 import { CollaborationService } from './collaboration.service';
-import { MessagePattern } from '@nestjs/microservices';
 import {
-  CollaborationServiceApi,
-  CreateSessionInfo,
-  GetSessionAndTicketInfo,
-} from '@app/microservice/interservice-api/collaboration';
+  CollaborationServiceController,
+  CollaborationServiceControllerMethods,
+  CreateCollabSessionRequest,
+  GetSessionAndWsTicketRequest,
+  GetSessionAndWsTicketResponse,
+  GetSessionIdFromTicketResponse,
+} from '@app/microservice/interfaces/collaboration';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Controller()
-export class CollaborationController {
+@CollaborationServiceControllerMethods()
+export class CollaborationController implements CollaborationServiceController {
   constructor(private readonly collaborationService: CollaborationService) {}
 
-  @MessagePattern(CollaborationServiceApi.CREATE_COLLAB_SESSION)
-  createCollabSession(createSessionInfo: CreateSessionInfo) {
+  createCollabSession(createSessionInfo: CreateCollabSessionRequest) {
     return this.collaborationService.createCollabSession(createSessionInfo);
   }
 
-  @MessagePattern(CollaborationServiceApi.GET_SESSION_AND_WS_TICKET)
-  getSessionAndWsTicket(getSessionInfo: GetSessionAndTicketInfo) {
+  getSessionAndWsTicket(
+    getSessionInfo: GetSessionAndWsTicketRequest,
+  ): Promise<GetSessionAndWsTicketResponse> {
     return this.collaborationService.getSessionAndCreateWsTicket(
       getSessionInfo,
     );
   }
 
-  @MessagePattern(CollaborationServiceApi.GET_SESSION_ID_FROM_TICKET)
-  getSessionIdFromTicket(ticketId: string) {
-    return this.collaborationService.getSessionIdFromTicket(ticketId);
+  // NOTE: Added async here to pass compiler typechecks
+  async getSessionIdFromTicket({
+    id,
+  }: ID): Promise<GetSessionIdFromTicketResponse> {
+    return this.collaborationService.getSessionIdFromTicket(id);
   }
 }

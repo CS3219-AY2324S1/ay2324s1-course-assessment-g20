@@ -1,6 +1,6 @@
 import { ConfigModule } from '@app/config';
-import { Service } from '@app/microservice/interservice-api/services';
-import { createMicroserviceClientProxyProvider } from '@app/microservice/utils';
+import { Service } from '@app/microservice/services';
+import { registerGrpcClients } from '@app/microservice/utils';
 import { Module } from '@nestjs/common';
 import gatewayConfiguration from './config/configuration';
 import { AppController } from './controllers/app.controller';
@@ -12,18 +12,18 @@ import { MatchingWebsocketController } from './controllers/matchingWebsocket.con
 import { UserController } from './controllers/user.controller';
 import { JwtModule } from './jwt/jwt.module';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
-import { WebsocketMemoryService } from './services/websocketMemory.service';
-import { MatchingGateway } from './websocket-gateways/matching.gateway';
 import { YjsGateway } from './websocket-gateways/yjs.gateway';
 
-const microserviceOptionKeys = {
-  [Service.QUESTION_SERVICE]: 'questionServiceOptions',
-  [Service.USER_SERVICE]: 'userServiceOptions',
-  [Service.COLLABORATION_SERVICE]: 'collaborationServiceOptions',
-  [Service.MATCHING_SERVICE]: 'matchingServiceOptions',
-};
 @Module({
-  imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
+  imports: [
+    ConfigModule.loadConfiguration(gatewayConfiguration),
+    JwtModule,
+    registerGrpcClients([
+      Service.USER_SERVICE,
+      Service.QUESTION_SERVICE,
+      Service.COLLABORATION_SERVICE,
+    ]),
+  ],
   controllers: [
     AppController,
     AuthController,
@@ -33,14 +33,6 @@ const microserviceOptionKeys = {
     MatchingWebsocketController,
     MatchingController,
   ],
-  providers: [
-    GoogleOauthStrategy,
-    YjsGateway,
-    MatchingGateway,
-    WebsocketMemoryService,
-    ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
-      createMicroserviceClientProxyProvider(key, value),
-    ),
-  ],
+  providers: [GoogleOauthStrategy, YjsGateway],
 })
-export class AppModule {}
+export class AppModule { }

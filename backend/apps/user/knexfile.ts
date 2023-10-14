@@ -5,7 +5,7 @@ import {
   DatabaseConfigurationOptions,
   getDatabaseConfigurationForService,
 } from '@app/sql-database';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
 
 const NODE_ENV = process.env.NODE_ENV;
 const IS_DEPLOYMENT = ['staging', 'production'].includes(NODE_ENV);

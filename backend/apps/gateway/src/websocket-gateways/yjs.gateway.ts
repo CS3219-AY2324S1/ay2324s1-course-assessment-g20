@@ -1,28 +1,36 @@
 import { Inject } from '@nestjs/common';
 import { WebSocketGateway } from '@nestjs/websockets';
 import { setupWSConnection, setPersistence } from 'y-websocket/bin/utils';
-import {
-  COLLABORATION_SERVICE,
-  CollaborationServiceApi,
-} from '@app/microservice/interservice-api/collaboration';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { ClientGrpc } from '@nestjs/microservices';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import { AuthenticatedWebsocket, BaseWebsocketGateway } from '@app/websocket';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
+import {
+  COLLABORATION_SERVICE_NAME,
+  CollaborationServiceClient,
+} from '@app/microservice/interfaces/collaboration';
+import { firstValueFrom } from 'rxjs';
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
+  private collaborationService: CollaborationServiceClient;
 
   constructor(
-    @Inject(Service.USER_SERVICE)
-    userServiceClient: ClientProxy,
-    @Inject(COLLABORATION_SERVICE)
-    private readonly collaborationServiceClient: ClientProxy,
+    @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
+    @Inject(Service.COLLABORATION_SERVICE)
+    private readonly collaborationServiceClient: ClientGrpc,
   ) {
     super(userServiceClient);
+  }
+
+  onModuleInit() {
+    super.onModuleInit();
+    this.collaborationService =
+      this.collaborationServiceClient.getService<CollaborationServiceClient>(
+        COLLABORATION_SERVICE_NAME,
+      );
   }
 
   async handleConnection(connection: AuthenticatedWebsocket, request: Request) {
@@ -34,10 +42,7 @@ export class YjsGateway extends BaseWebsocketGateway {
 
     const ticketId = YjsGateway.getTicketIdFromUrl(request);
     const { sessionId } = await firstValueFrom(
-      this.collaborationServiceClient.send(
-        CollaborationServiceApi.GET_SESSION_ID_FROM_TICKET,
-        ticketId,
-      ),
+      this.collaborationService.getSessionIdFromTicket({ id: ticketId }),
     );
 
     YjsGateway.setupYjs(connection, sessionId);

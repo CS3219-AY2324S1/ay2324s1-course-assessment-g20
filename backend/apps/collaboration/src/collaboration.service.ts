@@ -1,31 +1,52 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  OnModuleInit,
+} from '@nestjs/common';
 import { SessionDaoService } from './database/daos/session/session.dao.service';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
-import {
-  CreateSessionInfo,
-  GetSessionAndTicketInfo,
-} from '@app/microservice/interservice-api/collaboration';
-import { Service } from '@app/microservice/interservice-api/services';
-import { QuestionServiceApi } from '@app/microservice/interservice-api/question';
-import {
-  CreateWebsocketTicketInfo,
-  UserServiceApi,
-  WebsocketTicket,
-} from '@app/microservice/interservice-api/user';
+import { ClientGrpc } from '@nestjs/microservices';
+import { Service } from '@app/microservice/services';
 import { SessionModel } from './database/models/session.model';
+import {
+  CreateCollabSessionRequest,
+  GetSessionAndWsTicketRequest,
+} from '@app/microservice/interfaces/collaboration';
+import {
+  USER_AUTH_SERVICE_NAME,
+  UserAuthServiceClient,
+} from '@app/microservice/interfaces/user';
+import {
+  QUESTION_SERVICE_NAME,
+  QuestionServiceClient,
+} from '@app/microservice/interfaces/question';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class CollaborationService {
+export class CollaborationService implements OnModuleInit {
+  private userAuthService: UserAuthServiceClient;
+  private questionService: QuestionServiceClient;
+
   constructor(
     @Inject(Service.USER_SERVICE)
-    private readonly userServiceClient: ClientProxy,
+    private readonly userServiceClient: ClientGrpc,
     @Inject(Service.QUESTION_SERVICE)
-    private readonly questionServiceClient: ClientProxy,
+    private readonly questionServiceClient: ClientGrpc,
     private readonly sessionDaoService: SessionDaoService,
   ) {}
 
-  async createCollabSession(createSessionInfo: CreateSessionInfo) {
+  onModuleInit() {
+    this.userAuthService =
+      this.userServiceClient.getService<UserAuthServiceClient>(
+        USER_AUTH_SERVICE_NAME,
+      );
+    this.questionService =
+      this.questionServiceClient.getService<QuestionServiceClient>(
+        QUESTION_SERVICE_NAME,
+      );
+  }
+
+  async createCollabSession(createSessionInfo: CreateCollabSessionRequest) {
     this.validateNumUsers(createSessionInfo.userIds, 2);
     await this.validateUsersExist(createSessionInfo.userIds);
 
@@ -37,7 +58,9 @@ export class CollaborationService {
     return this.sessionDaoService.create(graphInfo);
   }
 
-  async getSessionAndCreateWsTicket(getSessionInfo: GetSessionAndTicketInfo) {
+  async getSessionAndCreateWsTicket(
+    getSessionInfo: GetSessionAndWsTicketRequest,
+  ) {
     const session = await this.sessionDaoService.findById({
       sessionId: getSessionInfo.sessionId,
       withGraphFetched: true,
@@ -47,19 +70,15 @@ export class CollaborationService {
     this.validateUsersBelongInSession(session, [getSessionInfo.userId]);
 
     const question = await firstValueFrom(
-      this.questionServiceClient.send(
-        QuestionServiceApi.GET_QUESTION_WITH_ID,
-        session.questionId,
-      ),
+      this.questionService.getQuestionWithId({
+        id: session.questionId,
+      }),
     );
 
     const ticket = await firstValueFrom(
-      this.userServiceClient.send<WebsocketTicket, CreateWebsocketTicketInfo>(
-        UserServiceApi.GENERATE_WEBSOCKET_TICKET,
-        {
-          userId: getSessionInfo.userId,
-        },
-      ),
+      this.userAuthService.generateWebsocketTicket({
+        userId: getSessionInfo.userId,
+      }),
     );
 
     // Link ticket to session
@@ -88,11 +107,9 @@ export class CollaborationService {
 
   private async validateUsersExist(userIds: string[]) {
     const validateBothUsers = await firstValueFrom(
-      this.userServiceClient.send<boolean>(
-        UserServiceApi.VALIDATE_USERS_EXISTS,
-        userIds,
-      ),
-    );
+      this.userAuthService.validateUsersExists({ ids: userIds }),
+    ).then(({ value }) => value);
+
     if (!validateBothUsers) {
       throw new BadRequestException('Invalid userId(s) provided!');
     }

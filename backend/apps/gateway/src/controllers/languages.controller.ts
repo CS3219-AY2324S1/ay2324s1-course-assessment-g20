@@ -1,24 +1,31 @@
-import { Service } from '@app/microservice/interservice-api/services';
-import { UserServiceApi } from '@app/microservice/interservice-api/user';
-import { Controller, Get, Inject, Req } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import {
+  USER_LANGUAGE_SERVICE_NAME,
+  UserLanguageServiceClient,
+} from '@app/microservice/interfaces/user';
+import { Service } from '@app/microservice/services';
+import { Controller, Get, Inject, OnModuleInit } from '@nestjs/common';
+import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 @Controller('languages')
-export class LanguagesController {
+export class LanguagesController implements OnModuleInit {
+  private userLanguageService: UserLanguageServiceClient;
+
   constructor(
-    @Inject(Service.USER_SERVICE)
-    private readonly userServiceClient: ClientProxy,
+    @Inject(Service.USER_SERVICE) private userServiceClient: ClientGrpc,
   ) {}
 
+  onModuleInit() {
+    this.userLanguageService =
+      this.userServiceClient.getService<UserLanguageServiceClient>(
+        USER_LANGUAGE_SERVICE_NAME,
+      );
+  }
+
   @Get()
-  async getLanguages(@Req() req) {
-    const languages = await firstValueFrom(
-      this.userServiceClient.send(
-        UserServiceApi.GET_ALL_LANGUAGES,
-        req.user.id,
-      ),
+  getLanguages() {
+    return firstValueFrom(this.userLanguageService.getAllLanguages({})).then(
+      (resp) => resp.languages,
     );
-    return languages;
   }
 }

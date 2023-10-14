@@ -6,6 +6,8 @@ export type QuestionDocument = HydratedDocument<Question>;
 
 @Schema()
 export class Question {
+  _id: string;
+
   @Prop({ required: false })
   id?: string;
 

@@ -6,7 +6,9 @@
   "root": "apps/gateway",
   "compilerOptions": {
     "webpack": true,
-    "tsConfigPath": "apps/gateway/tsconfig.app.json"
+    "tsConfigPath": "apps/gateway/tsconfig.app.json",
+    "assets": ["**/*.proto"],
+    "watchAssets": true
   },
   "projects": {
     "gateway": {
@@ -15,7 +17,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/gateway/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/gateway/tsconfig.app.json"
+        "tsConfigPath": "apps/gateway/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
       }
     },
     "question": {
@@ -24,7 +28,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/question/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/question/tsconfig.app.json"
+        "tsConfigPath": "apps/question/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
       }
     },
     "user": {
@@ -33,7 +39,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/user/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/user/tsconfig.app.json"
+        "tsConfigPath": "apps/user/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
       }
     },
     "matching": {
@@ -87,7 +95,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/collaboration/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/collaboration/tsconfig.app.json"
+        "tsConfigPath": "apps/collaboration/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
       }
     },
     "websocket": {

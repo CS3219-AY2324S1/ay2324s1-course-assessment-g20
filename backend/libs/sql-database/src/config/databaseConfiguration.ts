@@ -1,4 +1,4 @@
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
 import { DatabaseConfigurationOptions } from '@app/sql-database';
 
 export const getDatabaseConfigurationForService = (

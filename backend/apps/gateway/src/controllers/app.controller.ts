@@ -42,7 +42,7 @@ export class AppController implements OnModuleInit {
   getQuestions() {
     return this.questionService
       .getQuestions({})
-      .pipe(map(({ questions }) => questions));
+      .pipe(map(({ questions }) => questions || []));
   }
 
   @Public()
@@ -72,7 +72,7 @@ export class AppController implements OnModuleInit {
   getDifficulties() {
     return this.questionService
       .getDifficulties({})
-      .pipe(map(({ difficulties }) => difficulties));
+      .pipe(map(({ difficulties }) => difficulties || []));
   }
 
   @Public()
@@ -95,7 +95,7 @@ export class AppController implements OnModuleInit {
   getCategories() {
     return this.questionService
       .getCategories({})
-      .pipe(map(({ categories }) => categories));
+      .pipe(map(({ categories }) => categories || []));
   }
 
   @Public()

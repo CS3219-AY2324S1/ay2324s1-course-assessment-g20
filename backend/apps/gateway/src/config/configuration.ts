@@ -12,6 +12,7 @@ const gatewayConfiguration = () => {
     corsOrigin: process.env.CORS_ORIGIN,
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
     googleOauthOptions,
+    mongoUri: process.env.COLLABORATION_SERVICE_MONGODB_URL,
   };
 };
 

@@ -29,6 +29,8 @@ services:
       - backend
     env_file:
       .env
+    environment:
+      - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question
 
   user:
     build: 
@@ -71,8 +73,6 @@ services:
     restart: always
     volumes:
       - ./postgres-data:/var/lib/postgresql/data # Persist data between restarts
-    env_file:
-      .env
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -83,6 +83,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - backend
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 20s
+      retries: 5
+      start_period: 20s
 
   sql-migrations:
     build: 
@@ -90,6 +105,8 @@ services:
       dockerfile: ./scripts/Dockerfile
     depends_on:
       postgres:
+        condition: service_healthy
+      mongo:
         condition: service_healthy
     env_file:
       .env
@@ -100,10 +117,14 @@ services:
       - USER_SERVICE_SQL_DATABASE_PORT=5432
       - USER_SERVICE_SQL_DATABASE_USER=postgres
       - USER_SERVICE_SQL_DATABASE_PASSWORD=postgres
+
       - COLLABORATION_SERVICE_SQL_DATABASE_HOST=postgres
       - COLLABORATION_SERVICE_SQL_DATABASE_PORT=5432
       - COLLABORATION_SERVICE_SQL_DATABASE_USER=postgres
       - COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD=postgres
+
+      - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question?authMechanism=DEFAULT
+      - COLLABORATION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-collaboration?authMechanism=DEFAULT
 
   rabbitmq:
     image: rabbitmq:management

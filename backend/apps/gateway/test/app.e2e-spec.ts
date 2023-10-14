@@ -17,7 +17,7 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer()).get('/').expect(404);
+  it('/auth/google (GET)', () => {
+    return request(app.getHttpServer()).get('/auth/google').expect(302);
   });
 });

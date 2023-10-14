@@ -7,8 +7,6 @@ services:
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
-      rabbitmq:
-        condition: service_healthy
     ports:
       - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
     networks:
@@ -18,7 +16,7 @@ services:
     environment:
       - QUESTION_SERVICE_HOST=question
       - USER_SERVICE_HOST=user
-      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - COLLABORATION_SERVICE_HOST=collaboration
 
   question:
     build: 
@@ -27,14 +25,10 @@ services:
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
-      rabbitmq:
-        condition: service_healthy
     networks:
       - backend
     env_file:
       .env
-    environment:
-      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   user:
     build: 
@@ -43,8 +37,6 @@ services:
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
-      rabbitmq:
-        condition: service_healthy
     networks:
       - backend
     env_file:
@@ -54,7 +46,6 @@ services:
       - USER_SERVICE_SQL_DATABASE_PORT=5432
       - USER_SERVICE_SQL_DATABASE_USER=postgres
       - USER_SERVICE_SQL_DATABASE_PASSWORD=postgres
-      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   collaboration:
     build: 
@@ -63,18 +54,17 @@ services:
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
-      rabbitmq:
-        condition: service_healthy
     networks:
       - backend
     env_file:
       .env
     environment:
+      - QUESTION_SERVICE_HOST=question
+      - USER_SERVICE_HOST=user
       - COLLABORATION_SERVICE_SQL_DATABASE_HOST=postgres
       - COLLABORATION_SERVICE_SQL_DATABASE_PORT=5432
       - COLLABORATION_SERVICE_SQL_DATABASE_USER=postgres
       - COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD=postgres
-      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   postgres:
     image: postgres:14.1-alpine
@@ -110,6 +100,10 @@ services:
       - USER_SERVICE_SQL_DATABASE_PORT=5432
       - USER_SERVICE_SQL_DATABASE_USER=postgres
       - USER_SERVICE_SQL_DATABASE_PASSWORD=postgres
+      - COLLABORATION_SERVICE_SQL_DATABASE_HOST=postgres
+      - COLLABORATION_SERVICE_SQL_DATABASE_PORT=5432
+      - COLLABORATION_SERVICE_SQL_DATABASE_USER=postgres
+      - COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD=postgres
 
   rabbitmq:
     image: rabbitmq:management

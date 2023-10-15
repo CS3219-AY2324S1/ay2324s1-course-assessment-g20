@@ -9,7 +9,7 @@ export class Question {
   @Prop({ required: false })
   id?: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   title: string;
 
   @Prop({ required: true })

@@ -50,7 +50,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/matching/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/matching/tsconfig.app.json"
+        "tsConfigPath": "apps/matching/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
       }
     },
     "config": {

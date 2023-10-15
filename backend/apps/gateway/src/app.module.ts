@@ -7,11 +7,12 @@ import { AppController } from './controllers/app.controller';
 import { AuthController } from './controllers/auth.controller';
 import { CollaborationController } from './controllers/collaboration.controller';
 import { LanguagesController } from './controllers/languages.controller';
-import { MatchingController } from './controllers/matching.controller';
 import { MatchingWebsocketController } from './controllers/matchingWebsocket.controller';
 import { UserController } from './controllers/user.controller';
 import { JwtModule } from './jwt/jwt.module';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
+import { MatchingWebsocketService } from './services/matchingWebsocketService';
+import { MatchingGateway } from './websocket-gateways/matching.gateway';
 import { YjsGateway } from './websocket-gateways/yjs.gateway';
 
 @Module({
@@ -22,6 +23,7 @@ import { YjsGateway } from './websocket-gateways/yjs.gateway';
       Service.USER_SERVICE,
       Service.QUESTION_SERVICE,
       Service.COLLABORATION_SERVICE,
+      Service.MATCHING_SERVICE,
     ]),
   ],
   controllers: [
@@ -31,8 +33,12 @@ import { YjsGateway } from './websocket-gateways/yjs.gateway';
     LanguagesController,
     CollaborationController,
     MatchingWebsocketController,
-    MatchingController,
   ],
-  providers: [GoogleOauthStrategy, YjsGateway],
+  providers: [
+    GoogleOauthStrategy,
+    YjsGateway,
+    MatchingGateway,
+    MatchingWebsocketService,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

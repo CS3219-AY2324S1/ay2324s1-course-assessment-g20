@@ -43,6 +43,8 @@ export interface QuestionServiceClient {
 
   getQuestionWithId(request: ID): Observable<Question>;
 
+  getQuestionsOfDifficultyId(request: ID): Observable<GetQuestionsResponse>;
+
   getDifficulties(request: Empty): Observable<GetDifficultiesResponse>;
 
   addDifficulty(request: Difficulty): Observable<Difficulty>;
@@ -73,6 +75,13 @@ export interface QuestionServiceController {
   getQuestionWithId(
     request: ID,
   ): Promise<Question> | Observable<Question> | Question;
+
+  getQuestionsOfDifficultyId(
+    request: ID,
+  ):
+    | Promise<GetQuestionsResponse>
+    | Observable<GetQuestionsResponse>
+    | GetQuestionsResponse;
 
   getDifficulties(
     request: Empty,
@@ -108,6 +117,7 @@ export function QuestionServiceControllerMethods() {
       'addQuestion',
       'deleteQuestionWithId',
       'getQuestionWithId',
+      'getQuestionsOfDifficultyId',
       'getDifficulties',
       'addDifficulty',
       'deleteDifficultyWithId',

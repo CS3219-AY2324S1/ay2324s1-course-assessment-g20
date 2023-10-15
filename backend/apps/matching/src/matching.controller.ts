@@ -1,20 +1,22 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
-import { LookingToMatchModel } from './database/models/lookingToMatch.model';
 import { Mutex } from 'async-mutex';
 import { MatchingService } from './matching.service';
-import { MatchingServiceApi } from '@app/microservice/interservice-api/matching';
+import {
+  MatchingEntry,
+  MatchingServiceController,
+  MatchingServiceControllerMethods,
+} from '@app/microservice/interfaces/matching';
 
 @Controller()
-export class MatchingController {
+@MatchingServiceControllerMethods()
+export class MatchingController implements MatchingServiceController {
   private mutex = new Mutex();
 
   constructor(private readonly matchingService: MatchingService) {}
 
-  @MessagePattern(MatchingServiceApi.GET_MATCH)
-  async getMatch(lookingToMatchEntry: Partial<LookingToMatchModel>) {
+  async requestMatch(matchingEntry: MatchingEntry) {
     const release = await this.mutex.acquire();
-    await this.matchingService.findMatch(lookingToMatchEntry);
+    await this.matchingService.findMatch(matchingEntry);
     release();
   }
 }

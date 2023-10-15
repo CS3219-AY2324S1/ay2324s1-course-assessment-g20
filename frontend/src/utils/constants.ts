@@ -16,6 +16,7 @@ export const backendServicesPaths = {
     root: `${AUTH}`,
     refresh: `${AUTH}/refresh`,
     googleRedirect: `${AUTH}/google`,
+    ticket: `${AUTH}/ticket`,
   },
   question: {
     root: QUESTION,
@@ -35,7 +36,6 @@ export const backendServicesPaths = {
   },
   matching: {
     root: MATCHING,
-    ticket: `${MATCHING}/ticket`,
   },
 };
 

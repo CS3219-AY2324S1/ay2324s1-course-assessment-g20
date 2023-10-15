@@ -37,7 +37,7 @@ async function bootstrap() {
   const port = configService.get('port');
 
   app.connectMicroservice<MicroserviceOptions>({
-    ...getRmqOptionsForQueue(RmqQueue.WEBSOCKET),
+    ...getRmqOptionsForQueue(RmqQueue.MATCHING_WEBSOCKET),
   } as RmqOptions);
 
   await app.startAllMicroservices();

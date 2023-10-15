@@ -1,8 +1,8 @@
-import { WebsocketServiceApi } from '@app/microservice/interservice-api/websocket';
+import { WebsocketServiceApi } from '@app/microservice/events-api/websocket';
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { Public } from '../jwt/jwtPublic.decorator';
-import { WebsocketMemoryService as MatchingWebsocketService } from '../services/websocketMemory.service';
+import { MatchingWebsocketService as MatchingWebsocketService } from '../services/matchingWebsocketService';
 
 @Controller()
 @Public()

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class WebsocketMemoryService {
+export class MatchingWebsocketService {
   private connections: Map<string, WebSocket> = new Map();
 
   addConnection(userId: string, socket: WebSocket) {

@@ -5,7 +5,7 @@ export class LookingToMatchModel extends BaseModel {
     return 'user_id';
   }
   static tableName = 'lookingToMatch';
-  readonly userId: number;
+  readonly userId: string;
   readonly questionDifficulty: string;
   readonly isConnected: boolean;
 }

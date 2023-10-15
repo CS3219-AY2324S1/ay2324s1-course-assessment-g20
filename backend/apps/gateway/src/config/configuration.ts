@@ -12,7 +12,6 @@ const gatewayConfiguration = () => {
     corsOrigin: process.env.CORS_ORIGIN,
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
     googleOauthOptions,
-    // matchingServiceOptions,
   };
 };
 

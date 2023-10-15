@@ -37,9 +37,10 @@ export class QuestionController implements QuestionServiceController {
     return this.questionService.getQuestionWithId(id);
   }
 
-  @MessagePattern(QuestionServiceApi.GET_QUESTIONS_OF_DIFFICULTY)
-  getQuestionsOfDifficulty(difficulty: string) {
-    return this.questionService.getQuestionsOfDifficulty(difficulty);
+  getQuestionsOfDifficultyId({ id }: ID): Promise<GetQuestionsResponse> {
+    return this.questionService
+      .getQuestionsOfDifficulty(id)
+      .then((questions) => ({ questions }));
   }
 
   // DIFFICULTIES

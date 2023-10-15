@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package MatchingPackage;
+
+import "google/protobuf/empty.proto";
+
+service MatchingService {
+  rpc RequestMatch (MatchingEntry) returns (google.protobuf.Empty) {}
+}
+
+message MatchingEntry {
+  string userId = 1;
+  string questionDifficulty = 2;
+}
+ 

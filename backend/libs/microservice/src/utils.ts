@@ -10,11 +10,8 @@ import {
 import { join } from 'path';
 import { Service } from './services';
 
-// RMQ
-// TODO: RMQ logic left here for matching service implementation
 export enum RmqQueue {
-  PLACHOLDER = 'placeholder_queue',
-  WEBSOCKET = 'websocket_queue',
+  MATCHING_WEBSOCKET = 'matching_websocket_queue',
 }
 
 export const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {
@@ -90,5 +87,9 @@ const SERVICE_TO_PROTO_OPTIONS_MAP = new Map<Service, GrpcOptions['options']>([
       package: 'CollaborationPackage',
       protoPath: getFullProtoPath('collaboration'),
     },
+  ],
+  [
+    Service.MATCHING_SERVICE,
+    { package: 'MatchingPackage', protoPath: getFullProtoPath('matching') },
   ],
 ]);

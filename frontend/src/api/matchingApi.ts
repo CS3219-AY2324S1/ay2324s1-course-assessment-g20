@@ -4,7 +4,7 @@ import { requestBackend } from './requestBackend';
 
 export async function getMatchingTicket() {
   return requestBackend<IWsTicket>({
-    url: backendServicesPaths.matching.ticket,
+    url: backendServicesPaths.auth.ticket,
     method: HttpRequestMethod.GET,
   });
 }

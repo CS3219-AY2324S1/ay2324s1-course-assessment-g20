@@ -1,57 +1,70 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { MongoClient, ObjectId } = require('mongodb');
 const questionsJson = require('../../data/questions.json');
-const fs = require('fs').promises;
+const fs = require('fs');
+const dotenv = require('dotenv');
 
-const generateFilePaths = async () => {
-  const questionDescFilePaths = [];
+dotenv.config({ path: `.env` });
+const uri = process.env.QUESTION_SERVICE_MONGODB_URL;
 
-  for (let i = 1; i <= questionsJson.length; i++) {
-    questionDescFilePaths.push(`data/question-descriptions/${i}.md`);
-  }
+const QUESTION_DESCRIPTION_DIRECTORY_PATH = 'data/question-descriptions';
+const generateFilePathFromId = (id) =>
+  `${QUESTION_DESCRIPTION_DIRECTORY_PATH}/${id}.md`;
 
-  return questionDescFilePaths;
-};
+const readFiles = () => {
+  const fileIds = questionsJson.map((question) => question.id);
+  const filesById = {};
 
-const readFiles = async () => {
   try {
-    const questionDescFilePaths = await generateFilePaths();
-    const descriptions = [];
-
-    await Promise.all(
-      questionDescFilePaths.map(async (filePath, index) => {
-        try {
-          const data = await fs.readFile(filePath, 'utf8');
-          descriptions[index] = data;
-          console.log('Read and pushed:', filePath);
-        } catch (err) {
-          console.error(`Error reading file ${filePath}: ${err}`);
-        }
-      }),
-    );
-
-    return descriptions;
-  } catch (error) {
-    console.error('Error generating file paths:', error);
+    fileIds.forEach((fileId) => {
+      const filePath = generateFilePathFromId(fileId);
+      const data = fs.readFileSync(filePath, 'utf8');
+      filesById[fileId] = data;
+      console.log('Read and pushed:', filePath);
+    });
+  } catch (err) {
+    console.error(`Error reading files: ${err}`);
     return [];
   }
+
+  return filesById;
 };
 
-const uri = 'mongodb://127.0.0.1:27017/';
+const getNamesToObjectIdMap = async (collection) => {
+  const objectIdsByName = {};
+
+  const documents = await collection.find().toArray();
+  documents.forEach((document) => {
+    objectIdsByName[document.name] = document._id;
+  });
+
+  return objectIdsByName;
+};
+
+const getCategoryIds = (database) => {
+  const categoryCollection = database.collection('categories');
+  return getNamesToObjectIdMap(categoryCollection);
+};
+
+const getDifficultyIds = async (database) => {
+  const difficultyCollection = database.collection('difficulties');
+  return getNamesToObjectIdMap(difficultyCollection);
+};
 
 async function connectToDatabase() {
   try {
     // Open connection to MongoDB
     const client = new MongoClient(uri);
     await client.connect().then(() => console.log('Connected to MongoDB'));
+    const database = client.db();
 
-    const database = client.db('peer-prep');
+    const categoryIdsByName = await getCategoryIds(database);
+    const difficultyIdsByName = await getDifficultyIds(database);
+    const filesById = readFiles();
 
     const questionCategoriesCollection =
       database.collection('questioncategories');
     const questionCollection = database.collection('questions');
-    const difficultyCollection = database.collection('difficulties');
-    const categoryCollection = database.collection('categories');
 
     await questionCategoriesCollection
       .deleteMany({})
@@ -60,46 +73,26 @@ async function connectToDatabase() {
       .deleteMany({})
       .then(() => console.log('Deleted all questions'));
 
-    await readFiles().then(
-      async (descriptions) =>
-        await questionCollection
-          .insertMany(
-            await Promise.all(
-              questionsJson.map(async (question, index) => {
-                return {
-                  _id: new ObjectId(question.id),
-                  title: question.title,
-                  description: descriptions[index],
-                  difficulty: await difficultyCollection
-                    .findOne({
-                      name: question.difficulty,
-                    })
-                    .then((difficulty) => difficulty._id),
-                };
-              }),
-            ),
-          )
-          .then(async (res) => {
-            console.log(res);
-            await questionCategoriesCollection.insertMany(
-              await Promise.all(
-                Object.keys(res.insertedIds).flatMap((id, index) => {
-                  return questionsJson[index].categories.map(
-                    async (category) => {
-                      return {
-                        question: res.insertedIds[id],
-                        category: await categoryCollection
-                          .findOne({ name: category })
-                          .then((category) => category._id),
-                      };
-                    },
-                  );
-                }),
-              ),
-            );
-          })
-          .then(() => console.log('Inserted all question categories')),
-    );
+    await questionCollection
+      .insertMany(
+        questionsJson.map((question) => ({
+          _id: new ObjectId(question.id),
+          title: question.title,
+          description: filesById[question.id],
+          difficulty: difficultyIdsByName[question.difficulty],
+        })),
+      )
+      .then(({ insertedIds }) =>
+        questionCategoriesCollection.insertMany(
+          Object.keys(insertedIds).flatMap((id, index) =>
+            questionsJson[index].categories.map((category) => ({
+              question: insertedIds[id],
+              category: categoryIdsByName[category],
+            })),
+          ),
+        ),
+      )
+      .then(() => console.log('Inserted all question categories'));
 
     // Close connection
     await client.close().then(() => console.log('Closed connection'));

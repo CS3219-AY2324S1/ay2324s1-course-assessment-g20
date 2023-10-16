@@ -1,28 +1,40 @@
 import { Inject } from '@nestjs/common';
 import { WebSocketGateway } from '@nestjs/websockets';
 import { setupWSConnection, setPersistence } from 'y-websocket/bin/utils';
-import {
-  COLLABORATION_SERVICE,
-  CollaborationServiceApi,
-} from '@app/microservice/interservice-api/collaboration';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { ClientGrpc } from '@nestjs/microservices';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import { BaseWebsocketGateway } from '@app/websocket';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
+import {
+  COLLABORATION_SERVICE_NAME,
+  CollaborationServiceClient,
+} from '@app/microservice/interfaces/collaboration';
+import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
+  private mongoUri;
+  private collaborationService: CollaborationServiceClient;
 
   constructor(
-    @Inject(Service.USER_SERVICE)
-    userServiceClient: ClientProxy,
-    @Inject(COLLABORATION_SERVICE)
-    private readonly collaborationServiceClient: ClientProxy,
+    @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
+    @Inject(Service.COLLABORATION_SERVICE)
+    private readonly collaborationServiceClient: ClientGrpc,
+    private readonly configService: ConfigService,
   ) {
     super(userServiceClient);
+    this.mongoUri = configService.getOrThrow('mongoUri');
+  }
+
+  onModuleInit() {
+    super.onModuleInit();
+    this.collaborationService =
+      this.collaborationServiceClient.getService<CollaborationServiceClient>(
+        COLLABORATION_SERVICE_NAME,
+      );
   }
 
   async handleConnection(connection: WebSocket, request: Request) {
@@ -34,17 +46,14 @@ export class YjsGateway extends BaseWebsocketGateway {
 
     const ticketId = YjsGateway.getTicketIdFromUrl(request);
     const { sessionId } = await firstValueFrom(
-      this.collaborationServiceClient.send(
-        CollaborationServiceApi.GET_SESSION_ID_FROM_TICKET,
-        ticketId,
-      ),
+      this.collaborationService.getSessionIdFromTicket({ id: ticketId }),
     );
 
-    YjsGateway.setupYjs(connection, sessionId);
+    YjsGateway.setupYjs(connection, sessionId, this.mongoUri);
     return YjsGateway.sessionInitialized(connection);
   }
 
-  private static setupYjs(connection, docName) {
+  private static setupYjs(connection, docName, mongoUri) {
     /**
      * Yjs `setupWSConnection` expects a Request object for auto room detection.
      * We are not using this feature, and can just pass in a dummy object.
@@ -54,13 +63,10 @@ export class YjsGateway extends BaseWebsocketGateway {
       docName,
     });
 
-    const mdb = new MongodbPersistence(
-      'mongodb://localhost:27017/peer-prep-collaboration',
-      {
-        flushSize: 100,
-        multipleCollections: true,
-      },
-    );
+    const mdb = new MongodbPersistence(mongoUri, {
+      flushSize: 100,
+      multipleCollections: true,
+    });
 
     setPersistence({
       bindState: async (docName, ydoc) => {

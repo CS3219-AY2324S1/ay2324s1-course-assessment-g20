@@ -4,6 +4,10 @@ RUN mkdir -p /app/scripts
 WORKDIR /app/scripts
 COPY ./scripts /app/scripts
 
+RUN mkdir -p /app/data
+WORKDIR /app/data
+COPY ./data /app/data
+
 RUN mkdir -p /app/libs
 WORKDIR /app/libs
 COPY ./libs .
@@ -17,4 +21,4 @@ COPY package.json yarn.lock tsconfig*.json ./
      
 RUN yarn install --frozen-lockfile
 
-CMD ["yarn", "migrate-and-seed:sql"]
+CMD ["yarn", "migrate-and-seed:all"]

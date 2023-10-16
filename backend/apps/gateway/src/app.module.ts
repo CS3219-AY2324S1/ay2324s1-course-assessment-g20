@@ -9,17 +9,19 @@ import { LanguagesController } from './controllers/languages.controller';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
 import { YjsGateway } from './websocket-gateways/yjs.gateway';
 import { CollaborationController } from './controllers/collaboration.controller';
-import { Service } from '@app/microservice/interservice-api/services';
-import { createMicroserviceClientProxyProvider } from '@app/microservice/utils';
-
-const microserviceOptionKeys = {
-  [Service.QUESTION_SERVICE]: 'questionServiceOptions',
-  [Service.USER_SERVICE]: 'userServiceOptions',
-  [Service.COLLABORATION_SERVICE]: 'collaborationServiceOptions',
-};
+import { Service } from '@app/microservice/services';
+import { registerGrpcClients } from '@app/microservice/utils';
 
 @Module({
-  imports: [ConfigModule.loadConfiguration(gatewayConfiguration), JwtModule],
+  imports: [
+    ConfigModule.loadConfiguration(gatewayConfiguration),
+    JwtModule,
+    registerGrpcClients([
+      Service.USER_SERVICE,
+      Service.QUESTION_SERVICE,
+      Service.COLLABORATION_SERVICE,
+    ]),
+  ],
   controllers: [
     AppController,
     AuthController,
@@ -27,12 +29,6 @@ const microserviceOptionKeys = {
     LanguagesController,
     CollaborationController,
   ],
-  providers: [
-    GoogleOauthStrategy,
-    YjsGateway,
-    ...Object.entries(microserviceOptionKeys).map(([key, value]) =>
-      createMicroserviceClientProxyProvider(key, value),
-    ),
-  ],
+  providers: [GoogleOauthStrategy, YjsGateway],
 })
 export class AppModule {}

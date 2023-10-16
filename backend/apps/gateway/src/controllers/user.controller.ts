@@ -4,32 +4,48 @@ import {
   Delete,
   Get,
   Inject,
+  OnModuleInit,
   Patch,
   Req,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
 import PatchUserProfileDto from '../dtos/user/patchUserProfile.dto';
-import { Service } from '@app/microservice/interservice-api/services';
-import { UserServiceApi } from '@app/microservice/interservice-api/user';
+import { Service } from '@app/microservice/services';
+import {
+  USER_AUTH_SERVICE_NAME,
+  USER_PROFILE_SERVICE_NAME,
+  UserAuthServiceClient,
+  UserProfileServiceClient,
+} from '@app/microservice/interfaces/user';
 
 @Controller('user')
-export class UserController {
+export class UserController implements OnModuleInit {
+  private userAuthService: UserAuthServiceClient;
+  private userProfileService: UserProfileServiceClient;
+
   constructor(
-    @Inject(Service.USER_SERVICE)
-    private readonly userServiceClient: ClientProxy,
+    @Inject(Service.USER_SERVICE) private userServiceClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.userAuthService =
+      this.userServiceClient.getService<UserAuthServiceClient>(
+        USER_AUTH_SERVICE_NAME,
+      );
+    this.userProfileService =
+      this.userServiceClient.getService<UserProfileServiceClient>(
+        USER_PROFILE_SERVICE_NAME,
+      );
+  }
 
   @Get()
   getUserProfile(@Req() req) {
-    return this.userServiceClient.send(
-      UserServiceApi.GET_USER_PROFILE,
-      req.user.id,
-    );
+    return this.userProfileService.getUserProfile({ id: req.user.id });
   }
 
   @Patch()
   patchUserProfile(@Req() req, @Body() body: PatchUserProfileDto) {
-    return this.userServiceClient.send(UserServiceApi.UPDATE_USER_PROFILE, {
+    return this.userProfileService.updateUserProfile({
       userId: req.user.id,
       ...body,
     });
@@ -37,9 +53,6 @@ export class UserController {
 
   @Delete()
   deleteUser(@Req() req) {
-    return this.userServiceClient.send(
-      UserServiceApi.DELETE_OAUTH_USER,
-      req.user.id,
-    );
+    return this.userAuthService.deleteOAuthUser({ id: req.user.id });
   }
 }

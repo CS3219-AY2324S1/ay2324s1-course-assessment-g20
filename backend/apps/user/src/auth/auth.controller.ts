@@ -1,48 +1,51 @@
 import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { MessagePattern } from '@nestjs/microservices';
 import { UserModel } from '../database/models/user.model';
 import {
-  CreateWebsocketTicketInfo,
-  UserServiceApi,
-} from '@app/microservice/interservice-api/user';
+  CreateWebsocketTicketInfoRequest,
+  RefreshTokenRequest,
+  User,
+  UserAuthServiceController,
+  UserAuthServiceControllerMethods,
+} from '@app/microservice/interfaces/user';
+import { ID, IDs } from '@app/microservice/interfaces/common';
 
 @Controller()
-export class AuthController {
+@UserAuthServiceControllerMethods()
+export class AuthController implements UserAuthServiceController {
   constructor(private readonly authService: AuthService) {}
 
-  @MessagePattern(UserServiceApi.GENERATE_JWTS)
-  generateJwts(user) {
+  generateJwts(user: User) {
     return this.authService.generateJwts(user);
   }
 
-  @MessagePattern(UserServiceApi.GENERATE_JWTS_FROM_REFRESH_TOKEN)
-  generateJwtsFromRefreshToken(refreshToken) {
+  generateJwtsFromRefreshToken({ refreshToken }: RefreshTokenRequest) {
     return this.authService.generateJwtsFromRefreshToken(refreshToken);
   }
 
-  @MessagePattern(UserServiceApi.FIND_OR_CREATE_OAUTH_USER)
-  findOrCreateOauthUser(user: Partial<UserModel>) {
-    return this.authService.findOrCreateOAuthUser(user);
+  findOrCreateOauthUser(user: Partial<User>) {
+    return this.authService.findOrCreateOAuthUser(user as Partial<UserModel>);
   }
 
-  @MessagePattern(UserServiceApi.DELETE_OAUTH_USER)
-  deleteOAuthUser(id: string) {
-    return this.authService.deleteOAuthUser(id);
+  deleteOAuthUser({ id }: ID) {
+    return this.authService
+      .deleteOAuthUser(id)
+      .then((deletedCount) => ({ deletedCount }));
   }
 
-  @MessagePattern(UserServiceApi.GENERATE_WEBSOCKET_TICKET)
-  generateWebsocketTicket(createTicketInfo: CreateWebsocketTicketInfo) {
+  async generateWebsocketTicket(
+    createTicketInfo: CreateWebsocketTicketInfoRequest,
+  ) {
     return this.authService.generateWebsocketTicket(createTicketInfo);
   }
 
-  @MessagePattern(UserServiceApi.CONSUME_WEBSOCKET_TICKET)
-  consumeWebsocketTicket(ticketId: string) {
-    return this.authService.consumeWebsocketTicket(ticketId);
+  consumeWebsocketTicket({ id }: ID) {
+    return this.authService.consumeWebsocketTicket(id);
   }
 
-  @MessagePattern(UserServiceApi.VALIDATE_USERS_EXISTS)
-  validateUsersExists(userIds: string[]) {
-    return this.authService.validateUsersExist(userIds);
+  validateUsersExists({ ids }: IDs) {
+    return this.authService
+      .validateUsersExist(ids)
+      .then((value) => ({ value }));
   }
 }

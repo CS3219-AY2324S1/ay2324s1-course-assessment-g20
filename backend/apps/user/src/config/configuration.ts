@@ -1,7 +1,7 @@
 import { DatabaseConfigurationOptions } from '@app/sql-database';
 import { JwtTokenConfig } from '@app/types';
 import { getDatabaseConfigurationForService } from '@app/sql-database/config/databaseConfiguration';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
 
 const userConfiguration = () => {
   const jwtTokenConfig: JwtTokenConfig = {

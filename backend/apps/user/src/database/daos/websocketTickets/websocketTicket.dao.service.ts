@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ModelClass } from 'objection';
 import { WebsocketTicketModel } from '../../models/websocketTicket.model';
-import { CreateWebsocketTicketInfo } from '@app/microservice/interservice-api/user';
+import { CreateWebsocketTicketInfoRequest } from '@app/microservice/interfaces/user';
 
 @Injectable()
 export class WebsocketTicketDaoService {
@@ -17,7 +17,7 @@ export class WebsocketTicketDaoService {
     return time;
   }
 
-  create(createTicketInfo: CreateWebsocketTicketInfo) {
+  create(createTicketInfo: CreateWebsocketTicketInfoRequest) {
     return this.websocketsTicketModel.query().insert({
       userId: createTicketInfo.userId,
       expiry: WebsocketTicketDaoService.getTicketExpiryTime(),

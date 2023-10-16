@@ -1,15 +1,18 @@
 [
   {
-    "name": "Array"
+    "name": "Arrays"
   },
   {
-    "name": "String"
+    "name": "Strings"
   },
   {
-    "name": "Hash Table"
+    "name": "Hash Tables"
   },
   {
     "name": "Math"
+  },
+  {
+    "name": "Algorithms"
   },
   {
     "name": "Dynamic Programming"
@@ -30,16 +33,19 @@
     "name": "Breadth-First Search"
   },
   {
-    "name": "Tree"
+    "name": "Brainteaser"
   },
   {
-    "name": "Matrix"
+    "name": "Trees"
+  },
+  {
+    "name": "Matrices"
   },
   {
     "name": "Two Pointers"
   },
   {
-    "name": "Binary Tree"
+    "name": "Binary Trees"
   },
   {
     "name": "Bit Manipulation"
@@ -48,13 +54,13 @@
     "name": "Heap (Priority Queue)"
   },
   {
-    "name": "Stack"
+    "name": "Stacks"
   },
   {
     "name": "Prefix Sum"
   },
   {
-    "name": "Graph"
+    "name": "Graphs"
   },
   {
     "name": "Simulation"
@@ -75,13 +81,13 @@
     "name": "Union Find"
   },
   {
-    "name": "Linked List"
+    "name": "Linked Lists"
   },
   {
-    "name": "Ordered Set"
+    "name": "Ordered Sets"
   },
   {
-    "name": "Trie"
+    "name": "Tries"
   },
   {
     "name": "Recursion"
@@ -90,7 +96,7 @@
     "name": "Divide and Conquer"
   },
   {
-    "name": "Queue"
+    "name": "Queues"
   },
   {
     "name": "Shortest Path"
@@ -103,5 +109,11 @@
   },
   {
     "name": "Quickselect"
+  },
+  {
+    "name": "Databases"
+  },
+  {
+    "name": "Data Structures"
   }
 ]

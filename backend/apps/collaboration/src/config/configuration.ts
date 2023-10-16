@@ -1,23 +1,16 @@
-import { getRmqOptionsForQueue } from '@app/microservice/utils';
 import {
   DatabaseConfigurationOptions,
   getDatabaseConfigurationForService,
 } from '@app/sql-database';
-import { RmqQueue } from '@app/microservice/utils';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
 
 const collaborationConfiguration = () => {
-  const userServiceOptions = getRmqOptionsForQueue(RmqQueue.USER);
-  const questionServiceOptions = getRmqOptionsForQueue(RmqQueue.QUESTION);
-
   const databaseConfigurationOptions: DatabaseConfigurationOptions =
     getDatabaseConfigurationForService(Service.COLLABORATION_SERVICE);
 
   return {
     port: parseInt(process.env.COLLABORATION_SERVICE_PORT, 10),
     databaseConfigurationOptions,
-    userServiceOptions,
-    questionServiceOptions,
     rmqUrl: process.env.RMQ_URL,
   };
 };

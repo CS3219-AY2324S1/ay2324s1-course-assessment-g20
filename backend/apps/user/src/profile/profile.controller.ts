@@ -1,24 +1,22 @@
 import { Controller } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { UserProfileModel } from '../database/models/userProfile.model';
-import { UserServiceApi } from '@app/microservice/interservice-api/user';
+import {
+  UserProfile,
+  UserProfileServiceController,
+  UserProfileServiceControllerMethods,
+} from '@app/microservice/interfaces/user';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Controller()
-export class ProfileController {
+@UserProfileServiceControllerMethods()
+export class ProfileController implements UserProfileServiceController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @MessagePattern(UserServiceApi.GET_USER_PROFILE)
-  getUserProfile(
-    @Payload() id: string,
-  ): Promise<Partial<UserProfileModel> | undefined> {
+  getUserProfile({ id }: ID) {
     return this.profileService.getUserProfile(id);
   }
 
-  @MessagePattern(UserServiceApi.UPDATE_USER_PROFILE)
-  updateUserProfile(
-    @Payload() data: Partial<UserProfileModel>,
-  ): Promise<UserProfileModel> {
+  updateUserProfile(data: UserProfile) {
     return this.profileService.updateUserProfile(data);
   }
 }

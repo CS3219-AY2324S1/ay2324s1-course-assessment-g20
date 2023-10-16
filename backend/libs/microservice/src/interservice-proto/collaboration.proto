@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package CollaborationPackage;
+
+import "question.proto";
+import "common.proto";
+
+service CollaborationService {
+  rpc CreateCollabSession (CreateCollabSessionRequest) returns (Session);
+  rpc GetSessionAndWsTicket (GetSessionAndWsTicketRequest) returns (GetSessionAndWsTicketResponse);
+  rpc GetSessionIdFromTicket (common.ID) returns (GetSessionIdFromTicketResponse);
+}
+
+message CreateCollabSessionRequest {
+  repeated string userIds = 1;
+  string questionId = 2;
+}
+
+message GetSessionAndWsTicketRequest {
+  string sessionId = 1;
+  string userId = 2;
+}
+
+message GetSessionAndWsTicketResponse {
+  QuestionPackage.Question question = 1;
+  string ticket = 2;
+}
+
+message GetSessionIdFromTicketResponse {
+  string sessionId = 1;
+}
+
+message Session {
+  string id = 1;
+  string questionId = 2;
+  repeated UserId userIds = 3;
+  repeated SessionTicket sessionTickets = 4;
+}
+
+message UserId {
+  string userId = 1;
+}
+
+message SessionTicket {
+  string ticketId = 1;
+}

@@ -13,8 +13,12 @@
 1. Run `yarn stop:docker` to stop the microservice containers.
 
 ## Testing (local)
+1. In the `backend` directory, run `yarn test` to run the E2E tests
+
+## Testing (CI pipeline with Docker)
 1. Install Docker Desktop if you have not already done so.
-1. In the `backend` directory, run `yarn test` to run the E2E tests.
+1. In the `backend` directory, run `yarn test:ci` to run the E2E tests.
+UPDATE THE TESTS
 
 ## Database migrations
 1. Create a knex (SQL) database migration file via `yarn migrate:make {microservice_name} {migration_file_name}`.

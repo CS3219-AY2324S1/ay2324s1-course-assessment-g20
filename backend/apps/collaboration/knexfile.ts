@@ -1,5 +1,5 @@
 import 'tsconfig-paths/register';
-import { Service } from '@app/microservice/interservice-api/services';
+import { Service } from '@app/microservice/services';
 import { getDatabaseConfigurationForService } from '@app/sql-database';
 import * as dotenv from 'dotenv';
 import { knexSnakeCaseMappers } from 'objection';

@@ -5,6 +5,8 @@ export type DifficultyDocument = HydratedDocument<Difficulty>;
 
 @Schema()
 export class Difficulty {
+  _id: string;
+
   @Prop({ required: false })
   id?: string;
 

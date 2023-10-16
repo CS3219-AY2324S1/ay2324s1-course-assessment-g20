@@ -6,7 +6,7 @@ import { JwtPayload, JwtTokenConfig } from '@app/types';
 import { UserDaoService } from '../database/daos/users/user.dao.service';
 import { UserModel } from '../database/models/user.model';
 import { WebsocketTicketDaoService } from '../database/daos/websocketTickets/websocketTicket.dao.service';
-import { CreateWebsocketTicketInfo } from '@app/microservice/interservice-api/user';
+import { CreateWebsocketTicketInfoRequest } from '@app/microservice/interfaces/user';
 
 @Injectable()
 export class AuthService {
@@ -97,7 +97,7 @@ export class AuthService {
     return this.userDaoService.deleteOAuthUser(id);
   }
 
-  generateWebsocketTicket(createTicketInfo: CreateWebsocketTicketInfo) {
+  generateWebsocketTicket(createTicketInfo: CreateWebsocketTicketInfoRequest) {
     return this.websocketTicketDaoService.create(createTicketInfo);
   }
 

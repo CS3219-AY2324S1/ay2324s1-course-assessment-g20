@@ -4,6 +4,7 @@ import { UserProfileModel } from '../database/models/userProfile.model';
 import { LanguageDaoService } from '../database/daos/languages/language.dao.service';
 import { RoleDaoService } from '../database/daos/roles/role.dao.service';
 import { Role } from '@app/types/roles';
+import { UserProfile } from '@app/microservice/interfaces/user';
 
 @Injectable()
 export class ProfileService {
@@ -13,9 +14,7 @@ export class ProfileService {
     private readonly roleDaoService: RoleDaoService,
   ) {}
 
-  getUserProfile(
-    userId: string,
-  ): Promise<Partial<UserProfileModel> | undefined> {
+  getUserProfile(userId: string): Promise<UserProfile | undefined> {
     return this.userProfileDaoService
       .findByUserId({
         userId,
@@ -24,7 +23,9 @@ export class ProfileService {
       .then((profile) => ({
         name: profile.name,
         preferredLanguage: profile.preferredLanguage,
+        preferredLanguageId: profile.preferredLanguageId,
         role: profile.role,
+        roleId: profile.roleId,
       }));
   }
 

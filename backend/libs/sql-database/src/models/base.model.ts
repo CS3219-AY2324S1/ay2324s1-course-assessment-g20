@@ -1,7 +1,7 @@
 import { Model } from 'objection';
 
-export class BaseModel extends Model {
-  readonly id: string;
+class BaseModelTemplate<ID_TYPE> extends Model {
+  readonly id: ID_TYPE;
 
   createdAt: Date;
   updatedAt: Date;
@@ -15,3 +15,6 @@ export class BaseModel extends Model {
     this.updatedAt = new Date();
   }
 }
+
+export class BaseModel extends BaseModelTemplate<number> {}
+export class BaseModelUUID extends BaseModelTemplate<string> {}

@@ -48,8 +48,8 @@ export default function Profile() {
   }, []);
 
   const handlePreferredLanguageChange = (event: SelectChangeEvent) => {
-    const newPreferredLanguage = event.target.value;
-    updateProfile({ preferredLanguageId: newPreferredLanguage as unknown as number });
+    const newPreferredLanguage = parseInt(event.target.value, 10);
+    updateProfile({ preferredLanguageId: newPreferredLanguage });
   };
   const handleDeleteAccount = async () => {
     await deleteUserProfile();

@@ -44,12 +44,12 @@ export interface JwtTokens {
 }
 
 export interface Language {
-  id: string;
+  id: number;
   name: string;
 }
 
 export interface Role {
-  id: string;
+  id: number;
   name: string;
 }
 

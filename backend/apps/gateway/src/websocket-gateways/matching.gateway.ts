@@ -14,7 +14,7 @@ import {
   MATCHING_SERVICE_NAME,
 } from '@app/microservice/interfaces/matching';
 import { Service } from '@app/microservice/services';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 
 @WebSocketGateway({ path: '/matching' })
 export class MatchingGateway extends BaseWebsocketGateway {
@@ -35,6 +35,15 @@ export class MatchingGateway extends BaseWebsocketGateway {
       this.matchingServiceClient.getService<MatchingServiceClient>(
         MATCHING_SERVICE_NAME,
       );
+  }
+
+  async handleDisconnect(connection: AuthenticatedWebsocket): Promise<void> {
+    this.websocketMemoryService.removeConnection(connection.ticket.userId);
+    await firstValueFrom(
+      this.matchingService.deleteMatchEntryByUserId({
+        id: connection.ticket.userId,
+      }),
+    );
   }
 
   @SubscribeMessage('get_match')

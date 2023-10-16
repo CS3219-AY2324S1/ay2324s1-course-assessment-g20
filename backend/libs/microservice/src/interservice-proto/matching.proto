@@ -3,9 +3,12 @@ syntax = "proto3";
 package MatchingPackage;
 
 import "google/protobuf/empty.proto";
+import "common.proto";
+
 
 service MatchingService {
   rpc RequestMatch (MatchingEntry) returns (google.protobuf.Empty) {}
+  rpc DeleteMatchEntryByUserId (common.ID) returns (google.protobuf.Empty) {}
 }
 
 message MatchingEntry {

@@ -10,6 +10,7 @@ async function bootstrap() {
     MatchingModule,
     getGrpcOptions(Service.MATCHING_SERVICE),
   );
+
   await app.listen();
   console.log(`Matching microservice running on port ${port}`);
 }

@@ -71,7 +71,7 @@ export class BaseWebsocketGateway
     return false;
   }
 
-  handleDisconnect(): void {
+  handleDisconnect(connection: AuthenticatedWebsocket): void {
     // No implementation
   }
 }

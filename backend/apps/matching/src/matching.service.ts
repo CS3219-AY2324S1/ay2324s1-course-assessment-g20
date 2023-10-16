@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc, ClientKafka } from '@nestjs/microservices';
 import { LookingToMatchModel } from './database/models/lookingToMatch.model';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { LookingToMatchDaoService } from './database/daos/lookingToMatch/lookingToMatch.dao.service';
 import { Service } from '@app/microservice/services';
 import { WebsocketServiceApi } from '@app/microservice/events-api/websocket';
@@ -21,7 +21,7 @@ export class MatchingService implements OnModuleInit {
 
   constructor(
     @Inject(Service.WEBSOCKET_SERVICE)
-    private readonly webSocketClient: ClientProxy,
+    private readonly webSocketClient: ClientKafka,
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionClient: ClientGrpc,
     @Inject(Service.COLLABORATION_SERVICE)
@@ -38,6 +38,18 @@ export class MatchingService implements OnModuleInit {
       this.questionClient.getService<QuestionServiceClient>(
         QUESTION_SERVICE_NAME,
       );
+
+    const patterns = [WebsocketServiceApi.EMIT_TO_USER_AND_DELETE_WEBSOCKET];
+
+    patterns.forEach((pattern) => {
+      this.webSocketClient.subscribeToResponseOf(pattern);
+    });
+  }
+
+  async deleteEntry(userId: string) {
+    this.lookingToMatchDaoService.deleteMatchingEntry({
+      userId: userId,
+    });
   }
 
   async findMatch(matchingEntry: Partial<LookingToMatchModel>) {
@@ -57,70 +69,49 @@ export class MatchingService implements OnModuleInit {
       return;
     }
 
-    if (
-      !firstValueFrom(
-        this.webSocketClient.emit(
-          WebsocketServiceApi.IS_CONNECTED,
-          possibleMatch.userId,
-        ),
-      )
-    ) {
-      this.lookingToMatchDaoService.deleteMatchingEntry(possibleMatch);
-      this.lookingToMatchDaoService.createOrUpdateMatchingEntry({
-        ...matchingEntry,
-        isConnected: true,
-      });
-      return;
-    }
-
     this.lookingToMatchDaoService.deleteMatchingEntry(possibleMatch);
     this.lookingToMatchDaoService.deleteMatchingEntry(matchingEntry);
 
     // get random question
 
     const questions = (
-      await lastValueFrom(
+      await firstValueFrom(
         this.questionService.getQuestionsOfDifficultyId({
           id: matchingEntry.questionDifficulty,
         }),
       )
     ).questions;
 
-    console.log(questions);
     const randomQuestion =
       questions[Math.floor(Math.random() * questions.length)];
     if (!randomQuestion) {
       throw new Error('No question found');
     }
 
-    const session = await lastValueFrom(
+    const session = await firstValueFrom(
       this.collaborationService.createCollabSession({
         userIds: [possibleMatch.userId, matchingEntry.userId],
         questionId: randomQuestion._id,
       }),
     );
 
-    console.log(session);
-
     const collabSessionId = session.id;
 
-    this.webSocketClient.emit(WebsocketServiceApi.EMIT_TO_USER, {
-      userId: matchingEntry.userId,
-      event: 'match',
-      payload: { sessionId: collabSessionId },
-    });
-    this.webSocketClient.emit(WebsocketServiceApi.EMIT_TO_USER, {
-      userId: possibleMatch.userId,
-      event: 'match',
-      payload: { sessionId: collabSessionId },
-    });
     this.webSocketClient.emit(
-      WebsocketServiceApi.DISCONNECT_AND_DELETE_WEBSOCKET,
-      matchingEntry.userId,
+      WebsocketServiceApi.EMIT_TO_USER_AND_DELETE_WEBSOCKET,
+      {
+        userId: matchingEntry.userId,
+        event: 'match',
+        payload: { sessionId: collabSessionId },
+      },
     );
     this.webSocketClient.emit(
-      WebsocketServiceApi.DISCONNECT_AND_DELETE_WEBSOCKET,
-      possibleMatch.userId,
+      WebsocketServiceApi.EMIT_TO_USER_AND_DELETE_WEBSOCKET,
+      {
+        userId: possibleMatch.userId,
+        event: 'match',
+        payload: { sessionId: collabSessionId },
+      },
     );
   }
 }

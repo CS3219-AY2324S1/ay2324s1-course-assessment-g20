@@ -20,16 +20,6 @@ export class MatchingWebsocketService {
     return this.connections.get(userId);
   }
 
-  isConnected(userId: string) {
-    if (!this.connections.has(userId)) {
-      return false;
-    }
-
-    const socket = this.connections.get(userId);
-
-    return socket.readyState === socket.OPEN;
-  }
-
   removeConnection(userId: string) {
     this.connections.delete(userId);
   }

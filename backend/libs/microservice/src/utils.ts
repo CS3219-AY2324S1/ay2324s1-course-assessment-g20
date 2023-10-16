@@ -14,7 +14,10 @@ export enum RmqQueue {
   MATCHING_WEBSOCKET = 'matching_websocket_queue',
 }
 
-export const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {
+export const getRmqOptionsForQueue = (
+  rmqQueue: RmqQueue,
+  noAck = true,
+): RmqOptions => {
   const rmqUrl = process.env.RMQ_URL;
   if (!rmqUrl) {
     throw new Error('RMQ URL not configured!');
@@ -24,6 +27,7 @@ export const getRmqOptionsForQueue = (rmqQueue: RmqQueue): RmqOptions => {
     options: {
       urls: [rmqUrl],
       queue: rmqQueue,
+      noAck: noAck,
     },
   };
 };

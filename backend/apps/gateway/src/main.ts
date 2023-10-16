@@ -3,8 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
-import { MicroserviceOptions, RmqOptions } from '@nestjs/microservices';
-import { getRmqOptionsForQueue, RmqQueue } from '@app/microservice/utils';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,8 +36,17 @@ async function bootstrap() {
   const port = configService.get('port');
 
   app.connectMicroservice<MicroserviceOptions>({
-    ...getRmqOptionsForQueue(RmqQueue.MATCHING_WEBSOCKET),
-  } as RmqOptions);
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: ['localhost:' + process.env.KAFKA_PORT],
+      },
+      consumer: {
+        // Each gateway instance should have its own consumer group id to allow each instance to consume the same kafka topic
+        groupId: process.env.API_GATEWAY_PORT,
+      },
+    },
+  });
 
   await app.startAllMicroservices();
 

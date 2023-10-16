@@ -11,18 +11,22 @@ import {
   CollaborationServiceClient,
 } from '@app/microservice/interfaces/collaboration';
 import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
+  private mongoUri;
   private collaborationService: CollaborationServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
     @Inject(Service.COLLABORATION_SERVICE)
     private readonly collaborationServiceClient: ClientGrpc,
+    private readonly configService: ConfigService,
   ) {
     super(userServiceClient);
+    this.mongoUri = configService.getOrThrow('mongoUri');
   }
 
   onModuleInit() {
@@ -45,11 +49,11 @@ export class YjsGateway extends BaseWebsocketGateway {
       this.collaborationService.getSessionIdFromTicket({ id: ticketId }),
     );
 
-    YjsGateway.setupYjs(connection, sessionId);
+    YjsGateway.setupYjs(connection, sessionId, this.mongoUri);
     return YjsGateway.sessionInitialized(connection);
   }
 
-  private static setupYjs(connection, docName) {
+  private static setupYjs(connection, docName, mongoUri) {
     /**
      * Yjs `setupWSConnection` expects a Request object for auto room detection.
      * We are not using this feature, and can just pass in a dummy object.
@@ -59,13 +63,10 @@ export class YjsGateway extends BaseWebsocketGateway {
       docName,
     });
 
-    const mdb = new MongodbPersistence(
-      'mongodb://localhost:27017/peer-prep-collaboration',
-      {
-        flushSize: 100,
-        multipleCollections: true,
-      },
-    );
+    const mdb = new MongodbPersistence(mongoUri, {
+      flushSize: 100,
+      multipleCollections: true,
+    });
 
     setPersistence({
       bindState: async (docName, ydoc) => {

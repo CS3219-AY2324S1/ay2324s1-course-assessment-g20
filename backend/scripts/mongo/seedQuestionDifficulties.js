@@ -1,24 +1,28 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { MongoClient } = require('mongodb');
 const difficultiesJson = require('../../data/question-difficulties.json');
+const dotenv = require('dotenv');
 
-const uri = 'mongodb://127.0.0.1:27017/';
+dotenv.config({ path: `.env` });
+const uri = process.env.QUESTION_SERVICE_MONGODB_URL;
 
 async function connectToDatabase() {
   try {
     // Open connection to MongoDB
-    const client = new MongoClient(uri);
+    const client = new MongoClient(uri, { authSource: 'admin' });
     await client.connect().then(() => console.log('Connected to MongoDB'));
 
-    const collection = client.db('peer-prep').collection('difficulties');
+    const collection = client.db().collection('difficulties');
 
-    await collection
-      .deleteMany({})
-      .then(() => console.log('Deleted all difficulties'));
+    // await collection
+    //   .deleteMany({})
+    //   .then(() => console.log('Deleted all difficulties'));
 
-    await collection
-      .insertMany(difficultiesJson)
-      .then(() => console.log('Finished inserting difficulties'));
+    await Promise.all(
+      difficultiesJson.map((d) =>
+        collection.updateOne(d, { $setOnInsert: d }, { upsert: true }),
+      ),
+    ).then(() => console.log('Finished upserting difficulties'));
 
     // Close connection
     await client.close().then(() => console.log('Closed connection'));

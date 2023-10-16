@@ -7,15 +7,18 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Question, QuestionSchema } from './schemas/question.schema';
 import { Difficulty, DifficultySchema } from './schemas/difficulty.schema';
 import { Category, CategorySchema } from './schemas/category.schema';
-import {
-  QuestionCategory,
-  QuestionCategorySchema,
-} from './schemas/question-category.schema';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     ConfigModule.loadConfiguration(questionConfiguration),
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/peer-prep'),
+    MongooseModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.getOrThrow('mongoUri'),
+        authSource: 'admin',
+      }),
+      inject: [ConfigService],
+    }),
     MongooseModule.forFeature([
       {
         name: Question.name,
@@ -28,10 +31,6 @@ import {
       {
         name: Category.name,
         schema: CategorySchema,
-      },
-      {
-        name: QuestionCategory.name,
-        schema: QuestionCategorySchema,
       },
     ]),
   ],

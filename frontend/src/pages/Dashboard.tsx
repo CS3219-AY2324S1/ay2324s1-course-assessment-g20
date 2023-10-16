@@ -162,6 +162,7 @@ export default function Dashboard() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
+              <StyledTableCell align="left">ID</StyledTableCell>
               <StyledTableCell align="left">Title</StyledTableCell>
               <StyledTableCell align="left">Category</StyledTableCell>
               <StyledTableCell align="left">Complexity</StyledTableCell>
@@ -173,6 +174,7 @@ export default function Dashboard() {
           <TableBody>
             {rows.map((row, index) => (
               <StyledTableRow key={index}>
+                <StyledTableCell align="left">{index + 1}</StyledTableCell>
                 <StyledTableCell component="th" scope="row">
                   {row.title}
                 </StyledTableCell>

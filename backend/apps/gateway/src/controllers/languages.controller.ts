@@ -25,7 +25,7 @@ export class LanguagesController implements OnModuleInit {
   @Get()
   getLanguages() {
     return firstValueFrom(this.userLanguageService.getAllLanguages({})).then(
-      (resp) => resp.languages,
+      (resp) => resp.languages || [],
     );
   }
 }

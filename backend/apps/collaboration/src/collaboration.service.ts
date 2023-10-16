@@ -66,6 +66,10 @@ export class CollaborationService implements OnModuleInit {
       withGraphFetched: true,
     });
 
+    if (!session) {
+      throw new BadRequestException('Invalid session!');
+    }
+
     await this.validateUsersExist([getSessionInfo.userId]);
     this.validateUsersBelongInSession(session, [getSessionInfo.userId]);
 

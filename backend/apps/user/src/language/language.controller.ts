@@ -1,14 +1,18 @@
 import { Controller } from '@nestjs/common';
 import { LanguageService } from './language.service';
-import { MessagePattern } from '@nestjs/microservices';
-import { UserServiceApi } from '@app/microservice/interservice-api/user';
+import {
+  UserLanguageServiceController,
+  UserLanguageServiceControllerMethods,
+} from '@app/microservice/interfaces/user';
 
 @Controller()
-export class LanguageController {
+@UserLanguageServiceControllerMethods()
+export class LanguageController implements UserLanguageServiceController {
   constructor(private readonly languageService: LanguageService) {}
 
-  @MessagePattern(UserServiceApi.GET_ALL_LANGUAGES)
   getAllLanguages() {
-    return this.languageService.getAllLanguages();
+    return this.languageService
+      .getAllLanguages()
+      .then((languages) => ({ languages }));
   }
 }

@@ -4,7 +4,6 @@ import { Model } from 'mongoose';
 import { Question } from './schemas/question.schema';
 import { Category } from './schemas/category.schema';
 import { Difficulty } from './schemas/difficulty.schema';
-import { QuestionCategory } from './schemas/question-category.schema';
 import { Question as QuestionWithCategoryAndDifficulty } from '@app/microservice/interfaces/question';
 
 @Injectable()
@@ -13,23 +12,21 @@ export class QuestionService {
     @InjectModel(Question.name) private questionModel: Model<Question>,
     @InjectModel(Category.name) private categoryModel: Model<Category>,
     @InjectModel(Difficulty.name) private diffcultyModel: Model<Difficulty>,
-    @InjectModel(QuestionCategory.name)
-    private questionCategoryModel: Model<QuestionCategory>,
   ) {}
 
   // QUESTIONS
 
-  async getQuestions(): Promise<QuestionWithCategoryAndDifficulty[]> {
+  getQuestions(): Promise<QuestionWithCategoryAndDifficulty[]> {
     return this.questionModel
       .find()
-      .exec()
-      .then(
-        async (questions) =>
-          await Promise.all(
-            questions.map(async (question) => {
-              return await this.getQuestionWithId(question._id.toString());
-            }),
-          ),
+      .populate('categories')
+      .populate('difficulty')
+      .then((questions) =>
+        questions.map((q) => ({
+          ...q.toObject(),
+          difficulty: q.difficulty.name,
+          categories: q.categories.map((c) => c.name),
+        })),
       );
   }
 
@@ -51,11 +48,9 @@ export class QuestionService {
       title: questionWithCategoriesAndDifficulty.title,
       description: questionWithCategoriesAndDifficulty.description,
       difficulty: difficultyObject,
+      categories: categoryObjects,
     });
-    const newQuestion = (await newQuestionObject.save()).toObject() as Question;
-
-    // Create question categories
-    await this.createQuestionCategories(newQuestion, categoryObjects);
+    const newQuestion = (await newQuestionObject.save()).toObject();
 
     return {
       ...newQuestion,
@@ -65,6 +60,7 @@ export class QuestionService {
   }
 
   private async getDifficultyIfExists(difficulty: string | Difficulty) {
+    // This is okay since the difficulties collection has a unique index on 'name'
     const difficultyObject =
       (await this.diffcultyModel.findOne({
         name: difficulty,
@@ -78,6 +74,7 @@ export class QuestionService {
   }
 
   private async getCategoryIfExists(category: string | Category) {
+    // This is okay since the categories collection has a unique index on 'name'
     const categoryObject =
       (await this.categoryModel.findOne({ name: category })) ??
       (await this.categoryModel.findById(category.toString()));
@@ -89,64 +86,25 @@ export class QuestionService {
     return categoryObject.toObject();
   }
 
-  private async createQuestionCategories(
-    newQuestion: Question,
-    categoryObjects: Category[],
-  ) {
-    await Promise.all(
-      categoryObjects.map((category) => {
-        const newQuestionCategoryObj = new this.questionCategoryModel({
-          question: newQuestion,
-          category,
-        });
-        return newQuestionCategoryObj.save();
-      }),
-    );
-  }
+  public async getQuestionWithId(questionId: string) {
+    const questionObject = await this.questionModel
+      .findById(questionId)
+      .populate('categories')
+      .populate('difficulty');
 
-  public async getQuestionWithId(
-    questionId: string,
-  ): Promise<QuestionWithCategoryAndDifficulty> {
-    const questionObject = await this.getQuestionIfExists(questionId);
-    const difficultyObject = await this.getDifficultyIfExists(
-      questionObject.difficulty,
-    );
-
-    const questionCategories =
-      (await this.questionCategoryModel.find({
-        question: questionId,
-      })) ?? [];
-
-    const categories = (
-      await Promise.all(
-        questionCategories.map((questionCategory) =>
-          this.getCategoryIfExists(questionCategory.category),
-        ),
-      )
-    ).map((category) => category.name);
-
-    return {
-      ...questionObject,
-      difficulty: difficultyObject.name,
-      categories: categories,
-    };
-  }
-
-  private async getQuestionIfExists(questionId: string) {
-    const questionObject = await this.questionModel.findById(questionId);
     if (questionObject == null) {
       throw new NotFoundException('Question not found');
     }
 
-    return questionObject.toObject();
+    return {
+      ...questionObject.toObject(),
+      categories: questionObject.categories.map((c) => c.name),
+      difficulty: questionObject.difficulty.name,
+    };
   }
 
   async deleteQuestionWithId(questionId: string): Promise<string> {
-    await this.questionCategoryModel.deleteMany({
-      question: questionId,
-    });
     await this.questionModel.findByIdAndDelete(questionId);
-
     return questionId;
   }
 

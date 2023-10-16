@@ -7,10 +7,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Question, QuestionSchema } from './schemas/question.schema';
 import { Difficulty, DifficultySchema } from './schemas/difficulty.schema';
 import { Category, CategorySchema } from './schemas/category.schema';
-import {
-  QuestionCategory,
-  QuestionCategorySchema,
-} from './schemas/question-category.schema';
 import { ConfigService } from '@nestjs/config';
 
 @Module({
@@ -35,10 +31,6 @@ import { ConfigService } from '@nestjs/config';
       {
         name: Category.name,
         schema: CategorySchema,
-      },
-      {
-        name: QuestionCategory.name,
-        schema: QuestionCategorySchema,
       },
     ]),
   ],

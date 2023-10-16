@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { MongoClient, ObjectId } = require('mongodb');
+const { MongoClient } = require('mongodb');
 const questionsJson = require('../../data/questions.json');
 const fs = require('fs');
 const dotenv = require('dotenv');
@@ -62,37 +62,28 @@ async function connectToDatabase() {
     const difficultyIdsByName = await getDifficultyIds(database);
     const filesById = readFiles();
 
-    const questionCategoriesCollection =
-      database.collection('questioncategories');
     const questionCollection = database.collection('questions');
 
-    await questionCategoriesCollection
-      .deleteMany({})
-      .then(() => console.log('Deleted all question categories'));
-    await questionCollection
-      .deleteMany({})
-      .then(() => console.log('Deleted all questions'));
+    // await questionCollection
+    //   .deleteMany({})
+    //   .then(() => console.log('Deleted all questions'));
 
-    await questionCollection
-      .insertMany(
-        questionsJson.map((question) => ({
-          _id: new ObjectId(question.id),
-          title: question.title,
-          description: filesById[question.id],
-          difficulty: difficultyIdsByName[question.difficulty],
-        })),
-      )
-      .then(({ insertedIds }) =>
-        questionCategoriesCollection.insertMany(
-          Object.keys(insertedIds).flatMap((id, index) =>
-            questionsJson[index].categories.map((category) => ({
-              question: insertedIds[id],
-              category: categoryIdsByName[category],
-            })),
-          ),
+    await Promise.all(
+      questionsJson.map((question) =>
+        questionCollection.updateOne(
+          { title: question.title },
+          {
+            $setOnInsert: {
+              ...question,
+              description: filesById[question.id],
+              difficulty: difficultyIdsByName[question.difficulty],
+              categories: question.categories.map((c) => categoryIdsByName[c]),
+            },
+          },
+          { upsert: true },
         ),
-      )
-      .then(() => console.log('Inserted all question categories'));
+      ),
+    ).then(() => console.log('Upserted all question categories'));
 
     // Close connection
     await client.close().then(() => console.log('Closed connection'));

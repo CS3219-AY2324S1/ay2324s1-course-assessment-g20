@@ -85,9 +85,7 @@ export class AppController implements OnModuleInit {
 
   @Delete('difficulties/:id')
   @Roles(Role.MAINTAINER)
-  deleteDifficultyWithId(
-    @Param('id') id: string,
-  ) {
+  deleteDifficultyWithId(@Param('id') id: string) {
     return this.questionService
       .deleteDifficultyWithId({ id })
       .pipe(map(({ id }) => id));

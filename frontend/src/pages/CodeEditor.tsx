@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Grid, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import { CodeEvaluator } from '../utils/codeEvaluator';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -14,6 +14,7 @@ import { editor as MonacoEditor } from 'monaco-editor';
 import { bindYjsToMonacoEditor, tsCompile } from '../utils/editorUtils';
 import { getSessionAndWsTicket } from '../api/collaborationServiceApi';
 import { useThrowAsyncError } from '../utils/hooks';
+import TextContent from '../components/TextContent';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.
@@ -104,9 +105,7 @@ const CodeEditor = () => {
     <Grid container>
       <Grid item sm={6} xs={12}>
         <h2>{question?.title}</h2>
-        {question?.description.split('\n').map((child, key) => {
-          return !child ? <br /> : <Typography key={key}>{child}</Typography>;
-        })}
+        <TextContent content={question?.description ?? ''} />
       </Grid>
       <Grid item sm={6} xs={12} style={{ padding: 10 }}>
         <FormControl sx={{ m: 1, minWidth: 200 }}>

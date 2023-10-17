@@ -34,11 +34,9 @@ async function bootstrap() {
   }
 
   const port = configService.get('port');
-  const kafkaConfigurationOptions = configService.get(
-    'kafkaConfigurationOptions',
-  );
+  const websocketGatewayOptions = configService.get('websocketGatewayOptions');
 
-  app.connectMicroservice<MicroserviceOptions>(kafkaConfigurationOptions);
+  app.connectMicroservice<MicroserviceOptions>(websocketGatewayOptions);
 
   await app.startAllMicroservices();
 

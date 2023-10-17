@@ -30,7 +30,7 @@ export class QuestionService {
       );
   }
 
-  async getQuestionsOfDifficulty(difficulty: string | Difficulty) {
+  async getQuestionsByDifficulty(difficulty: string | Difficulty) {
     const difficultyObject = await this.getDifficultyIfExists(difficulty);
     const questionObjects = await this.questionModel
       .find({

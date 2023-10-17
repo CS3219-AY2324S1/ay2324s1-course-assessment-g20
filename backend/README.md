@@ -24,6 +24,8 @@ UPDATE THE TESTS
 1. Create a knex (SQL) database migration file via `yarn migrate:make {microservice_name} {migration_file_name}`.
 1. To rollback a knex migration, run `yarn knex {microservice_name} migrate:rollback`.
 
+## Matching service
+1. Install and run zookeper, kafka and redis if you have not done so
 
 ## Making Commits
 1. Run `yarn lint` and `yarn format` in the `backend` directory to lint and format the backend codebase.

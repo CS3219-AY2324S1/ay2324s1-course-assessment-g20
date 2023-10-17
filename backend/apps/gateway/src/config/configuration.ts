@@ -8,7 +8,7 @@ const gatewayConfiguration = () => {
     callbackURL: process.env.OAUTH_GOOGLE_REDIRECT_URL,
   };
 
-  const kafkaConfigurationOptions: MicroserviceOptions = {
+  const websocketGatewayOptions: MicroserviceOptions = {
     transport: Transport.KAFKA,
     options: {
       client: {
@@ -26,7 +26,7 @@ const gatewayConfiguration = () => {
     corsOrigin: process.env.CORS_ORIGIN,
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
     googleOauthOptions,
-    kafkaConfigurationOptions,
+    websocketGatewayOptions,
     mongoUri: process.env.COLLABORATION_SERVICE_MONGODB_URL,
     connectionTimeout: parseInt(
       process.env.MATCHING_SERVICE_CONNECTION_TTL,

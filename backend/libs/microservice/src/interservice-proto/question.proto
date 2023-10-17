@@ -10,7 +10,7 @@ service QuestionService {
   rpc AddQuestion (Question) returns (Question);
   rpc DeleteQuestionWithId (common.ID) returns (common.ID);
   rpc GetQuestionWithId (common.ID) returns (Question);
-  rpc GetQuestionsOfDifficultyId(common.ID) returns (GetQuestionsResponse);
+  rpc GetQuestionsByDifficultyId(common.ID) returns (GetQuestionsResponse);
 
   rpc GetDifficulties (google.protobuf.Empty) returns (GetDifficultiesResponse);
   rpc AddDifficulty (Difficulty) returns (Difficulty);

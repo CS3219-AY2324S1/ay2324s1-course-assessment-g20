@@ -23,7 +23,7 @@ export class MatchingService implements OnModuleInit {
   private collaborationService: CollaborationServiceClient;
 
   constructor(
-    @Inject(Service.WEBSOCKET_SERVICE)
+    @Inject(Service.WEBSOCKET_GATEWAY)
     private readonly webSocketClient: ClientKafka,
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionClient: ClientGrpc,
@@ -73,24 +73,12 @@ export class MatchingService implements OnModuleInit {
       return;
     }
 
-    this.redisStoreService.deleteMatchingEntry(possibleMatch);
-    this.redisStoreService.deleteMatchingEntry(matchingEntry);
+    this.redisStoreService.deleteMatchingEntryIfExists(possibleMatch);
+    this.redisStoreService.deleteMatchingEntryIfExists(matchingEntry);
 
-    // get random question
-
-    const questions = (
-      await firstValueFrom(
-        this.questionService.getQuestionsOfDifficultyId({
-          id: matchingEntry.questionDifficulty,
-        }),
-      )
-    ).questions;
-
-    const randomQuestion =
-      questions[Math.floor(Math.random() * questions.length)];
-    if (!randomQuestion) {
-      throw new Error('No question found');
-    }
+    const randomQuestion = await this.getRandomQuestion(
+      matchingEntry.questionDifficulty,
+    );
 
     const session = await firstValueFrom(
       this.collaborationService.createCollabSession({
@@ -101,21 +89,34 @@ export class MatchingService implements OnModuleInit {
 
     const collabSessionId = session.id;
 
-    this.webSocketClient.emit(
-      WebsocketServiceApi.EMIT_TO_USER_AND_DELETE_WEBSOCKET,
-      {
-        userId: matchingEntry.userId,
-        event: 'match',
-        payload: { sessionId: collabSessionId },
-      },
-    );
-    this.webSocketClient.emit(
-      WebsocketServiceApi.EMIT_TO_USER_AND_DELETE_WEBSOCKET,
-      {
-        userId: possibleMatch.userId,
-        event: 'match',
-        payload: { sessionId: collabSessionId },
-      },
-    );
+    [matchingEntry, possibleMatch].forEach((entry) => {
+      this.webSocketClient.emit(
+        WebsocketServiceApi.EMIT_TO_USER_AND_DELETE_WEBSOCKET,
+        {
+          userId: entry.userId,
+          event: 'match',
+          payload: { sessionId: collabSessionId },
+        },
+      );
+    });
+  }
+
+  private async getRandomQuestion(difficultyId: string) {
+    const questions = (
+      await firstValueFrom(
+        this.questionService.getQuestionsByDifficultyId({
+          id: difficultyId,
+        }),
+      )
+    ).questions;
+
+    const randomQuestion =
+      questions[Math.floor(Math.random() * questions.length)];
+
+    if (!randomQuestion) {
+      throw new Error('No question found');
+    }
+
+    return randomQuestion;
   }
 }

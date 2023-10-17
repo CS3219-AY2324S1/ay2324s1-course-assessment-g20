@@ -27,7 +27,7 @@ import { RedisStoreService } from '../store/redisStore.service';
       isGlobal: true,
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) =>
-        configService.get('redisConfigurationOptions'),
+        configService.get('matchingStoreConfigurationOptions'),
       inject: [ConfigService],
     }),
   ],
@@ -36,11 +36,9 @@ import { RedisStoreService } from '../store/redisStore.service';
     MatchingService,
     RedisStoreService,
     {
-      provide: Service.WEBSOCKET_SERVICE,
+      provide: Service.WEBSOCKET_GATEWAY,
       useFactory: async (configService: ConfigService) =>
-        ClientProxyFactory.create(
-          configService.get('kafkaConfigurationOptions'),
-        ),
+        ClientProxyFactory.create(configService.get('websocketGatewayOptions')),
       inject: [ConfigService],
     },
   ],

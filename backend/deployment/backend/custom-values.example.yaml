@@ -1,0 +1,5 @@
+base-externals:
+  # Specify DNS names to database servers here
+  # We are currently only using one db server in the deployment
+  mongodbHost: host.docker.internal
+  postgresHost: host.docker.internal

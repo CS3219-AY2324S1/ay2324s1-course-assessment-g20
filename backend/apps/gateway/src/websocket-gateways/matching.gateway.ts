@@ -15,12 +15,14 @@ import {
 } from '@app/microservice/interfaces/matching';
 import { Service } from '@app/microservice/services';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @WebSocketGateway({ path: '/matching' })
 export class MatchingGateway extends BaseWebsocketGateway {
   private matchingService: MatchingServiceClient;
 
   constructor(
+    private readonly configService: ConfigService,
     @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
     @Inject(Service.MATCHING_SERVICE)
     private readonly matchingServiceClient: ClientGrpc,
@@ -44,6 +46,17 @@ export class MatchingGateway extends BaseWebsocketGateway {
         id: connection.ticket.userId,
       }),
     );
+  }
+
+  async handleConnection(
+    connection: AuthenticatedWebsocket,
+    request: Request,
+  ): Promise<boolean> {
+    setTimeout(() => {
+      connection.close();
+    }, this.configService.get('connectionTimeout'));
+
+    return super.handleConnection(connection, request);
   }
 
   @SubscribeMessage('get_match')

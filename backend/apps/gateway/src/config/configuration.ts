@@ -28,6 +28,10 @@ const gatewayConfiguration = () => {
     googleOauthOptions,
     kafkaConfigurationOptions,
     mongoUri: process.env.COLLABORATION_SERVICE_MONGODB_URL,
+    connectionTimeout: parseInt(
+      process.env.MATCHING_SERVICE_CONNECTION_TTL,
+      10,
+    ),
   };
 };
 

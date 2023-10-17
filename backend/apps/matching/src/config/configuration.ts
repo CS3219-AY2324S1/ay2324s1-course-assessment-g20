@@ -22,7 +22,7 @@ export default function matchingConfiguration() {
 
   const redisConfigurationOptions = {
     store: redisStore({
-      ttl: parseInt(process.env.MATCHING_SERVICE_CACHE_TTL, 10),
+      ttl: 2 * parseInt(process.env.MATCHING_SERVICE_CACHE_TTL, 10), // sets a max ttl in case the cache is not cleared by the websocket service
     }),
   };
 

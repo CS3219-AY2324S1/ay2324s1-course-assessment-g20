@@ -8,8 +8,11 @@ dependencies:
 - name: base-microservice
   repository: file://../base-microservice
   version: 0.1.0
+- name: base-microservice
+  repository: file://../base-microservice
+  version: 0.1.0
 - name: base-nginx-ingress
   repository: file://../base-nginx-ingress
   version: 0.1.0
-digest: sha256:86acac8ed8e06eaf134cf14d739e1812467416d00d6b49c114ab261471c1632e
-generated: "2023-09-28T16:07:08.251762+08:00"
+digest: sha256:303b36beb42252170c980f68795fcbcab965d807570dbe1caea3c7c027828038
+generated: "2023-10-17T10:51:54.849708+08:00"

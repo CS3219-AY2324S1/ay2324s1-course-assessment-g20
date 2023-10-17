@@ -50,15 +50,17 @@ export const registerGrpcClients = (microservices: Service[]) =>
        * useFactory dynamic module ensures configService is up before we
        * attempt to read the envt variables.
        */
-      useFactory: async (configService: ConfigService) =>
-        getGrpcOptions(microservice),
+      useFactory: async () => getGrpcOptions(microservice, true),
       name: microservice,
       inject: [ConfigService],
     })),
   );
 
-export const getGrpcOptions = (service: Service): GrpcOptions => {
-  const HOST = process.env[`${service}_HOST`];
+export const getGrpcOptions = (
+  service: Service,
+  fromClient = false,
+): GrpcOptions => {
+  const HOST = fromClient ? process.env[`${service}_HOST`] : '0.0.0.0';
   const PORT = process.env[`${service}_PORT`];
 
   return {

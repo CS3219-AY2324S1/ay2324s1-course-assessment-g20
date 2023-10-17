@@ -29,7 +29,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Run `helm dependency update` to install the local `base-microservice` Helm chart
 1. Run `helm template peerprep-backend . > ./base/backend.yaml` to generate the Helm templated K8s manifest.
 1. Copy and set the backend `.env` file in the `deployment/backend/overlays/dev` directory.
-    - **IMPT NOTE**: Remove all `{microservice}_SERVICE_HOST` and `{microservice}_SERVICE_PORT` variables in the copied `.env` file.
+    - **IMPT NOTE**: Set all `{MICROSERVICE}_SERVICE_HOST` to `{microservice}.default.svc.cluster.local` (e.g. `QUESTION_SERVICE_HOST_FROM_CLIENT=question.default.svc.cluster.local`) and `{MICROSERVICE}_SERVICE_PORT` to the corresponding port specified in `values.yaml` inside the copied `.env` file.
     - **IMPT NOTE**: Set `OAUTH_GOOGLE_REDIRECT_URL=http://localhost/v1/auth/google/redirect`
     - **IMPT NOTE**: Set `RMQ_URL=amqp://user:${PASSWORD}@rmq-rabbitmq.rmq.svc.cluster.local:5672`, where `${PASSWORD}` is to be replaced by the password obtained from the RabbitMQ installation step above
 1. Run `kustomize build overlays/dev` to check that kustomize has been configured correctly, and can successfully override the values from the K8s manifest generated above by Helm.

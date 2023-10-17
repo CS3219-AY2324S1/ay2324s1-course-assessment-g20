@@ -1,4 +1,4 @@
-import { Controller, NotFoundException } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { QuestionService } from './question.service';
 import { Difficulty } from './schemas/difficulty.schema';
 import { Category } from './schemas/category.schema';
@@ -11,10 +11,8 @@ import {
   QuestionServiceControllerMethods,
 } from '@app/microservice/interfaces/question';
 import { ID } from '@app/microservice/interfaces/common';
-import { RpcException } from '@nestjs/microservices';
 
 @Controller()
-// @UseFilters(GrpcExceptionFilter)
 @QuestionServiceControllerMethods()
 export class QuestionController implements QuestionServiceController {
   constructor(private readonly questionService: QuestionService) {}
@@ -59,8 +57,6 @@ export class QuestionController implements QuestionServiceController {
 
   // CATEGORIES
   getCategories(): Promise<GetCategoriesResponse> {
-    // throw new RpcException({ code: 5, message: 'Resource not found' });
-    throw new RpcException(new NotFoundException('Q Controller Not Found'));
     return this.questionService
       .getCategories()
       .then((categories) => ({ categories }));

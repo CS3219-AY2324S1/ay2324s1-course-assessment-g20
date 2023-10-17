@@ -13,7 +13,7 @@ import { Service } from '@app/microservice/services';
 import { registerGrpcClients } from '@app/microservice/utils';
 import { RolesModule } from './roles/roles.module';
 import { APP_FILTER } from '@nestjs/core';
-import { GrpcExceptionFilter } from 'libs/exception-filter/grpc-exception.filter';
+import { GatewayExceptionFilter } from 'libs/exception-filter/gateway-exception.filter';
 
 @Module({
   imports: [
@@ -38,7 +38,7 @@ import { GrpcExceptionFilter } from 'libs/exception-filter/grpc-exception.filter
     YjsGateway,
     {
       provide: APP_FILTER,
-      useClass: GrpcExceptionFilter,
+      useClass: GatewayExceptionFilter,
     },
   ],
 })

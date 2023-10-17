@@ -7,6 +7,8 @@ import { UserDaoService } from '../database/daos/users/user.dao.service';
 import { UserModel } from '../database/models/user.model';
 import { WebsocketTicketDaoService } from '../database/daos/websocketTickets/websocketTicket.dao.service';
 import { CreateWebsocketTicketInfoRequest } from '@app/microservice/interfaces/user';
+import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
+import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +44,10 @@ export class AuthService {
         secret: this.tokenConfig.refreshTokenSecret,
       });
     } catch (e) {
-      throw new HttpException('Invalid refresh token', 401);
+      throw new PeerprepException(
+        'Invalid refresh token',
+        PEERPREP_EXCEPTION_TYPES.UNAUTHORIZED,
+      );
     }
   }
 
@@ -80,7 +85,10 @@ export class AuthService {
     );
 
     if (!isValidRefreshToken) {
-      throw new HttpException('Invalid refresh token', 401);
+      throw new PeerprepException(
+        'Invalid refresh token',
+        PEERPREP_EXCEPTION_TYPES.UNAUTHORIZED,
+      );
     }
 
     return this.generateJwts(user, refreshToken);
@@ -102,7 +110,10 @@ export class AuthService {
     const ticket = await this.websocketTicketDaoService.get(ticketId);
 
     if (!ticket) {
-      throw new BadRequestException('Invalid ticket!');
+      throw new PeerprepException(
+        'Invalid ticket!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
     }
 
     return this.websocketTicketDaoService.updateUsed(ticketId);

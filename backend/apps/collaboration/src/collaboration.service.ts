@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { SessionDaoService } from './database/daos/session/session.dao.service';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Service } from '@app/microservice/services';

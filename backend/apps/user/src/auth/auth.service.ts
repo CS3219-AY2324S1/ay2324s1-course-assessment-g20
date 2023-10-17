@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokensDaoService } from '../database/daos/refreshTokens/refreshTokens.dao.service';
 import { JwtService as NestJwtService } from '@nestjs/jwt';

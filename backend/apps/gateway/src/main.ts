@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
-import { GrpcExceptionFilter } from 'libs/exception-filter/grpc-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,8 +31,6 @@ async function bootstrap() {
       optionsSuccessStatus: 200,
     });
   }
-
-  app.useGlobalFilters(new GrpcExceptionFilter());
 
   const port = configService.get('port');
   await app.listen(port);

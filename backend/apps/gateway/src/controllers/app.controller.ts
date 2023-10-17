@@ -7,11 +7,8 @@ import {
   Param,
   Delete,
   OnModuleInit,
-  UseFilters,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
-import { ClientGrpc, RpcException } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
 import { Public } from '../jwt/jwtPublic.decorator';
 import QuestionDto from '../dtos/question/question.dto';
 import DifficultyDto from '../dtos/question/difficulty.dto';
@@ -23,9 +20,7 @@ import {
   QUESTION_SERVICE_NAME,
   QuestionServiceClient,
 } from '@app/microservice/interfaces/question';
-import { catchError, map, throwError } from 'rxjs';
-import { NotFoundException } from '@nestjs/common';
-import { GrpcExceptionFilter } from 'libs/exception-filter/grpc-exception.filter';
+import { map } from 'rxjs';
 
 @Controller('question')
 export class AppController implements OnModuleInit {
@@ -99,18 +94,10 @@ export class AppController implements OnModuleInit {
   // CATEGORIES
 
   @Get('categories')
-  @UseFilters(GrpcExceptionFilter)
   getCategories() {
     return this.questionService
       .getCategories({})
       .pipe(map(({ categories }) => categories || []));
-    // .pipe(
-    //   catchError((error) =>
-    //     throwError(
-    //       () => new HttpException('mESSAGE', HttpStatus.NOT_IMPLEMENTED),
-    //     ),
-    //   ),
-    // );
   }
 
   @Post('categories')

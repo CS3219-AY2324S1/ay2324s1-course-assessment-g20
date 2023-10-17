@@ -8,6 +8,8 @@ import { Question, QuestionSchema } from './schemas/question.schema';
 import { Difficulty, DifficultySchema } from './schemas/difficulty.schema';
 import { Category, CategorySchema } from './schemas/category.schema';
 import { ConfigService } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
+import { GrpcExceptionFilter } from 'libs/exception-filter/grpc-exception.filter';
 
 @Module({
   imports: [
@@ -35,6 +37,12 @@ import { ConfigService } from '@nestjs/config';
     ]),
   ],
   controllers: [QuestionController],
-  providers: [QuestionService],
+  providers: [
+    QuestionService,
+    {
+      provide: APP_FILTER,
+      useClass: GrpcExceptionFilter,
+    },
+  ],
 })
 export class QuestionModule {}

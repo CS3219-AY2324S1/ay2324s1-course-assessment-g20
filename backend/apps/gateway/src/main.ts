@@ -34,19 +34,11 @@ async function bootstrap() {
   }
 
   const port = configService.get('port');
+  const kafkaConfigurationOptions = configService.get(
+    'kafkaConfigurationOptions',
+  );
 
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        brokers: ['localhost:' + process.env.KAFKA_PORT],
-      },
-      consumer: {
-        // Each gateway instance should have its own consumer group id to allow each instance to consume the same kafka topic
-        groupId: process.env.API_GATEWAY_PORT,
-      },
-    },
-  });
+  app.connectMicroservice<MicroserviceOptions>(kafkaConfigurationOptions);
 
   await app.startAllMicroservices();
 

@@ -18,18 +18,9 @@ const collaborationServiceDatabaseOptions = {
   database: process.env.COLLABORATION_SERVICE_SQL_DATABASE_NAME,
 };
 
-const matchingServiceDatabaseOptions = {
-  host: process.env.MATCHING_SERVICE_SQL_DATABASE_HOST,
-  port: process.env.MATCHING_SERVICE_SQL_DATABASE_PORT,
-  user: process.env.MATCHING_SERVICE_SQL_DATABASE_USER,
-  password: process.env.MATCHING_SERVICE_SQL_DATABASE_PASSWORD,
-  database: process.env.MATCHING_SERVICE_SQL_DATABASE_NAME,
-};
-
 const databaseConnections = [
   userServiceDatabaseOptions,
   collaborationServiceDatabaseOptions,
-  matchingServiceDatabaseOptions,
 ];
 
 async function createDatabaseIfNotExist(connectionOptions) {

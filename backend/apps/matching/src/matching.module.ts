@@ -1,14 +1,15 @@
-import { Module } from '@nestjs/common';
-import { MatchingController } from './matching.controller';
-import matchingConfiguration from './config/configuration';
 import { ConfigModule } from '@app/config';
-import { SqlDatabaseModule } from '@app/sql-database';
-import { LookingToMatchDaoModule } from './database/daos/lookingToMatch/lookingToMatch.dao.module';
-import { MatchingService } from './matching.service';
-import { LookingToMatchModel } from './database/models/lookingToMatch.model';
 import { Service } from '@app/microservice/services';
 import { registerGrpcClients } from '@app/microservice/utils';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ClientProxyFactory } from '@nestjs/microservices';
+import { redisStore } from 'cache-manager-redis-yet';
+import matchingConfiguration from './config/configuration';
+import { MatchingController } from './matching.controller';
+import { MatchingService } from './matching.service';
+import { RedisStoreService } from '../store/redisStore.service';
 
 @Module({
   imports: [
@@ -17,21 +18,31 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       Service.QUESTION_SERVICE,
       Service.COLLABORATION_SERVICE,
     ]),
-    ClientsModule.register([
-      {
-        name: Service.WEBSOCKET_SERVICE,
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            brokers: ['localhost:' + process.env.KAFKA_PORT],
-          },
-        },
-      },
-    ]),
-    SqlDatabaseModule.factory([LookingToMatchModel]),
-    LookingToMatchDaoModule,
+    CacheModule.registerAsync({
+      useFactory: async () => ({
+        store: await redisStore({ ttl: 30000 }),
+      }),
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) =>
+        configService.get('redisConfigurationOptions'),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [MatchingController],
-  providers: [MatchingService],
+  providers: [
+    MatchingService,
+    RedisStoreService,
+    {
+      provide: Service.WEBSOCKET_SERVICE,
+      useFactory: async (configService: ConfigService) =>
+        ClientProxyFactory.create(
+          configService.get('kafkaConfigurationOptions'),
+        ),
+      inject: [ConfigService],
+    },
+  ],
 })
 export class MatchingModule {}

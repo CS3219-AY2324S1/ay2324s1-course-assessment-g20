@@ -1,8 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc, ClientKafka } from '@nestjs/microservices';
-import { LookingToMatchModel } from './database/models/lookingToMatch.model';
 import { firstValueFrom } from 'rxjs';
-import { LookingToMatchDaoService } from './database/daos/lookingToMatch/lookingToMatch.dao.service';
 import { Service } from '@app/microservice/services';
 import { WebsocketServiceApi } from '@app/microservice/events-api/websocket';
 import {
@@ -13,6 +11,11 @@ import {
   CollaborationServiceClient,
   COLLABORATION_SERVICE_NAME,
 } from '@app/microservice/interfaces/collaboration';
+import { RedisStoreService } from '../store/redisStore.service';
+import { LookingToMatchModel } from '../store/models';
+import { Mutex } from 'async-mutex';
+
+const mutex = new Mutex();
 
 @Injectable()
 export class MatchingService implements OnModuleInit {
@@ -26,7 +29,7 @@ export class MatchingService implements OnModuleInit {
     private readonly questionClient: ClientGrpc,
     @Inject(Service.COLLABORATION_SERVICE)
     private readonly collaborationClient: ClientGrpc,
-    private readonly lookingToMatchDaoService: LookingToMatchDaoService,
+    private readonly redisStoreService: RedisStoreService,
   ) {}
 
   onModuleInit() {
@@ -47,30 +50,31 @@ export class MatchingService implements OnModuleInit {
   }
 
   async deleteEntry(userId: string) {
-    this.lookingToMatchDaoService.deleteMatchingEntry({
-      userId: userId,
-    });
+    const release = await mutex.acquire();
+    this.redisStoreService.deleteEntryByUserId(userId);
+    release();
   }
 
-  async findMatch(matchingEntry: Partial<LookingToMatchModel>) {
-    this.lookingToMatchDaoService.updateMatchingEntryIfExist({
-      ...matchingEntry,
-      isConnected: true,
-    });
-    const possibleMatch = await this.lookingToMatchDaoService.findMatchingEntry(
+  async findMatch(matchingEntry: LookingToMatchModel) {
+    const release = await mutex.acquire();
+    this.findMatchHelper(matchingEntry);
+    release();
+  }
+
+  private async findMatchHelper(matchingEntry: LookingToMatchModel) {
+    await this.redisStoreService.updateMatchingEntryIfExist(matchingEntry);
+
+    const possibleMatch = await this.redisStoreService.findMatchingEntry(
       matchingEntry,
     );
 
     if (!possibleMatch) {
-      this.lookingToMatchDaoService.createOrUpdateMatchingEntry({
-        ...matchingEntry,
-        isConnected: true,
-      });
+      await this.redisStoreService.createOrUpdateMatchingEntry(matchingEntry);
       return;
     }
 
-    this.lookingToMatchDaoService.deleteMatchingEntry(possibleMatch);
-    this.lookingToMatchDaoService.deleteMatchingEntry(matchingEntry);
+    this.redisStoreService.deleteMatchingEntry(possibleMatch);
+    this.redisStoreService.deleteMatchingEntry(matchingEntry);
 
     // get random question
 

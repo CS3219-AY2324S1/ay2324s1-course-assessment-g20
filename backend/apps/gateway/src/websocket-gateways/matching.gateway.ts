@@ -52,11 +52,16 @@ export class MatchingGateway extends BaseWebsocketGateway {
     connection: AuthenticatedWebsocket,
     request: Request,
   ): Promise<boolean> {
-    setTimeout(() => {
-      connection.close();
-    }, this.configService.get('connectionTimeout'));
 
-    return super.handleConnection(connection, request);
+
+    if (await super.handleConnection(connection, request)) {
+      setTimeout(() => {
+        connection.close();
+      }, this.configService.get('connectionTimeout'));
+
+      return true;
+    }
+    return false
   }
 
   @SubscribeMessage('get_match')
@@ -64,6 +69,16 @@ export class MatchingGateway extends BaseWebsocketGateway {
     @MessageBody() data: MatchingDto,
     @ConnectedSocket() connection: AuthenticatedWebsocket,
   ) {
+
+    // wait for ticket to be set, or connection to close
+    while (connection.ticket === undefined && connection.readyState !== connection.CLOSED) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    if (connection.readyState === connection.CLOSED) {
+      return;
+    }
+
     const { userId } = connection.ticket;
     this.websocketMemoryService.addConnection(userId, connection);
     await lastValueFrom(

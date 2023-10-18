@@ -26,6 +26,11 @@ UPDATE THE TESTS
 
 ## Matching service
 1. Install and run zookeper, kafka and redis if you have not done so
+1. Set env variables:
+  - MATCHING_SERVICE_HOST=0.0.0.0
+  - MATCHING_SERVICE_PORT=4004
+  - MATCHING_SERVICE_CONNECTION_TTL=30000
+  - KAFKA_PORT=9092
 
 ## Making Commits
 1. Run `yarn lint` and `yarn format` in the `backend` directory to lint and format the backend codebase.

@@ -17,6 +17,20 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     - `helm repo update`
     - Install ingress-nginx and create the `nginx` namespace via `helm install nginx-ingress ingress-nginx/ingress-nginx --namespace nginx --create-namespace`
 
+#### Install Istio
+1. (Helm) Install Istio via Helm on the minikube cluster.
+    - Add the Istio repo to Helm via `helm repo add istio https://istio-release.storage.googleapis.com/charts`
+    - `helm repo update`
+    - `helm install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default`
+    - `helm install istiod istio/istiod -n istio-system --wait`
+    - `helm ls -n istio-system` (verify both charts have been successfully deployed)
+    - `kubectl label namespace default istio-injection=enabled --overwrite` (enable [automatic sidecar injection](https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/))
+        - Run `kubectl get namespace -L istio-injection` to verify label has been set correctly
+1. (Istioctl) Alternatively, install via istioctl (e.g. `brew install istioctl`)
+    - `istioctl install --set profile=minimal`
+    - `kubectl label namespace default istio-injection=enabled --overwrite` (enable [automatic sidecar injection](https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/))
+    - To uninstall, run `istioctl uninstall --purge`
+
 #### Install RabbitMQ
 1. Install RabbitMQ via Helm on the minikube cluster.
     - Add the RabbitMQ repo to Helm via `helm repo add bitnami https://charts.bitnami.com/bitnami`

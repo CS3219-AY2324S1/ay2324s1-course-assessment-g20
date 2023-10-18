@@ -4,7 +4,7 @@ gateway-microservice:
   image:
     repository: backend-gateway
     tag: 'latest'
-  portProtocol: http
+  portProtocol: TCP
   containerPort: 4000
   servicePort: 4000
 
@@ -14,7 +14,7 @@ question-microservice:
   image:
     repository: backend-question
     tag: 'latest'
-  portProtocol: tcp
+  portProtocol: TCP
   containerPort: 4001
   servicePort: 4001
 
@@ -24,7 +24,7 @@ user-microservice:
   image:
     repository: backend-user
     tag: 'latest'
-  portProtocol: tcp
+  portProtocol: TCP
   containerPort: 4002
   servicePort: 4002
 
@@ -34,6 +34,6 @@ collaboration-microservice:
   image:
     repository: backend-collaboration
     tag: 'latest'
-  portProtocol: tcp
+  portProtocol: TCP
   containerPort: 4003
   servicePort: 4003

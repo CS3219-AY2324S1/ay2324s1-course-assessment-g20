@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../utils/hooks';
+import { ProfileProvider } from '../contextProviders/ProfileContext';
 
 export default function ProtectedRoutes() {
   const auth = useAuth();
@@ -12,6 +13,10 @@ export default function ProtectedRoutes() {
     // than dropping them off on the home page.
     return <Navigate to="/login" state={{ from: location }} replace />;
   } else {
-    return <Outlet />;
+    return (
+      <ProfileProvider>
+        <Outlet />
+      </ProfileProvider>
+    );
   }
 }

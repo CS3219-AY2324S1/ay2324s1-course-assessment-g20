@@ -1,6 +1,6 @@
-import { BaseModel } from '@app/sql-database';
+import { BaseModelUUID } from '@app/sql-database';
 
-export class WebsocketTicketModel extends BaseModel {
+export class WebsocketTicketModel extends BaseModelUUID {
   static tableName = 'websocketTickets';
 
   readonly userId: string;

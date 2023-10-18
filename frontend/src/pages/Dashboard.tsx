@@ -18,9 +18,11 @@ import { useEffect, useState } from 'react';
 import { addQuestion, deleteQuestionWithId, getQuestions } from '../api/questionBankApi';
 import { useNavigate } from 'react-router-dom';
 import { EMPTY_QUESTION, IQuestion } from '../@types/question';
+import { useProfile } from '../hooks/useProfile';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { isMaintainer } = useProfile();
 
   // Styling for dashboard table
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -209,17 +211,19 @@ export default function Dashboard() {
                       setOpenPopup={handlePopupOnClose}
                     ></Popup>
                   )}
-                  <Button
-                    variant={'contained'}
-                    onClick={() => handleDeleteOnClick(row._id)}
-                    sx={{
-                      width: 80,
-                      height: 35,
-                      backgroundColor: 'red',
-                    }}
-                  >
-                    DELETE
-                  </Button>
+                  {isMaintainer && (
+                    <Button
+                      variant={'contained'}
+                      onClick={() => handleDeleteOnClick(row._id)}
+                      sx={{
+                        width: 80,
+                        height: 35,
+                        backgroundColor: 'red',
+                      }}
+                    >
+                      DELETE
+                    </Button>
+                  )}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <Button
@@ -255,17 +259,19 @@ export default function Dashboard() {
             isValidated={isValidated}
           ></QuestionForm>
         )}
-        <Button
-          variant={'contained'}
-          onClick={handleButtonFormClick}
-          style={{ fontSize: '18px' }}
-          sx={{
-            width: 180,
-            height: 50,
-          }}
-        >
-          Add Question
-        </Button>
+        {isMaintainer && (
+          <Button
+            variant={'contained'}
+            onClick={handleButtonFormClick}
+            style={{ fontSize: '18px' }}
+            sx={{
+              width: 180,
+              height: 50,
+            }}
+          >
+            Add Question
+          </Button>
+        )}
       </Typography>
     </Box>
   );

@@ -38,10 +38,6 @@ const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: '/authRedirect',
-        element: <AuthRedirect />,
-      },
       { path: '*', element: <Navigate to="/login" replace /> },
     ],
   },

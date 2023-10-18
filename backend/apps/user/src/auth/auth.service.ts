@@ -51,7 +51,10 @@ export class AuthService {
    * If undefined, create a new database entry (i.e. when signing in)
    */
   async generateJwts(user, oldToken?: string) {
-    const payload: JwtPayload = { id: user.id };
+    const payload: JwtPayload = {
+      id: user.id,
+      roleId: user.userProfile.roleId,
+    };
     const accessToken: string = this.generateAccessToken(payload);
     const refreshToken: string = this.generateRefreshToken(payload);
 

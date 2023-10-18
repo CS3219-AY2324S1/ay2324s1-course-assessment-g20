@@ -1,4 +1,7 @@
-export type JwtPayload = { id: string };
+export type JwtPayload = {
+  id: string;
+  roleId: number;
+};
 export type JwtTokenConfig = {
   accessTokenSecret: string;
   accessTokenExpiry: string;

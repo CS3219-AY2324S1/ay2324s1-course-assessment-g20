@@ -12,8 +12,6 @@ import { CollaborationController } from './controllers/collaboration.controller'
 import { Service } from '@app/microservice/services';
 import { registerGrpcClients } from '@app/microservice/utils';
 import { RolesModule } from './roles/roles.module';
-import { APP_FILTER } from '@nestjs/core';
-import { GatewayExceptionFilter } from 'libs/exception-filter/gateway-exception.filter';
 
 @Module({
   imports: [
@@ -33,13 +31,6 @@ import { GatewayExceptionFilter } from 'libs/exception-filter/gateway-exception.
     LanguagesController,
     CollaborationController,
   ],
-  providers: [
-    GoogleOauthStrategy,
-    YjsGateway,
-    {
-      provide: APP_FILTER,
-      useClass: GatewayExceptionFilter,
-    },
-  ],
+  providers: [GoogleOauthStrategy, YjsGateway],
 })
 export class AppModule {}

@@ -31,6 +31,7 @@ UPDATE THE TESTS
   - MATCHING_SERVICE_PORT=4004
   - MATCHING_SERVICE_CONNECTION_TTL=30000
   - KAFKA_PORT=9092
+1. To enable kafka to work correctly (all gateways consume same message from matching service), ensure that consumer group ids in each gateway instance is unique from each other. Right now, consumer group id is set to gateway port number.
 
 ## Making Commits
 1. Run `yarn lint` and `yarn format` in the `backend` directory to lint and format the backend codebase.

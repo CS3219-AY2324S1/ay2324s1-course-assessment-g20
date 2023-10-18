@@ -63,8 +63,11 @@ export default function Profile() {
   const handleCloseModal = () => setisModalOpen(false);
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" padding="2rem">
-      <Paper elevation={3} sx={{ padding: '2rem', width: '50%' }}>
+    <Box display="flex" flexDirection="column" alignItems="center" padding="2rem" minWidth="400px">
+      <Paper
+        elevation={3}
+        sx={{ padding: '2rem', minWidth: '400px', width: { xs: '100%', md: '60%' } }}
+      >
         <Box display="flex" flexDirection="column">
           <Typography fontSize={30} fontWeight={10} paddingBottom={3} align="center">
             {name}

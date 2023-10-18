@@ -1,4 +1,5 @@
 import { Box, Button, Typography } from '@mui/material';
+import GoogleIcon from '@mui/icons-material/Google';
 import { useAuth } from '../utils/hooks';
 
 export default function Login() {
@@ -13,11 +14,13 @@ export default function Login() {
           alignItems: 'center',
         }}
       >
-        <Typography variant="h1" gutterBottom>
+        <img src="/src/assets/logo.png" alt="logo" width="200px" height="200px" />
+        <Typography variant="h2" gutterBottom>
           PeerPrep
         </Typography>
         <Button onClick={auth.redirectToSignIn} variant="contained">
-          Log in
+          <GoogleIcon sx={{ mr: 2 }} />
+          Log in with Google
         </Button>
       </Box>
     </>

@@ -1,21 +1,31 @@
-import { AppBar, Box, Button, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from '@mui/material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { useState } from 'react';
-import { useAuth } from '../utils/hooks';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 export default function MainMenuBar() {
   const authContext = useAuth();
   const navigate = useNavigate();
 
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const handleMenuToggle = () => setMobileOpen((prevState) => !prevState);
 
   // Can eventually abstract into a type / interface
   const options = [
@@ -24,6 +34,7 @@ export default function MainMenuBar() {
       onClick: () => {
         navigate('/profile');
       },
+      icon: <AccountCircleIcon />,
     },
     {
       title: 'Logout',
@@ -31,66 +42,121 @@ export default function MainMenuBar() {
         authContext.signout();
         navigate('/login', { replace: true });
       },
+      icon: <LogoutIcon />,
     },
   ];
 
+  const drawer = (
+    <Box onClick={handleMenuToggle} sx={{ textAlign: 'center' }}>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        sx={{ backgroundColor: '#2F4858' }}
+      >
+        <img
+          src="/src/assets/logo.png"
+          alt="logo"
+          width="35px"
+          height="35px"
+          style={{ marginRight: '10px' }}
+        />
+        <Typography variant="h6" color="white" sx={{ py: 2, backgroundColor: 'secondary' }}>
+          PeerPrep
+        </Typography>
+      </Box>
+      <List>
+        {options.map((option) => (
+          <ListItem key={option.title} disablePadding>
+            <ListItemButton onClick={option.onClick}>
+              <ListItemIcon>{option.icon}</ListItemIcon>
+              <ListItemText primary={option.title} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+    <Box sx={{ display: 'flex' }}>
+      <AppBar component="nav" position="fixed" sx={{ backgroundColor: 'secondary' }}>
         <Toolbar>
-          <Typography
-            variant="h3"
-            noWrap
-            component="a"
+          <Box
             sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.2rem',
-              color: 'inherit',
-              textDecoration: 'none',
               flexGrow: 1,
+              display: 'flex',
             }}
           >
-            PEERPREP
-          </Typography>
-          <Button
-            variant={'contained'}
-            onClick={handleOpenUserMenu}
-            style={{ fontSize: '15px' }}
-            sx={{
-              width: 100,
-              height: 50,
-              backgroundColor: 'black',
-            }}
+            <Box
+              onClick={() => navigate('/')}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                ':hover': {
+                  cursor: 'pointer',
+                },
+              }}
+            >
+              <img
+                src="/src/assets/logo.png"
+                alt="logo"
+                width="35px"
+                height="35px"
+                style={{ marginRight: '10px' }}
+              />
+              <Typography
+                variant="h6"
+                component="div"
+                fontFamily="sans-serif"
+                sx={{
+                  display: { xs: 'none', sm: 'contents' },
+                }}
+                onClick={() => navigate('/')}
+              >
+                PeerPrep
+              </Typography>
+            </Box>
+          </Box>
+          <IconButton
+            // color="inherit"
+            aria-label="open drawer"
+            edge="end"
+            onClick={handleMenuToggle}
+            sx={{ display: { sm: 'none' } }}
           >
-            OPTIONS
-          </Button>
-          <Menu
-            sx={{ mt: '45px' }}
-            id="menu-appbar"
-            anchorEl={anchorElUser}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
-          >
-            {options.map((options) => (
-              <MenuItem key={options.title} onClick={options.onClick}>
-                <Typography textAlign="center">{options.title}</Typography>
-              </MenuItem>
+            <MenuIcon sx={{ color: 'white' }} />
+          </IconButton>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+            {options.map((option) => (
+              <Button
+                key={option.title}
+                sx={{ color: 'white', '&:hover': { backgroundColor: 'black' } }}
+                onClick={option.onClick}
+              >
+                {option.title}
+              </Button>
             ))}
-          </Menu>
+          </Box>
         </Toolbar>
       </AppBar>
+      <nav>
+        <Drawer
+          anchor="top"
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleMenuToggle}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box' },
+          }}
+        >
+          {drawer}
+        </Drawer>
+      </nav>
     </Box>
   );
 }

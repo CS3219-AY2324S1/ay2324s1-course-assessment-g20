@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import MainMenuBar from '../navigation/MainMenuBar';
-import { useAuth } from '../utils/hooks';
+import { useAuth } from '../hooks/useAuth';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { SnackbarProvider } from 'notistack';
 import { Box, Container } from '@mui/material';

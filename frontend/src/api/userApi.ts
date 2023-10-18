@@ -1,4 +1,5 @@
-import { Language, UpdateUserProfile, UserProfile } from '../@types/userProfile';
+import { UpdateUserProfile, UserProfile } from '../@types/userProfile';
+import { Language } from '../@types/language';
 import { backendServicesPaths, HttpRequestMethod } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 

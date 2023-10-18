@@ -41,4 +41,4 @@ import { YjsGateway } from './websocket-gateways/yjs.gateway';
     MatchingWebsocketService,
   ],
 })
-export class AppModule {}
+export class AppModule { }

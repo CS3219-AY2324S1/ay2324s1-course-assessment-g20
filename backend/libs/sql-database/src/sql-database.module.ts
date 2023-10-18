@@ -1,11 +1,13 @@
 import { DynamicModule } from '@nestjs/common';
-import { BaseModel } from './models/base.model';
+import { BaseModel, BaseModelUUID } from './models/base.model';
 import { ConfigService } from '@nestjs/config';
 import Knex from 'knex';
 import { Model, knexSnakeCaseMappers } from 'objection';
 
 export class SqlDatabaseModule {
-  static factory(models: (typeof BaseModel)[]): DynamicModule {
+  static factory(
+    models: (typeof BaseModel | typeof BaseModelUUID)[],
+  ): DynamicModule {
     const modelProviders = models.map((model) => ({
       provide: model.name,
       useValue: model,

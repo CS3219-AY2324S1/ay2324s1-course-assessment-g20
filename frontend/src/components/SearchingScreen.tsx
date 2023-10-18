@@ -77,7 +77,9 @@ export default function WaitingScreen({
   };
 
   const handleCancelSearch = () => {
-    ws.close();
+    if (ws !== undefined && ws.readyState !== ws.CLOSED) {
+      ws.close();
+    }
     setCloseScreen();
   };
 

@@ -64,8 +64,6 @@ services:
       - backend
     env_file:
       .env.test
-    environment:
-      - RMQ_URL=amqp://guest:guest@rabbitmq:5672
 
   collaboration:
     build: 
@@ -126,45 +124,6 @@ services:
     environment:
       - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question?authMechanism=DEFAULT
       - COLLABORATION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-collaboration?authMechanism=DEFAULT
-
-  redis:
-    image: redis:7.2.1-alpine
-    ports:
-      - '6379:6379'
-    networks:
-      - backend
-    healthcheck:
-      test: ["CMD", "redis-cli","ping"]
-      interval: 5s
-      timeout: 20s
-      retries: 5
-  
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.1
-    ports:
-      - 2181:2181
-    networks:
-      - backend
-    healthcheck:
-      test: ["CMD-SHELL", "echo ruok | nc -w 2 zookeeper 4444"]
-      interval: 5s
-      timeout: 10s
-      retries: 3
-  
-  kafka:
-    image: confluentinc/cp-kafka:7.5.1
-    depends_on:
-      - zookeeper
-    ports:
-      - 9092:9092
-    networks:
-      - backend
-    healthcheck:
-      test: nc -z localhost 9092 || exit -1
-      start_period: 15s
-      interval: 5s
-      timeout: 10s
-      retries: 10
 
 networks:
   backend:

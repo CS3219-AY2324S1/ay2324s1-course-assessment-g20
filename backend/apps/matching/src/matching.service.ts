@@ -42,11 +42,9 @@ export class MatchingService implements OnModuleInit {
         QUESTION_SERVICE_NAME,
       );
 
-    const patterns = [WebsocketServiceApi.EMIT_TO_USER_AND_DELETE_WEBSOCKET];
-
-    patterns.forEach((pattern) => {
-      this.webSocketClient.subscribeToResponseOf(pattern);
-    });
+    this.webSocketClient.subscribeToResponseOf(
+      WebsocketServiceApi.EMIT_TO_USER_AND_DELETE_WEBSOCKET,
+    );
   }
 
   async deleteEntry(userId: string) {

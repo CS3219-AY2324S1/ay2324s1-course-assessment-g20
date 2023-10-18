@@ -5,7 +5,6 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory } from '@nestjs/microservices';
-import { redisStore } from 'cache-manager-redis-yet';
 import matchingConfiguration from './config/configuration';
 import { MatchingController } from './matching.controller';
 import { MatchingService } from './matching.service';
@@ -19,15 +18,10 @@ import { RedisStoreService } from '../store/redisStore.service';
       Service.COLLABORATION_SERVICE,
     ]),
     CacheModule.registerAsync({
-      useFactory: async () => ({
-        store: await redisStore({ ttl: 30000 }),
-      }),
-    }),
-    CacheModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) =>
-        configService.get('matchingStoreConfigurationOptions'),
+        await configService.get('getMatchingStoreConfigurationOptions')(),
       inject: [ConfigService],
     }),
   ],

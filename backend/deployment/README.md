@@ -24,6 +24,9 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     - Install RabbitMQ and create the `rmq` namespace via `helm install rmq bitnami/rabbitmq -n rmq --create-namespace`
     - Take note of the password to the RabbitMQ instance (e.g. `echo "Password: $(kubectl get secret --namespace rmq rmq-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 -d)"`) We will set this later on in our `.env` file
 
+### Install Redis, Kafka and Zookeeper for Matching service
+<!-- TODO: fill up details for setting up theses services for deployment -->
+
 #### Deploy microservices
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Run `helm dependency update` to install the local `base-microservice` Helm chart

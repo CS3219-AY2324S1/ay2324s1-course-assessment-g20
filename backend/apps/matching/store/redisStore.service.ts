@@ -12,25 +12,23 @@ export class RedisStoreService {
       matchEntry.questionDifficulty,
     );
 
-    if (!matchingEntry) {
+    if (!matchingEntry || matchingEntry.userId === matchEntry.userId) {
       return null;
     }
 
-    if (matchingEntry.userId !== matchEntry.userId) {
-      return matchingEntry;
-    }
-
-    return null;
+    return matchingEntry;
   }
 
   async updateMatchingEntryIfExist(matchEntry: LookingToMatchModel) {
     const { userId } = matchEntry;
     const existingEntry = await this.getEntryByUserId(userId);
 
-    if (existingEntry) {
-      this.deleteEntryByUserId(userId);
-      this.storeEntry(matchEntry);
+    if (!existingEntry) {
+      return;
     }
+
+    this.deleteEntryByUserId(userId);
+    this.storeEntry(matchEntry);
   }
 
   async createOrUpdateMatchingEntry(matchEntry: LookingToMatchModel) {
@@ -45,44 +43,44 @@ export class RedisStoreService {
   private async storeEntry(matchEntry: LookingToMatchModel) {
     const { userId, questionDifficulty } = matchEntry;
 
-    await this.cacheManager.set(this.getUserKey(userId), matchEntry);
+    await this.cacheManager.set(this.generateUserKey(userId), matchEntry);
     await this.cacheManager.set(
-      this.getDifficultyKey(questionDifficulty),
+      this.generateDifficultyKey(questionDifficulty),
       matchEntry,
     );
   }
 
   async deleteEntryByUserId(userId: string) {
     const entry = await this.cacheManager.get<LookingToMatchModel>(
-      this.getUserKey(userId),
+      this.generateUserKey(userId),
     );
 
     if (!entry) {
       return;
     }
-    await this.cacheManager.del(this.getUserKey(userId));
+    await this.cacheManager.del(this.generateUserKey(userId));
     await this.cacheManager.del(
-      this.getDifficultyKey(entry.questionDifficulty),
+      this.generateDifficultyKey(entry.questionDifficulty),
     );
   }
 
   private async getEntryByUserId(userId: string) {
     return await this.cacheManager.get<LookingToMatchModel>(
-      this.getUserKey(userId),
+      this.generateUserKey(userId),
     );
   }
 
   private async getEntryByDifficulty(difficulty: string) {
     return await this.cacheManager.get<LookingToMatchModel>(
-      this.getDifficultyKey(difficulty),
+      this.generateDifficultyKey(difficulty),
     );
   }
 
-  private getUserKey(userId: string) {
+  private generateUserKey(userId: string) {
     return 'user' + userId;
   }
 
-  private getDifficultyKey(difficulty: string) {
+  private generateDifficultyKey(difficulty: string) {
     return 'difficulty' + difficulty;
   }
 }

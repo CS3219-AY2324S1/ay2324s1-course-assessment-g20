@@ -4,33 +4,10 @@ import {
   ClientProxyFactory,
   ClientsModule,
   GrpcOptions,
-  RmqOptions,
   Transport,
 } from '@nestjs/microservices';
 import { join } from 'path';
 import { Service } from './services';
-
-export enum RmqQueue {
-  MATCHING_WEBSOCKET = 'matching_websocket_queue',
-}
-
-export const getRmqOptionsForQueue = (
-  rmqQueue: RmqQueue,
-  noAck = true,
-): RmqOptions => {
-  const rmqUrl = process.env.RMQ_URL;
-  if (!rmqUrl) {
-    throw new Error('RMQ URL not configured!');
-  }
-  return {
-    transport: Transport.RMQ,
-    options: {
-      urls: [rmqUrl],
-      queue: rmqQueue,
-      noAck: noAck,
-    },
-  };
-};
 
 export const createMicroserviceClientProxyProvider = (
   microservice: string,

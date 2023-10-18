@@ -52,8 +52,6 @@ export class MatchingGateway extends BaseWebsocketGateway {
     connection: AuthenticatedWebsocket,
     request: Request,
   ): Promise<boolean> {
-
-
     if (await super.handleConnection(connection, request)) {
       setTimeout(() => {
         connection.close();
@@ -61,7 +59,7 @@ export class MatchingGateway extends BaseWebsocketGateway {
 
       return true;
     }
-    return false
+    return false;
   }
 
   @SubscribeMessage('get_match')
@@ -69,9 +67,11 @@ export class MatchingGateway extends BaseWebsocketGateway {
     @MessageBody() data: MatchingDto,
     @ConnectedSocket() connection: AuthenticatedWebsocket,
   ) {
-
     // wait for ticket to be set, or connection to close
-    while (connection.ticket === undefined && connection.readyState !== connection.CLOSED) {
+    while (
+      connection.ticket === undefined &&
+      connection.readyState !== connection.CLOSED
+    ) {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 

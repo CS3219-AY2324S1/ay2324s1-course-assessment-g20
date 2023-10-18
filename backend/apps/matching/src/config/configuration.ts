@@ -13,13 +13,13 @@ export default function matchingConfiguration() {
     },
   };
 
-  const matchingStoreConfigurationOptions = {
-    store: redisStore({}),
-  };
+  const getMatchingStoreConfigurationOptions = async () => ({
+    store: await redisStore(),
+  });
 
   return {
     port: parseInt(process.env.MATCHING_SERVICE_PORT, 10),
     websocketGatewayOptions,
-    matchingStoreConfigurationOptions,
+    getMatchingStoreConfigurationOptions,
   };
 }

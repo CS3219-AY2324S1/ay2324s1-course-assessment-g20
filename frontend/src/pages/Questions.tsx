@@ -163,7 +163,6 @@ export default function Dashboard() {
               style={{ fontSize: '18px' }}
               sx={{
                 height: 50,
-                // mr: 'auto',
                 whiteSpace: 'nowrap',
                 minWidth: 'max-content',
               }}

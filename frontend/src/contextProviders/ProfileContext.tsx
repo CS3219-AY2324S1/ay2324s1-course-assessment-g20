@@ -7,12 +7,6 @@ import { IProfileContext } from '../@types/userProfile';
 export const ProfileContext = React.createContext<IProfileContext>(null!);
 
 export const ProfileProvider = ({ children }: { children: React.ReactNode }) => {
-  /* 
-    Values in Profile Context:
-    Name
-    Preferred Language
-    Role
-  */
   const [name, setName] = useState<string>('');
   const [preferredLanguageId, setPreferredLanguageId] = useState<number>(1);
   const [roleId, setRoleId] = useState<number>(2);

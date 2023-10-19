@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Grid,
   Paper,
   styled,
   Table,
@@ -147,9 +148,31 @@ export default function Dashboard() {
 
   return (
     <Box>
-      <Typography variant="h4" color="black" align="center" mb={2}>
-        Questions
-      </Typography>
+      <Grid container spacing={2} pb={3}>
+        <Grid item xs={0} sm={4}></Grid>
+        <Grid item xs={12} sm={4}>
+          <Typography variant="h4" color="black" align="center" mb={2}>
+            Questions
+          </Typography>
+        </Grid>
+        <Grid item xs={12} sm={4} textAlign={{ xs: 'center', sm: 'right' }}>
+          {isMaintainer && (
+            <Button
+              variant={'contained'}
+              onClick={handleButtonFormClick}
+              style={{ fontSize: '18px' }}
+              sx={{
+                height: 50,
+                // mr: 'auto',
+                whiteSpace: 'nowrap',
+                minWidth: 'max-content',
+              }}
+            >
+              Add a question
+            </Button>
+          )}
+        </Grid>
+      </Grid>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
@@ -229,19 +252,6 @@ export default function Dashboard() {
           ></QuestionForm>
         )}
       </Typography>
-      {isMaintainer && (
-        <Button
-          variant={'contained'}
-          onClick={handleButtonFormClick}
-          style={{ fontSize: '18px' }}
-          sx={{
-            height: 50,
-            // mr: 'auto',
-          }}
-        >
-          Add a question
-        </Button>
-      )}
     </Box>
   );
 }

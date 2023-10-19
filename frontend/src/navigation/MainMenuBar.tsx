@@ -11,6 +11,7 @@ import {
   ListItemText,
   Toolbar,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { useState } from 'react';
@@ -22,6 +23,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 export default function MainMenuBar() {
   const authContext = useAuth();
   const navigate = useNavigate();
+  const { palette } = useTheme();
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -80,7 +82,7 @@ export default function MainMenuBar() {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar component="nav" position="fixed" sx={{ backgroundColor: 'secondary' }}>
+      <AppBar component="nav" position="fixed" sx={{ backgroundColor: palette.primary.main }}>
         <Toolbar>
           <Box
             sx={{
@@ -131,7 +133,7 @@ export default function MainMenuBar() {
             {options.map((option) => (
               <Button
                 key={option.title}
-                sx={{ color: 'white', '&:hover': { backgroundColor: 'black' } }}
+                sx={{ color: 'white', '&:hover': { backgroundColor: palette.primary.dark } }}
                 onClick={option.onClick}
               >
                 {option.title}

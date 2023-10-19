@@ -19,9 +19,9 @@ export default function Matching() {
             onClick={() => console.log('CLICKED EASY')}
             style={{ fontSize: '40px' }}
             sx={{
-              backgroundColor: palette.success.main,
+              backgroundColor: palette.easy.main,
               '&:hover': {
-                backgroundColor: palette.success.dark,
+                backgroundColor: palette.easy.dark,
               },
             }}
           >
@@ -32,9 +32,9 @@ export default function Matching() {
             onClick={() => console.log('CLICKED MEDIUM')}
             style={{ fontSize: '40px' }}
             sx={{
-              backgroundColor: palette.warning.main,
+              backgroundColor: palette.medium.main,
               '&:hover': {
-                backgroundColor: palette.warning.dark,
+                backgroundColor: palette.medium.dark,
               },
             }}
           >
@@ -45,9 +45,9 @@ export default function Matching() {
             onClick={() => console.log('CLICKED HARD')}
             style={{ fontSize: '40px' }}
             sx={{
-              backgroundColor: palette.error.main,
+              backgroundColor: palette.hard.main,
               '&:hover': {
-                backgroundColor: palette.error.dark,
+                backgroundColor: palette.hard.dark,
               },
             }}
           >

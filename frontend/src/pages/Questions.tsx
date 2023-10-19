@@ -136,6 +136,19 @@ export default function Dashboard() {
       });
   };
 
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'Easy':
+        return palette.easy.main;
+      case 'Medium':
+        return palette.medium.main;
+      case 'Hard':
+        return palette.hard.main;
+      default:
+        return 'black';
+    }
+  };
+
   const validateForm = () => {
     return (
       !questionInput.title ||
@@ -210,7 +223,11 @@ export default function Dashboard() {
                   )}
                 </StyledTableCell>
                 <StyledTableCell align="left">{row.categories.join(', ')}</StyledTableCell>
-                <StyledTableCell align="left">{row.difficulty}</StyledTableCell>
+                <StyledTableCell align="left">
+                  <Typography variant="subtitle2" color={getDifficultyColor(row.difficulty)}>
+                    {row.difficulty}
+                  </Typography>
+                </StyledTableCell>
                 {isMaintainer && (
                   <StyledTableCell align="center">
                     <Button
@@ -221,7 +238,7 @@ export default function Dashboard() {
                         height: 35,
                         backgroundColor: palette.error.main,
                         '&:hover': {
-                          backgroundColor: palette.error.dark,
+                          backgroundColor: palette.error.light,
                         },
                       }}
                     >

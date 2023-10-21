@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   OnModuleInit,
+  Patch,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Public } from '../jwt/jwtPublic.decorator';
@@ -59,6 +60,15 @@ export class AppController implements OnModuleInit {
     return this.questionService
       .deleteQuestionWithId({ id })
       .pipe(map(({ id }) => id));
+  }
+
+  @Patch('questions/:id')
+  @Roles(Role.MAINTAINER)
+  updateQuestionWithId(
+    @Param('id') id: string,
+    @Body('question') question: QuestionDto,
+  ) {
+    return this.questionService.updateQuestionWithId({ _id: id, ...question });
   }
 
   @Public()

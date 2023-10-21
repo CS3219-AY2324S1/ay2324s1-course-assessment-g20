@@ -29,12 +29,16 @@ export class QuestionController implements QuestionServiceController {
     return this.questionService.addQuestion(question);
   }
 
-  deleteQuestionWithId({ id }: { id: string }): Promise<ID> {
+  deleteQuestionWithId({ id }: ID): Promise<ID> {
     return this.questionService.deleteQuestionWithId(id).then((id) => ({ id }));
   }
 
   getQuestionWithId({ id }: ID): Promise<Question> {
     return this.questionService.getQuestionWithId(id);
+  }
+
+  updateQuestionWithId(question: Question): Promise<Question> {
+    return this.questionService.updateQuestionWithId(question);
   }
 
   // DIFFICULTIES

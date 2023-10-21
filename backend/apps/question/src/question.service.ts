@@ -132,9 +132,6 @@ export class QuestionService {
       ),
     );
 
-    console.log('qid', questionWithCategoriesAndDifficulty._id);
-    console.log('q', questionWithCategoriesAndDifficulty);
-
     // Find and update question
     const newQuestion = await this.questionModel.findByIdAndUpdate(
       questionWithCategoriesAndDifficulty._id ?? '',
@@ -147,16 +144,8 @@ export class QuestionService {
       { new: true },
     );
 
-    console.log({
-      ...newQuestion,
-      title: questionWithCategoriesAndDifficulty.title,
-      description: questionWithCategoriesAndDifficulty.description,
-      difficulty: difficultyObject,
-      categories: categoryObjects,
-    });
-
     return {
-      ...newQuestion,
+      ...newQuestion.toObject(),
       difficulty: questionWithCategoriesAndDifficulty.difficulty,
       categories: categoryObjects.map((category) => category.name),
     };

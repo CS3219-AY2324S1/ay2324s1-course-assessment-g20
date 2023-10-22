@@ -118,7 +118,6 @@ export class ChatbotService {
 
 
   private pushMessagesToChatHistory(sessionId: string, userId: string, messages: ChatMessage[]): Promise<ChatHistory> {
-    // append array to array
     return this.chatHistoryModel.findOneAndUpdate({ sessionId, userId }, { $push: { messages: { $each: messages } } }, { new: true }).exec();
   }
 

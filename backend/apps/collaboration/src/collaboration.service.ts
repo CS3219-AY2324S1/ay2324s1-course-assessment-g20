@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { SessionDaoService } from './database/daos/session/session.dao.service';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Service } from '@app/microservice/services';
@@ -23,6 +18,8 @@ import {
 } from '@app/microservice/interfaces/question';
 import { firstValueFrom } from 'rxjs';
 import { ID } from '@app/microservice/interfaces/common';
+import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
+import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
@@ -73,7 +70,10 @@ export class CollaborationService implements OnModuleInit {
     });
 
     if (!session) {
-      throw new BadRequestException('Invalid session!');
+      throw new PeerprepException(
+        'Invalid session!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
     }
 
     await this.validateUsersExist([getSessionInfo.userId]);
@@ -109,8 +109,9 @@ export class CollaborationService implements OnModuleInit {
 
   private validateNumUsers(userIds: string[], expectedNumber: number) {
     if (userIds.length !== expectedNumber) {
-      throw new BadRequestException(
+      throw new PeerprepException(
         `You must provide exactly ${expectedNumber} userIds to start a session for!`,
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
       );
     }
   }
@@ -121,7 +122,10 @@ export class CollaborationService implements OnModuleInit {
     ).then(({ value }) => value);
 
     if (!validateBothUsers) {
-      throw new BadRequestException('Invalid userId(s) provided!');
+      throw new PeerprepException(
+        'Invalid userId(s) provided!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
     }
   }
 

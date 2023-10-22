@@ -56,7 +56,6 @@ export class QuestionController implements QuestionServiceController {
   }
 
   // CATEGORIES
-
   getCategories(): Promise<GetCategoriesResponse> {
     return this.questionService
       .getCategories()

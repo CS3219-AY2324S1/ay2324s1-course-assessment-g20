@@ -10,6 +10,7 @@ import { Service } from '@app/microservice/services';
 import { SessionModel } from './database/models/session.model';
 import {
   CreateCollabSessionRequest,
+  GetQuestionIdFromSessionIdResponse,
   GetSessionAndWsTicketRequest,
 } from '@app/microservice/interfaces/collaboration';
 import {
@@ -21,6 +22,7 @@ import {
   QuestionServiceClient,
 } from '@app/microservice/interfaces/question';
 import { firstValueFrom } from 'rxjs';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
@@ -33,7 +35,7 @@ export class CollaborationService implements OnModuleInit {
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionServiceClient: ClientGrpc,
     private readonly sessionDaoService: SessionDaoService,
-  ) {}
+  ) { }
 
   onModuleInit() {
     this.userAuthService =
@@ -56,6 +58,10 @@ export class CollaborationService implements OnModuleInit {
     };
 
     return this.sessionDaoService.create(graphInfo);
+  }
+
+  async getQuestionIdFromSessionId(request: ID): Promise<GetQuestionIdFromSessionIdResponse> {
+    return this.sessionDaoService.getQuestionIdFromSession(request.id)
   }
 
   async getSessionAndCreateWsTicket(

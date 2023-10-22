@@ -12,6 +12,7 @@ import { CollaborationController } from './controllers/collaboration.controller'
 import { Service } from '@app/microservice/services';
 import { registerGrpcClients } from '@app/microservice/utils';
 import { RolesModule } from './roles/roles.module';
+import { ChatbotController } from './controllers/chatbot.controller';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RolesModule } from './roles/roles.module';
       Service.USER_SERVICE,
       Service.QUESTION_SERVICE,
       Service.COLLABORATION_SERVICE,
+      Service.CHATBOT_SERVICE,
     ]),
   ],
   controllers: [
@@ -30,6 +32,7 @@ import { RolesModule } from './roles/roles.module';
     UserController,
     LanguagesController,
     CollaborationController,
+    ChatbotController
   ],
   providers: [GoogleOauthStrategy, YjsGateway],
 })

@@ -90,4 +90,11 @@ const SERVICE_TO_PROTO_OPTIONS_MAP = new Map<Service, GrpcOptions['options']>([
       protoPath: getFullProtoPath('collaboration'),
     },
   ],
+  [
+    Service.CHATBOT_SERVICE,
+    {
+      package: 'ChatbotPackage',
+      protoPath: getFullProtoPath('chatbot'),
+    },
+  ]
 ]);

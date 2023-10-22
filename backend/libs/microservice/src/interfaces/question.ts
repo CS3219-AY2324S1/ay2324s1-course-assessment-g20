@@ -1,8 +1,8 @@
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
-import { ID } from './common';
-import { Empty } from './google/protobuf/empty';
+import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
+import { ID } from "./common";
+import { Empty } from "./google/protobuf/empty";
 
 export interface GetQuestionsResponse {
   questions: Question[];
@@ -57,46 +57,27 @@ export interface QuestionServiceClient {
 }
 
 export interface QuestionServiceController {
-  getQuestions(
-    request: Empty,
-  ):
-    | Promise<GetQuestionsResponse>
-    | Observable<GetQuestionsResponse>
-    | GetQuestionsResponse;
+  getQuestions(request: Empty): Promise<GetQuestionsResponse> | Observable<GetQuestionsResponse> | GetQuestionsResponse;
 
-  addQuestion(
-    request: Question,
-  ): Promise<Question> | Observable<Question> | Question;
+  addQuestion(request: Question): Promise<Question> | Observable<Question> | Question;
 
   deleteQuestionWithId(request: ID): Promise<ID> | Observable<ID> | ID;
 
-  getQuestionWithId(
-    request: ID,
-  ): Promise<Question> | Observable<Question> | Question;
+  getQuestionWithId(request: ID): Promise<Question> | Observable<Question> | Question;
 
   getDifficulties(
     request: Empty,
-  ):
-    | Promise<GetDifficultiesResponse>
-    | Observable<GetDifficultiesResponse>
-    | GetDifficultiesResponse;
+  ): Promise<GetDifficultiesResponse> | Observable<GetDifficultiesResponse> | GetDifficultiesResponse;
 
-  addDifficulty(
-    request: Difficulty,
-  ): Promise<Difficulty> | Observable<Difficulty> | Difficulty;
+  addDifficulty(request: Difficulty): Promise<Difficulty> | Observable<Difficulty> | Difficulty;
 
   deleteDifficultyWithId(request: ID): Promise<ID> | Observable<ID> | ID;
 
   getCategories(
     request: Empty,
-  ):
-    | Promise<GetCategoriesResponse>
-    | Observable<GetCategoriesResponse>
-    | GetCategoriesResponse;
+  ): Promise<GetCategoriesResponse> | Observable<GetCategoriesResponse> | GetCategoriesResponse;
 
-  addCategory(
-    request: Category,
-  ): Promise<Category> | Observable<Category> | Category;
+  addCategory(request: Category): Promise<Category> | Observable<Category> | Category;
 
   deleteCategoryWithId(request: ID): Promise<ID> | Observable<ID> | ID;
 }
@@ -104,41 +85,27 @@ export interface QuestionServiceController {
 export function QuestionServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
-      'getQuestions',
-      'addQuestion',
-      'deleteQuestionWithId',
-      'getQuestionWithId',
-      'getDifficulties',
-      'addDifficulty',
-      'deleteDifficultyWithId',
-      'getCategories',
-      'addCategory',
-      'deleteCategoryWithId',
+      "getQuestions",
+      "addQuestion",
+      "deleteQuestionWithId",
+      "getQuestionWithId",
+      "getDifficulties",
+      "addDifficulty",
+      "deleteDifficultyWithId",
+      "getCategories",
+      "addCategory",
+      "deleteCategoryWithId",
     ];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(
-        constructor.prototype,
-        method,
-      );
-      GrpcMethod('QuestionService', method)(
-        constructor.prototype[method],
-        method,
-        descriptor,
-      );
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("QuestionService", method)(constructor.prototype[method], method, descriptor);
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(
-        constructor.prototype,
-        method,
-      );
-      GrpcStreamMethod('QuestionService', method)(
-        constructor.prototype[method],
-        method,
-        descriptor,
-      );
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("QuestionService", method)(constructor.prototype[method], method, descriptor);
     }
   };
 }
 
-export const QUESTION_SERVICE_NAME = 'QuestionService';
+export const QUESTION_SERVICE_NAME = "QuestionService";

@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokensDaoService } from '../database/daos/refreshTokens/refreshTokens.dao.service';
 import { JwtService as NestJwtService } from '@nestjs/jwt';
@@ -7,6 +7,8 @@ import { UserDaoService } from '../database/daos/users/user.dao.service';
 import { UserModel } from '../database/models/user.model';
 import { WebsocketTicketDaoService } from '../database/daos/websocketTickets/websocketTicket.dao.service';
 import { CreateWebsocketTicketInfoRequest } from '@app/microservice/interfaces/user';
+import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
+import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +44,10 @@ export class AuthService {
         secret: this.tokenConfig.refreshTokenSecret,
       });
     } catch (e) {
-      throw new HttpException('Invalid refresh token', 401);
+      throw new PeerprepException(
+        'Invalid refresh token',
+        PEERPREP_EXCEPTION_TYPES.UNAUTHORIZED,
+      );
     }
   }
 
@@ -51,10 +56,7 @@ export class AuthService {
    * If undefined, create a new database entry (i.e. when signing in)
    */
   async generateJwts(user, oldToken?: string) {
-    const payload: JwtPayload = {
-      id: user.id,
-      roleId: user.userProfile.roleId,
-    };
+    const payload: JwtPayload = { id: user.id };
     const accessToken: string = this.generateAccessToken(payload);
     const refreshToken: string = this.generateRefreshToken(payload);
 
@@ -83,7 +85,10 @@ export class AuthService {
     );
 
     if (!isValidRefreshToken) {
-      throw new HttpException('Invalid refresh token', 401);
+      throw new PeerprepException(
+        'Invalid refresh token',
+        PEERPREP_EXCEPTION_TYPES.UNAUTHORIZED,
+      );
     }
 
     return this.generateJwts(user, refreshToken);
@@ -104,8 +109,11 @@ export class AuthService {
   async consumeWebsocketTicket(ticketId: string) {
     const ticket = await this.websocketTicketDaoService.get(ticketId);
 
-    if (!ticket || ticket.isUsed) {
-      throw new BadRequestException('Invalid ticket!');
+    if (!ticket) {
+      throw new PeerprepException(
+        'Invalid ticket!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
     }
 
     return this.websocketTicketDaoService.updateUsed(ticketId);

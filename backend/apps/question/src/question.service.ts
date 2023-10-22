@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Question } from './schemas/question.schema';
 import { Category } from './schemas/category.schema';
 import { Difficulty } from './schemas/difficulty.schema';
 import { Question as QuestionWithCategoryAndDifficulty } from '@app/microservice/interfaces/question';
+import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
+import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
 
 @Injectable()
 export class QuestionService {
@@ -82,7 +84,10 @@ export class QuestionService {
       })) ?? (await this.diffcultyModel.findById(difficulty.toString()));
 
     if (difficultyObject == null) {
-      throw new NotFoundException('Difficulty not found');
+      throw new PeerprepException(
+        'Difficulty not found',
+        PEERPREP_EXCEPTION_TYPES.NOT_FOUND,
+      );
     }
 
     return difficultyObject.toObject();
@@ -95,7 +100,10 @@ export class QuestionService {
       (await this.categoryModel.findById(category.toString()));
 
     if (categoryObject == null) {
-      throw new NotFoundException('Category not found');
+      throw new PeerprepException(
+        'Category not found',
+        PEERPREP_EXCEPTION_TYPES.NOT_FOUND,
+      );
     }
 
     return categoryObject.toObject();
@@ -108,7 +116,10 @@ export class QuestionService {
       .populate('difficulty');
 
     if (questionObject == null) {
-      throw new NotFoundException('Question not found');
+      throw new PeerprepException(
+        'Question not found',
+        PEERPREP_EXCEPTION_TYPES.NOT_FOUND,
+      );
     }
 
     return {

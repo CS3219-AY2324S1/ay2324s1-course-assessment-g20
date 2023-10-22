@@ -12,7 +12,10 @@ import { ChatbotService } from './chatbot.service';
 @Module({
   imports: [
     ConfigModule.loadConfiguration(chatbotConfiguration),
-    registerGrpcClients([Service.QUESTION_SERVICE, Service.COLLABORATION_SERVICE]),
+    registerGrpcClients([
+      Service.QUESTION_SERVICE,
+      Service.COLLABORATION_SERVICE,
+    ]),
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         uri: configService.getOrThrow('mongoUri'),

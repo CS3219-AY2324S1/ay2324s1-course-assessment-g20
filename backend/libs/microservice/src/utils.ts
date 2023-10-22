@@ -96,5 +96,5 @@ const SERVICE_TO_PROTO_OPTIONS_MAP = new Map<Service, GrpcOptions['options']>([
       package: 'ChatbotPackage',
       protoPath: getFullProtoPath('chatbot'),
     },
-  ]
+  ],
 ]);

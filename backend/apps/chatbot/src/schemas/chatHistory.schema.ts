@@ -4,13 +4,11 @@ import { HydratedDocument } from 'mongoose';
 
 export type ChatHistoryDocument = HydratedDocument<ChatHistory>;
 
-
 @Schema()
 export class ChatHistory {
   _id: string;
 
   @Prop({ required: true })
-
   sessionId: string;
 
   @Prop({ required: true })
@@ -18,9 +16,7 @@ export class ChatHistory {
 
   @Prop({ required: true })
   messages: ChatMessage[];
-
 }
-
 
 export const ChatHistorySchema = SchemaFactory.createForClass(ChatHistory);
 ChatHistorySchema.index({ sessionId: 1, userId: 1 }, { unique: true });

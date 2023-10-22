@@ -21,7 +21,7 @@ export class ChatbotController implements OnModuleInit {
   constructor(
     @Inject(Service.CHATBOT_SERVICE)
     private chatbotServiceClient: ClientGrpc,
-  ) { }
+  ) {}
 
   onModuleInit() {
     this.chatbotService =

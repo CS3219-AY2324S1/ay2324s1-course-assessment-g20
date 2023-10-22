@@ -14,14 +14,16 @@ import { ID } from '@app/microservice/interfaces/common';
 @Controller()
 @CollaborationServiceControllerMethods()
 export class CollaborationController implements CollaborationServiceController {
-  constructor(private readonly collaborationService: CollaborationService) { }
+  constructor(private readonly collaborationService: CollaborationService) {}
 
   createCollabSession(createSessionInfo: CreateCollabSessionRequest) {
     return this.collaborationService.createCollabSession(createSessionInfo);
   }
 
-  getQuestionIdFromSessionId(request: ID): Promise<GetQuestionIdFromSessionIdResponse> {
-    return this.collaborationService.getQuestionIdFromSessionId(request)
+  getQuestionIdFromSessionId(
+    request: ID,
+  ): Promise<GetQuestionIdFromSessionIdResponse> {
+    return this.collaborationService.getQuestionIdFromSessionId(request);
   }
 
   getSessionAndWsTicket(

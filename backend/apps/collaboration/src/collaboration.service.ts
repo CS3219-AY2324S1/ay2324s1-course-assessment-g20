@@ -32,7 +32,7 @@ export class CollaborationService implements OnModuleInit {
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionServiceClient: ClientGrpc,
     private readonly sessionDaoService: SessionDaoService,
-  ) { }
+  ) {}
 
   onModuleInit() {
     this.userAuthService =
@@ -57,8 +57,10 @@ export class CollaborationService implements OnModuleInit {
     return this.sessionDaoService.create(graphInfo);
   }
 
-  async getQuestionIdFromSessionId(request: ID): Promise<GetQuestionIdFromSessionIdResponse> {
-    return this.sessionDaoService.getQuestionIdFromSession(request.id)
+  async getQuestionIdFromSessionId(
+    request: ID,
+  ): Promise<GetQuestionIdFromSessionIdResponse> {
+    return this.sessionDaoService.getQuestionIdFromSession(request.id);
   }
 
   async getSessionAndCreateWsTicket(

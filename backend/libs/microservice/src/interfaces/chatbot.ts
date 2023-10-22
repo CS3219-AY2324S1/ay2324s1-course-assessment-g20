@@ -1,6 +1,6 @@
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
 
 export interface ChatbotRequest {
   query: string;
@@ -33,26 +33,46 @@ export interface ChatbotServiceClient {
 export interface ChatbotServiceController {
   createChatQuery(
     request: ChatbotRequest,
-  ): Promise<ChatMessagesResponse> | Observable<ChatMessagesResponse> | ChatMessagesResponse;
+  ):
+    | Promise<ChatMessagesResponse>
+    | Observable<ChatMessagesResponse>
+    | ChatMessagesResponse;
 
   getChatHistory(
     request: ChatHistoryRequest,
-  ): Promise<ChatMessagesResponse> | Observable<ChatMessagesResponse> | ChatMessagesResponse;
+  ):
+    | Promise<ChatMessagesResponse>
+    | Observable<ChatMessagesResponse>
+    | ChatMessagesResponse;
 }
 
 export function ChatbotServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["createChatQuery", "getChatHistory"];
+    const grpcMethods: string[] = ['createChatQuery', 'getChatHistory'];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("ChatbotService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcMethod('ChatbotService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("ChatbotService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcStreamMethod('ChatbotService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
   };
 }
 
-export const CHATBOT_SERVICE_NAME = "ChatbotService";
+export const CHATBOT_SERVICE_NAME = 'ChatbotService';

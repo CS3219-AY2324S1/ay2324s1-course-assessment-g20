@@ -11,7 +11,7 @@ async function bootstrap() {
     getGrpcOptions(Service.CHATBOT_SERVICE),
   );
 
-await app.listen();
+  await app.listen();
   console.log(`Chatbot microservice running on port ${port}`);
 }
 bootstrap();

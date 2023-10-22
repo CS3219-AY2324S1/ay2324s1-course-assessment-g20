@@ -32,7 +32,7 @@ import { ChatbotController } from './controllers/chatbot.controller';
     UserController,
     LanguagesController,
     CollaborationController,
-    ChatbotController
+    ChatbotController,
   ],
   providers: [GoogleOauthStrategy, YjsGateway],
 })

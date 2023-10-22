@@ -1,8 +1,8 @@
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
-import { ID } from "./common";
-import { Question } from "./question";
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
+import { ID } from './common';
+import { Question } from './question';
 
 export interface CreateCollabSessionRequest {
   userIds: string[];
@@ -45,19 +45,30 @@ export interface SessionTicket {
 export interface CollaborationServiceClient {
   createCollabSession(request: CreateCollabSessionRequest): Observable<Session>;
 
-  getSessionAndWsTicket(request: GetSessionAndWsTicketRequest): Observable<GetSessionAndWsTicketResponse>;
+  getSessionAndWsTicket(
+    request: GetSessionAndWsTicketRequest,
+  ): Observable<GetSessionAndWsTicketResponse>;
 
-  getSessionIdFromTicket(request: ID): Observable<GetSessionIdFromTicketResponse>;
+  getSessionIdFromTicket(
+    request: ID,
+  ): Observable<GetSessionIdFromTicketResponse>;
 
-  getQuestionIdFromSessionId(request: ID): Observable<GetQuestionIdFromSessionIdResponse>;
+  getQuestionIdFromSessionId(
+    request: ID,
+  ): Observable<GetQuestionIdFromSessionIdResponse>;
 }
 
 export interface CollaborationServiceController {
-  createCollabSession(request: CreateCollabSessionRequest): Promise<Session> | Observable<Session> | Session;
+  createCollabSession(
+    request: CreateCollabSessionRequest,
+  ): Promise<Session> | Observable<Session> | Session;
 
   getSessionAndWsTicket(
     request: GetSessionAndWsTicketRequest,
-  ): Promise<GetSessionAndWsTicketResponse> | Observable<GetSessionAndWsTicketResponse> | GetSessionAndWsTicketResponse;
+  ):
+    | Promise<GetSessionAndWsTicketResponse>
+    | Observable<GetSessionAndWsTicketResponse>
+    | GetSessionAndWsTicketResponse;
 
   getSessionIdFromTicket(
     request: ID,
@@ -77,21 +88,35 @@ export interface CollaborationServiceController {
 export function CollaborationServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
-      "createCollabSession",
-      "getSessionAndWsTicket",
-      "getSessionIdFromTicket",
-      "getQuestionIdFromSessionId",
+      'createCollabSession',
+      'getSessionAndWsTicket',
+      'getSessionIdFromTicket',
+      'getQuestionIdFromSessionId',
     ];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("CollaborationService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcMethod('CollaborationService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("CollaborationService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcStreamMethod('CollaborationService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
   };
 }
 
-export const COLLABORATION_SERVICE_NAME = "CollaborationService";
+export const COLLABORATION_SERVICE_NAME = 'CollaborationService';

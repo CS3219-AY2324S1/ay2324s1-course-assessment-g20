@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -9,6 +10,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { getCategories, getDifficulties } from '../api/questionBankApi';
@@ -41,6 +43,7 @@ export default function QuestionForm({
 }: FormProps) {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [difficulties, setDifficulties] = useState<IDifficulty[]>([]);
+  const { palette } = useTheme();
 
   useEffect(() => {
     // Fetch categories from API
@@ -63,11 +66,13 @@ export default function QuestionForm({
   }, []);
 
   return (
-    <Dialog open={openForm} onClose={closeForm}>
-      <DialogTitle>{formType}</DialogTitle>
+    <Dialog open={openForm} onClose={closeForm} fullWidth>
+      <DialogTitle sx={{ backgroundColor: palette.primary.main, color: 'white' }}>
+        {formType}
+      </DialogTitle>
       <DialogContent dividers>
         <DialogContentText>
-          Fill in the question's title, category, complexity and description
+          Fill in the question's title, category, complexity and description.
         </DialogContentText>
         <br />
         <InputLabel id="title-label">Question Title</InputLabel>
@@ -83,7 +88,7 @@ export default function QuestionForm({
         ></TextField>
         <InputLabel id="category-label">Question Category</InputLabel>
         <Select
-          sx={{ marginBottom: '4px', marginTop: '8px' }}
+          sx={{ marginBottom: '4px', marginTop: '8px', maxWidth: '100%' }}
           required
           margin="dense"
           id="category"
@@ -92,10 +97,12 @@ export default function QuestionForm({
           multiple
           value={category}
           onChange={inputCategory}
+          renderValue={(selected) => selected.join(', ')}
         >
-          {categories.map((category) => (
-            <MenuItem key={category._id} value={category.name}>
-              {category.name}
+          {categories.map((availableCategories) => (
+            <MenuItem key={availableCategories._id} value={availableCategories.name}>
+              <Checkbox checked={category.indexOf(availableCategories.name) > -1} />
+              {availableCategories.name}
             </MenuItem>
           ))}
         </Select>

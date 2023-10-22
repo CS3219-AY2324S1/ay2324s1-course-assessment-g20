@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { getAllLanguages, deleteUserProfile } from '../api/userApi';
-import { useAuth } from '../utils/hooks';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Language } from '../@types/language';
 import { useProfile } from '../hooks/useProfile';
@@ -63,8 +63,11 @@ export default function Profile() {
   const handleCloseModal = () => setisModalOpen(false);
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" padding="2rem">
-      <Paper elevation={3} sx={{ padding: '2rem', width: '50%' }}>
+    <Box display="flex" flexDirection="column" alignItems="center" padding="2rem" minWidth="400px">
+      <Paper
+        elevation={3}
+        sx={{ padding: '2rem', minWidth: '400px', width: { xs: '100%', md: '60%' } }}
+      >
         <Box display="flex" flexDirection="column">
           <Typography fontSize={30} fontWeight={10} paddingBottom={3} align="center">
             {name}

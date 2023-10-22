@@ -1,5 +1,5 @@
 import { Navigate, useLocation, Outlet } from 'react-router-dom';
-import { useAuth } from '../utils/hooks';
+import { useAuth } from '../hooks/useAuth';
 
 export default function PublicOnlyRoutes() {
   const auth = useAuth();

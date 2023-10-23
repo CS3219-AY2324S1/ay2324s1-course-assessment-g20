@@ -14,7 +14,7 @@ export class ProfileController implements UserProfileServiceController {
   constructor(private readonly profileService: ProfileService) {}
 
   getUserProfileById({ id }: ID) {
-    return this.profileService.getUserProfile(id);
+    return this.profileService.getUserProfileById(id);
   }
 
   getUserProfileByUsername({ username }: Username) {

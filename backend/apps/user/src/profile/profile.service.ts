@@ -20,7 +20,7 @@ export class ProfileService {
     private readonly roleDaoService: RoleDaoService,
   ) {}
 
-  getUserProfile(userId: string): Promise<UserProfile | undefined> {
+  getUserProfileById(userId: string): Promise<UserProfile | undefined> {
     return this.userProfileDaoService
       .findByUserId({
         userId,
@@ -79,7 +79,7 @@ export class ProfileService {
     delete userProfile.userId;
 
     await this.validateForeignKeys(userProfile);
-    const currentProfile = await this.getUserProfile(userId);
+    const currentProfile = await this.getUserProfileById(userId);
     if (
       currentProfile.roleId === Role.REGULAR &&
       userProfile.roleId === Role.MAINTAINER

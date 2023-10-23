@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserProfileDaoService } from '../database/daos/userProfiles/userProfile.dao.service';
 import { UserProfileModel } from '../database/models/userProfile.model';
 import { LanguageDaoService } from '../database/daos/languages/language.dao.service';
@@ -9,6 +9,8 @@ import {
   UserProfile,
   Role as RoleObj,
 } from '@app/microservice/interfaces/user';
+import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
+import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
 
 @Injectable()
 export class ProfileService {
@@ -60,7 +62,10 @@ export class ProfileService {
     await Promise.all(
       fkeyValues.map(async (fkeyValue, idx) => {
         if (fkeyValue && !(await daoServices[idx].findById(fkeyValue))) {
-          throw new HttpException(`Invalid ${fkeyName[idx]}`, 400);
+          throw new PeerprepException(
+            `Invalid ${fkeyName[idx]}`,
+            PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+          );
         }
       }),
     );
@@ -79,9 +84,9 @@ export class ProfileService {
       currentProfile.roleId === Role.REGULAR &&
       userProfile.roleId === Role.MAINTAINER
     ) {
-      throw new HttpException(
+      throw new PeerprepException(
         `Unauthorized operation: cannot upgrade status to maintainer`,
-        401,
+        PEERPREP_EXCEPTION_TYPES.UNAUTHORIZED,
       );
     }
     return this.userProfileDaoService.updateByUserId(userId, userProfile);

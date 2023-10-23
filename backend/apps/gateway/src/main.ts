@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
+import { GatewayExceptionFilter } from 'libs/exception-filter/gateway-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +32,8 @@ async function bootstrap() {
       optionsSuccessStatus: 200,
     });
   }
+
+  app.useGlobalFilters(new GatewayExceptionFilter());
 
   const port = configService.get('port');
   await app.listen(port);

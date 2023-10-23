@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getUserProfileByUsername } from '../api/userApi';
 import { UserProfile } from '../@types/userProfile';
+import { frontendPaths } from '../routes/paths';
 
 export default function Profile() {
   const { username } = useParams();
@@ -28,7 +29,7 @@ export default function Profile() {
   }, [isOwnProfile, username]);
 
   const handleEditProfile = () => {
-    navigate('/profile/edit');
+    navigate(frontendPaths.editProfile);
   };
 
   return (

@@ -17,6 +17,7 @@ import { Language } from '../@types/language';
 import { useProfile } from '../hooks/useProfile';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import { frontendPaths } from '../routes/paths';
 
 export default function Onboarding() {
   const [languages, setLanguages] = useState<Language[]>([]);
@@ -60,7 +61,7 @@ export default function Onboarding() {
         preferredLanguageId: newPreferredLanguageId,
       });
       enqueueSnackbar('Successfully completed onboarding!', { variant: 'success' });
-      navigate('/dashboard');
+      navigate(frontendPaths.dashboard);
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Error updating profile :(', { variant: 'error' });

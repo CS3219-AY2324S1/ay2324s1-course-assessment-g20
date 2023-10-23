@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useProfile } from '../hooks/useProfile';
+import { frontendPaths } from '../routes/paths';
 
 export default function MainMenuBar() {
   const authContext = useAuth();
@@ -36,7 +37,7 @@ export default function MainMenuBar() {
     {
       title: 'Profile',
       onClick: () => {
-        navigate(`/user/${username}`);
+        navigate(`${frontendPaths.user}/${username}`);
       },
       icon: <AccountCircleIcon />,
     },
@@ -44,7 +45,7 @@ export default function MainMenuBar() {
       title: 'Logout',
       onClick: () => {
         authContext.signout();
-        navigate('/login', { replace: true });
+        navigate(frontendPaths.login, { replace: true });
       },
       icon: <LogoutIcon />,
     },

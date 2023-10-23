@@ -17,6 +17,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Language } from '../@types/language';
 import { useProfile } from '../hooks/useProfile';
+import { frontendPaths } from '../routes/paths';
 
 const modalStyle = {
   position: 'absolute' as const,
@@ -80,7 +81,7 @@ export default function EditProfile() {
   };
   const logUserOut = () => {
     authContext.signout();
-    navigate('/login', { replace: true });
+    navigate(frontendPaths.login, { replace: true });
   };
   const handleOpenModal = () => setisModalOpen(true);
   const handleCloseModal = () => setisModalOpen(false);

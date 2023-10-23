@@ -11,6 +11,7 @@ import Onboarding from '../pages/Onboarding';
 import OnboardedRoutes from './OnboardedRoutes';
 import NonOnboardedRoutes from './NonOnboardedRoutes';
 import EditProfile from '../pages/EditProfile';
+import { frontendPaths } from './paths';
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
         element: <PublicOnlyRoutes />,
         children: [
           {
-            path: '/login',
+            path: frontendPaths.login,
             element: <Login />,
           },
         ],
@@ -32,19 +33,19 @@ const router = createBrowserRouter([
             element: <OnboardedRoutes />,
             children: [
               {
-                path: '/dashboard',
+                path: frontendPaths.dashboard,
                 element: <Dashboard />,
               },
               {
-                path: '/session/:sessionId?',
+                path: `${frontendPaths.session}/:sessionId?`,
                 element: <CodeEditor />,
               },
               {
-                path: '/user/:username',
+                path: `${frontendPaths.user}/:username`,
                 element: <Profile />,
               },
               {
-                path: '/profile/edit',
+                path: frontendPaths.editProfile,
                 element: <EditProfile />,
               },
             ],
@@ -53,18 +54,18 @@ const router = createBrowserRouter([
             element: <NonOnboardedRoutes />,
             children: [
               {
-                path: '/onboarding',
+                path: frontendPaths.onboarding,
                 element: <Onboarding />,
               },
             ],
           },
         ],
       },
-      { path: '*', element: <Navigate to="/login" replace /> },
+      { path: '*', element: <Navigate to={frontendPaths.login} replace /> },
     ],
   },
   {
-    path: '/authRedirect',
+    path: frontendPaths.authRedirect,
     element: <AuthRedirect />,
   },
 ]);

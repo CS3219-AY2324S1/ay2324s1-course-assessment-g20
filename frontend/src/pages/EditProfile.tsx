@@ -89,10 +89,7 @@ export default function EditProfile() {
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" padding="2rem" minWidth="400px">
-      <Paper
-        elevation={3}
-        sx={{ padding: '2rem', minWidth: '400px', width: { xs: '100%', md: '60%' } }}
-      >
+      <Paper elevation={3} sx={{ padding: '2rem', width: { xs: '100%', md: '60%' } }}>
         <Box display="flex" flexDirection="column">
           <Stack spacing={2} direction="column">
             <Box>

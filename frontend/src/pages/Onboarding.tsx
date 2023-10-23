@@ -72,13 +72,13 @@ export default function Onboarding() {
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" padding="2rem" minWidth="400px">
-      <Paper
-        elevation={3}
-        sx={{ padding: '2rem', minWidth: '400px', width: { xs: '100%', md: '60%' } }}
-      >
+      <Paper elevation={3} sx={{ padding: '2rem', width: { xs: '100%', md: '60%' } }}>
         <Stack spacing={2}>
-          <Typography variant="h5" textAlign="center">
-            {`Hey ${name}! Let's get you set up.`}
+          <Typography variant="h4" textAlign="center">
+            {`Hey ${name}!`}
+          </Typography>
+          <Typography variant="subtitle1" textAlign="center">
+            Let's get you set up.
           </Typography>
           <Divider />
           <Typography>Enter a username</Typography>

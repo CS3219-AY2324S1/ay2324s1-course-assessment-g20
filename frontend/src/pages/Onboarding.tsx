@@ -18,6 +18,7 @@ import { useProfile } from '../hooks/useProfile';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { frontendPaths } from '../routes/paths';
+import { formatLanguage } from '../utils/stringUtils';
 
 export default function Onboarding() {
   const [languages, setLanguages] = useState<Language[]>([]);
@@ -99,7 +100,7 @@ export default function Onboarding() {
             >
               {languages.map((language: Language) => (
                 <MenuItem key={language.id} value={language.id}>
-                  {language.name}
+                  {formatLanguage(language.name)}
                 </MenuItem>
               ))}
             </Select>

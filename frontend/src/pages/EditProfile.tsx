@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { Language } from '../@types/language';
 import { useProfile } from '../hooks/useProfile';
 import { frontendPaths } from '../routes/paths';
+import { formatLanguage } from '../utils/stringUtils';
 
 const modalStyle = {
   position: 'absolute' as const,
@@ -131,7 +132,7 @@ export default function EditProfile() {
                 >
                   {languages.map((language: Language) => (
                     <MenuItem key={language.id} value={language.id}>
-                      {language.name}
+                      {formatLanguage(language.name)}
                     </MenuItem>
                   ))}
                 </Select>

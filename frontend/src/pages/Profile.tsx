@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { getUserProfileByUsername } from '../api/userApi';
 import { UserProfile } from '../@types/userProfile';
 import { frontendPaths } from '../routes/paths';
+import { formatLanguage } from '../utils/stringUtils';
 
 export default function Profile() {
   const { username } = useParams();
@@ -53,7 +54,9 @@ export default function Profile() {
               Preferred Language
             </Typography>
             <Typography sx={{ opacity: 0.6 }}>
-              {isOwnProfile ? preferredLanguage : profile?.preferredLanguage.name}
+              {formatLanguage(
+                isOwnProfile ? preferredLanguage : profile?.preferredLanguage.name ?? '',
+              )}
             </Typography>
           </Box>
           {isOwnProfile && (

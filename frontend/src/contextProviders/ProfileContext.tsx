@@ -23,7 +23,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
         setName(data.name ?? '');
         setUsername(data.username ?? '');
         setPreferredLanguageId(data.preferredLanguage?.id ?? 1);
-        setPreferredLanguage(data.preferredLanguage?.name ?? 'JAVASCRIPT');
+        setPreferredLanguage(data.preferredLanguage?.name ?? 'JavaScript');
         setRoleId(data.role?.id ?? 2);
         setIsMaintainer(data.role?.name === 'MAINTAINER');
       })

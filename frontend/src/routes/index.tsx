@@ -7,6 +7,10 @@ import AppWrapper from './AppWrapper';
 import CodeEditor from '../pages/CodeEditor';
 import Profile from '../pages/Profile';
 import Dashboard from '../pages/Dashboard';
+import Onboarding from '../pages/Onboarding';
+import OnboardedRoutes from './OnboardedRoutes';
+import NonOnboardedRoutes from './NonOnboardedRoutes';
+import EditProfile from '../pages/EditProfile';
 
 const router = createBrowserRouter([
   {
@@ -25,16 +29,34 @@ const router = createBrowserRouter([
         element: <ProtectedRoutes />,
         children: [
           {
-            path: '/dashboard',
-            element: <Dashboard />,
+            element: <OnboardedRoutes />,
+            children: [
+              {
+                path: '/dashboard',
+                element: <Dashboard />,
+              },
+              {
+                path: '/session/:sessionId?',
+                element: <CodeEditor />,
+              },
+              {
+                path: '/user/:username',
+                element: <Profile />,
+              },
+              {
+                path: '/profile/edit',
+                element: <EditProfile />,
+              },
+            ],
           },
           {
-            path: '/session/:sessionId?',
-            element: <CodeEditor />,
-          },
-          {
-            path: '/profile',
-            element: <Profile />,
+            element: <NonOnboardedRoutes />,
+            children: [
+              {
+                path: '/onboarding',
+                element: <Onboarding />,
+              },
+            ],
           },
         ],
       },

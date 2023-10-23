@@ -30,6 +30,23 @@ export class ProfileService {
         preferredLanguageId: profile.preferredLanguageId,
         role: profile.role as unknown as RoleObj,
         roleId: profile.roleId,
+        username: profile.username,
+      }));
+  }
+
+  getUserProfileByUsername(username: string): Promise<UserProfile | undefined> {
+    return this.userProfileDaoService
+      .findByUsername({
+        username,
+        withGraphFetched: true,
+      })
+      .then((profile) => ({
+        name: profile.name,
+        preferredLanguage: profile.preferredLanguage as unknown as Language,
+        preferredLanguageId: profile.preferredLanguageId,
+        role: profile.role as unknown as RoleObj,
+        roleId: profile.roleId,
+        username: profile.username,
       }));
   }
 

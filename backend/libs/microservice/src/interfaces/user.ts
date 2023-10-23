@@ -22,6 +22,7 @@ export interface UserProfile {
   roleId: number;
   preferredLanguage?: Language | undefined;
   role?: Role | undefined;
+  username?: string | undefined;
 }
 
 export interface RefreshTokenRequest {
@@ -41,6 +42,10 @@ export interface WebsocketTicket {
 export interface JwtTokens {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface Username {
+  username: string;
 }
 
 export interface Language {
@@ -201,14 +206,20 @@ export function UserLanguageServiceControllerMethods() {
 export const USER_LANGUAGE_SERVICE_NAME = 'UserLanguageService';
 
 export interface UserProfileServiceClient {
-  getUserProfile(request: ID): Observable<UserProfile>;
+  getUserProfileById(request: ID): Observable<UserProfile>;
+
+  getUserProfileByUsername(request: Username): Observable<UserProfile>;
 
   updateUserProfile(request: UserProfile): Observable<UserProfile>;
 }
 
 export interface UserProfileServiceController {
-  getUserProfile(
+  getUserProfileById(
     request: ID,
+  ): Promise<UserProfile> | Observable<UserProfile> | UserProfile;
+
+  getUserProfileByUsername(
+    request: Username,
   ): Promise<UserProfile> | Observable<UserProfile> | UserProfile;
 
   updateUserProfile(
@@ -218,7 +229,11 @@ export interface UserProfileServiceController {
 
 export function UserProfileServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['getUserProfile', 'updateUserProfile'];
+    const grpcMethods: string[] = [
+      'getUserProfileById',
+      'getUserProfileByUsername',
+      'updateUserProfile',
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

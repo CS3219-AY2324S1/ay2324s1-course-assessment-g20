@@ -12,6 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('name').notNullable();
     table.integer('preferredLanguageId').references('id').inTable('languages');
     table.integer('roleId').references('id').inTable('roles');
+    table.string('username').unique();
     table.timestamps(true, true);
   });
 }

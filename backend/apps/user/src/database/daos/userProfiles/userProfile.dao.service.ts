@@ -45,6 +45,40 @@ export class UserProfileDaoService {
     });
   }
 
+  findByUsername({
+    username,
+    select,
+    withGraphFetched,
+  }: {
+    username: string;
+    select?: string | string[];
+    withGraphFetched?: boolean;
+  }) {
+    let query = this.userProfileModel.query().where({ username });
+
+    if (select) {
+      query = query.select(select);
+    }
+
+    if (withGraphFetched) {
+      query = query.withGraphFetched(UserProfileDaoService.allGraphs);
+    }
+
+    return query.first().then((profile) => {
+      if (!profile) {
+        throw new HttpException('User does not exist!', 400);
+      }
+      /**
+       * Favouring this method of removing id instead of selecting columns
+       * to prevent accidentally forgetting to update the select query when adding
+       * new columns in the future.
+       */
+      const profileWithoutId = { ...profile };
+      delete profileWithoutId.id;
+      return profileWithoutId;
+    });
+  }
+
   updateByUserId(userId: string, data: Partial<UserProfileModel>) {
     return this.userProfileModel
       .query()

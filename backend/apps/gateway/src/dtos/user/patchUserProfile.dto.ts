@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsNotEmpty } from 'class-validator';
 
 export default class PatchUserProfileDto {
   @IsOptional()
@@ -12,4 +12,9 @@ export default class PatchUserProfileDto {
   @IsOptional()
   @IsNumber()
   roleId: number;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  username: string;
 }

@@ -23,7 +23,7 @@ export default function AuthRedirect() {
   });
 
   if (auth.isAuthenticated) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/onboarding" />;
   }
 
   return (

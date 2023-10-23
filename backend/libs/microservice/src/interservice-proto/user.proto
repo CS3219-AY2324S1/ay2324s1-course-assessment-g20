@@ -22,7 +22,8 @@ service UserLanguageService {
 }
 
 service UserProfileService {
-    rpc GetUserProfile (common.ID) returns (UserProfile);
+    rpc GetUserProfileById (common.ID) returns (UserProfile);
+    rpc GetUserProfileByUsername (Username) returns (UserProfile);
     rpc UpdateUserProfile (UserProfile) returns (UserProfile);
 }
 
@@ -42,6 +43,7 @@ message UserProfile {
     int32 roleId = 4;
     optional Language preferredLanguage = 5;
     optional Role role = 6;
+    optional string username = 7;
 }
 
 message RefreshTokenRequest {
@@ -61,6 +63,10 @@ message WebsocketTicket {
 message JwtTokens {
     string accessToken = 1;
     string refreshToken = 2;
+}
+
+message Username {
+    string username = 1;
 }
 
 message Language {

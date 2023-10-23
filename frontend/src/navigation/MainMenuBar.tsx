@@ -19,11 +19,13 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useProfile } from '../hooks/useProfile';
 
 export default function MainMenuBar() {
   const authContext = useAuth();
   const navigate = useNavigate();
   const { palette } = useTheme();
+  const { username } = useProfile();
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -34,7 +36,7 @@ export default function MainMenuBar() {
     {
       title: 'Profile',
       onClick: () => {
-        navigate('/profile');
+        navigate(`/user/${username}`);
       },
       icon: <AccountCircleIcon />,
     },

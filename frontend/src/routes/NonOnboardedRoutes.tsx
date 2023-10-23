@@ -1,11 +1,11 @@
-import { Navigate, useLocation, Outlet } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useProfile } from '../hooks/useProfile';
 
-export default function PublicOnlyRoutes() {
-  const { isAuthenticated } = useAuth();
+export default function NonOnboardedRouteGuard() {
+  const { isOnboarded } = useProfile();
   const location = useLocation();
 
-  if (isAuthenticated) {
+  if (isOnboarded) {
     if (location.state?.from?.pathname) {
       return <Navigate to={location.state.from.pathname} replace />;
     }

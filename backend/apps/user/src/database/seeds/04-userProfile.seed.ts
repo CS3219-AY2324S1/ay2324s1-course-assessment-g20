@@ -25,12 +25,14 @@ export async function seed(knex: Knex): Promise<void> {
       name: MOCK_USER_1_NAME,
       preferredLanguageId: 1,
       roleId: 1,
+      username: 'alicetan',
     },
     {
       userId: MOCK_USER_2_UUID,
       name: MOCK_USER_2_NAME,
       preferredLanguageId: 2,
       roleId: 2,
+      username: 'boblim',
     },
   ]);
 }

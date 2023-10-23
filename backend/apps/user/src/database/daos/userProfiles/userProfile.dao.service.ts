@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { ModelClass } from 'objection';
 import { UserProfileModel } from '../../models/userProfile.model';
 import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';

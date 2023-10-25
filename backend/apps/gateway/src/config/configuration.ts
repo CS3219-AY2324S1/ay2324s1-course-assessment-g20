@@ -1,4 +1,4 @@
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { Transport } from '@nestjs/microservices';
 import { _StrategyOptionsBase } from 'passport-google-oauth20';
 
 const gatewayConfiguration = () => {
@@ -8,16 +8,11 @@ const gatewayConfiguration = () => {
     callbackURL: process.env.OAUTH_GOOGLE_REDIRECT_URL,
   };
 
-  const websocketGatewayOptions: MicroserviceOptions = {
-    transport: Transport.KAFKA,
+  const websocketGatewayOptions = {
+    transport: Transport.REDIS,
     options: {
-      client: {
-        brokers: ['localhost:' + process.env.KAFKA_PORT],
-      },
-      consumer: {
-        // Each gateway instance should have its own consumer group id to allow each instance to consume the same kafka topic
-        groupId: process.env.API_GATEWAY_PORT,
-      },
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
     },
   };
 

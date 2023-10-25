@@ -25,13 +25,12 @@ UPDATE THE TESTS
 1. To rollback a knex migration, run `yarn knex {microservice_name} migrate:rollback`.
 
 ## Matching service
-1. Install and run zookeper, kafka and redis if you have not done so
+1. Install redis if you have not done so
 1. Set env variables:
   - MATCHING_SERVICE_HOST=0.0.0.0
   - MATCHING_SERVICE_PORT=4004
   - MATCHING_SERVICE_CONNECTION_TTL=30000
-  - KAFKA_PORT=9092
-1. To enable kafka to work correctly (all gateways consume same message from matching service), ensure that consumer group ids in each gateway instance is unique from each other. Right now, consumer group id is set to gateway port number.
-
+  - REDIS_PORT=6379
+  - REDIS_HOST=localhost
 ## Making Commits
 1. Run `yarn lint` and `yarn format` in the `backend` directory to lint and format the backend codebase.

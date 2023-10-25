@@ -5,16 +5,16 @@ import { redisStore } from 'cache-manager-redis-yet';
 export default function matchingConfiguration() {
   const websocketGatewayOptions = {
     name: Service.WEBSOCKET_GATEWAY,
-    transport: Transport.KAFKA,
+    transport: Transport.REDIS,
     options: {
-      client: {
-        brokers: ['localhost:' + process.env.KAFKA_PORT],
-      },
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
     },
   };
 
   const getMatchingStoreConfigurationOptions = async () => ({
     store: await redisStore(),
+    port: process.env.REDIS_PORT,
   });
 
   return {

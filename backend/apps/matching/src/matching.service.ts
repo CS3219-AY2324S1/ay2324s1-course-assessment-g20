@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientGrpc, ClientKafka } from '@nestjs/microservices';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { Service } from '@app/microservice/services';
 import { WebsocketServiceApi } from '@app/microservice/events-api/websocket';
@@ -24,7 +24,7 @@ export class MatchingService implements OnModuleInit {
 
   constructor(
     @Inject(Service.WEBSOCKET_GATEWAY)
-    private readonly webSocketClient: ClientKafka,
+    private readonly webSocketClient: ClientProxy,
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionClient: ClientGrpc,
     @Inject(Service.COLLABORATION_SERVICE)
@@ -41,10 +41,6 @@ export class MatchingService implements OnModuleInit {
       this.questionClient.getService<QuestionServiceClient>(
         QUESTION_SERVICE_NAME,
       );
-
-    this.webSocketClient.subscribeToResponseOf(
-      WebsocketServiceApi.EMIT_TO_USER_AND_DELETE_WEBSOCKET,
-    );
   }
 
   async deleteEntry(userId: string) {

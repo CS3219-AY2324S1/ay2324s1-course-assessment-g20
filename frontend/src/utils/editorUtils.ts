@@ -24,7 +24,7 @@ export const bindYjsToMonacoEditor = (
     }
   };
 
-  authenticatedYjsWebsocketProvider(wsTicket, bindEditorOnAuthenticate, onError);
+  return authenticatedYjsWebsocketProvider(wsTicket, bindEditorOnAuthenticate, onError);
 };
 
 const ROOM_NAME = 'yjs';
@@ -65,4 +65,6 @@ const authenticatedYjsWebsocketProvider = (
 
   ws.onopen = dummyOnOpen;
   ws.onmessage = customOnMessage;
+
+  return provider;
 };

@@ -15,6 +15,7 @@ import { bindYjsToMonacoEditor, tsCompile } from '../utils/editorUtils';
 import { getSessionAndWsTicket } from '../api/collaborationServiceApi';
 import { useThrowAsyncError } from '../utils/hooks';
 import TextContent from '../components/TextContent';
+import { WebsocketProvider } from 'y-websocket';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.
@@ -64,10 +65,17 @@ const CodeEditor = () => {
 
   // Initialize websocket connection to Yjs service
   useEffect(() => {
+    let provider: WebsocketProvider | null = null;
     if (editor && wsTicket) {
       // Handles websocket disconnection when unauthorized (e.g. invalid ws ticket)
-      bindYjsToMonacoEditor(wsTicket, editor, throwAsyncError);
+      provider = bindYjsToMonacoEditor(wsTicket, editor, throwAsyncError);
     }
+
+    return () => {
+      if (provider) {
+        provider.disconnect();
+      }
+    };
   }, [editor, wsTicket, throwAsyncError]);
 
   const handleLanguageChange = (event: SelectChangeEvent) => {

@@ -44,6 +44,17 @@
         "watchAssets": true
       }
     },
+    "matching": {
+      "type": "application",
+      "root": "apps/matching",
+      "entryFile": "main",
+      "sourceRoot": "apps/matching/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/matching/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
+      }
+    },
     "config": {
       "type": "library",
       "root": "libs/config",

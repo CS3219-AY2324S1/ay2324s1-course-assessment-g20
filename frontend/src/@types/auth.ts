@@ -10,3 +10,7 @@ export interface IAuthContext {
   signIn: (auth: IAuth) => void;
   signout: () => void;
 }
+
+export interface IWsTicket {
+  id: string;
+}

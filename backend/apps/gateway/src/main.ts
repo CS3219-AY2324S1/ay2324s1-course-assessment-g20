@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
+import { MicroserviceOptions } from '@nestjs/microservices';
 import { GatewayExceptionFilter } from 'libs/exception-filter/gateway-exception.filter';
 
 async function bootstrap() {
@@ -36,6 +37,12 @@ async function bootstrap() {
   app.useGlobalFilters(new GatewayExceptionFilter());
 
   const port = configService.get('port');
+  const websocketGatewayOptions = configService.get('websocketGatewayOptions');
+
+  app.connectMicroservice<MicroserviceOptions>(websocketGatewayOptions);
+
+  await app.startAllMicroservices();
+
   await app.listen(port);
   console.log(`Gateway running on port ${port}`);
 }

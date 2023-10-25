@@ -51,6 +51,18 @@ services:
     env_file:
       .env.test
 
+  matching:
+    build: 
+      context: .
+      dockerfile: ./apps/matching/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+    networks:
+      - backend
+    env_file:
+      .env.test
+
   collaboration:
     build: 
       context: .
@@ -110,22 +122,6 @@ services:
     environment:
       - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question?authMechanism=DEFAULT
       - COLLABORATION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-collaboration?authMechanism=DEFAULT
-
-  rabbitmq:
-    image: rabbitmq:management
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    healthcheck:
-      test: [ "CMD", "rabbitmqctl", "status"]
-      interval: 5s
-      timeout: 20s
-      retries: 5
-    networks:
-      - backend
-    ports:
-      - 5673:5672 # To not conflict with local RMQ if test is ran locally
-      - 15672:15672
 
 networks:
   backend:

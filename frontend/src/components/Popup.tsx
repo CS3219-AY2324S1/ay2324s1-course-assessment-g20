@@ -7,7 +7,7 @@ interface PopupProps {
   title: string;
   children: string;
   openPopup: boolean;
-  setOpenPopup: () => void;
+  closePopup: () => void;
 }
 
 export default function Popup({
@@ -15,19 +15,19 @@ export default function Popup({
   title,
   children,
   openPopup,
-  setOpenPopup,
+  closePopup,
 }: PopupProps) {
   const { palette } = useTheme();
   const navigate = useNavigate();
 
   return (
-    <Dialog open={openPopup} onClose={setOpenPopup}>
+    <Dialog open={openPopup} onClose={closePopup}>
       <div style={{ display: 'flex' }}>
         <DialogTitle style={{ justifyContent: 'space-between' }}>{title}</DialogTitle>
         <Button
           type="button"
           className="btn-close"
-          onClick={setOpenPopup}
+          onClick={closePopup}
           aria-label="Close"
           style={{ fontSize: '15px', marginLeft: 'auto', color: 'red' }}
           sx={{

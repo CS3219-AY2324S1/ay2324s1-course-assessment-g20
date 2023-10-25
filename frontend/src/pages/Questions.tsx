@@ -3,6 +3,7 @@ import {
   Button,
   Grid,
   Paper,
+  Stack,
   styled,
   Table,
   TableBody,
@@ -173,8 +174,8 @@ export default function Dashboard() {
                       questionId={row._id}
                       title={row.title}
                       children={row.description}
-                      openPopup={true}
-                      setOpenPopup={handlePopupOnClose}
+                      openPopup={rowIndex == index && popupVisibility}
+                      closePopup={handlePopupOnClose}
                     ></Popup>
                   )}
                 </StyledTableCell>
@@ -186,34 +187,36 @@ export default function Dashboard() {
                 </StyledTableCell>
                 {isMaintainer && (
                   <StyledTableCell align="center">
-                    <Button
-                      variant={'contained'}
-                      onClick={() => handleDeleteOnClick(row._id)}
-                      sx={{
-                        width: 80,
-                        height: 35,
-                        backgroundColor: palette.error.main,
-                        '&:hover': {
-                          backgroundColor: palette.error.light,
-                        },
-                      }}
-                    >
-                      DELETE
-                    </Button>
-                    <Button
-                      variant={'contained'}
-                      onClick={() => handleUpdateOnClick(row)}
-                      sx={{
-                        width: 80,
-                        height: 35,
-                        backgroundColor: palette.info.main,
-                        '&:hover': {
-                          backgroundColor: palette.info.light,
-                        },
-                      }}
-                    >
-                      UPDATE
-                    </Button>
+                    <Stack display={'block'} spacing={2} direction={{ xs: 'column', sm: 'row' }}>
+                      <Button
+                        variant={'contained'}
+                        onClick={() => handleDeleteOnClick(row._id)}
+                        sx={{
+                          width: 80,
+                          height: 35,
+                          backgroundColor: palette.error.main,
+                          '&:hover': {
+                            backgroundColor: palette.error.light,
+                          },
+                        }}
+                      >
+                        DELETE
+                      </Button>
+                      <Button
+                        variant={'contained'}
+                        onClick={() => handleUpdateOnClick(row)}
+                        sx={{
+                          width: 80,
+                          height: 35,
+                          backgroundColor: palette.info.main,
+                          '&:hover': {
+                            backgroundColor: palette.info.light,
+                          },
+                        }}
+                      >
+                        UPDATE
+                      </Button>
+                    </Stack>
                   </StyledTableCell>
                 )}
               </StyledTableRow>

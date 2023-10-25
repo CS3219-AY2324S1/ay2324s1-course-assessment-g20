@@ -32,7 +32,6 @@ export default function QuestionForm({
   openForm,
   closeForm,
   fetchAndSet,
-  // isValidated,
   updateQuestion,
 }: FormProps) {
   const { palette } = useTheme();
@@ -62,7 +61,7 @@ export default function QuestionForm({
       .catch((error) => {
         console.error('Error:', error);
       });
-  }, []);
+  });
 
   // Usestates and useeffect to handle the current question creation/update status
   const [currTitle, setCurrTitle] = useState('');
@@ -92,7 +91,7 @@ export default function QuestionForm({
       setCurrDifficulty(updateQuestion.difficulty);
       setCurrDescription(updateQuestion.description);
     }
-  }, []);
+  });
 
   // Functions to handle form submission
   const handleFormSubmission = () => {
@@ -123,7 +122,7 @@ export default function QuestionForm({
     closeForm();
   };
 
-  const validateForm = () => {
+  const isInvalidForm = () => {
     return (
       !(currTitle.trim().length > 0) ||
       !currCategory ||
@@ -131,7 +130,7 @@ export default function QuestionForm({
       !(currDescription.trim().length > 0)
     );
   };
-  const isFormDisabled = validateForm();
+  const isFormDisabled = isInvalidForm();
 
   return (
     <Dialog open={openForm} onClose={closeForm} fullWidth>
@@ -152,8 +151,8 @@ export default function QuestionForm({
           fullWidth
           variant="outlined"
           multiline
+          value={currTitle}
           onChange={handleTitleInputChange}
-          defaultValue={currTitle}
         ></TextField>
         <InputLabel id="category-label">Question Category</InputLabel>
         <Select
@@ -201,8 +200,8 @@ export default function QuestionForm({
           fullWidth
           variant="outlined"
           multiline
+          value={currDescription}
           onChange={handleDescInputChange}
-          defaultValue={currDescription}
         ></TextField>
       </DialogContent>
       <DialogActions>

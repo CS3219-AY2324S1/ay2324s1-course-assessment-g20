@@ -8,6 +8,7 @@ export const USER = '/user';
 export const LANGUAGES = '/languages';
 export const QUESTION = '/question';
 export const COLLABORATION = '/collaboration';
+export const MATCHING = '/matching';
 export const VERSION_PREFIX = '/v1';
 export const CHATBOT = '/chatbot';
 
@@ -16,6 +17,7 @@ export const backendServicesPaths = {
     root: `${AUTH}`,
     refresh: `${AUTH}/refresh`,
     googleRedirect: `${AUTH}/google`,
+    ticket: `${AUTH}/ticket`,
   },
   question: {
     root: QUESTION,
@@ -32,6 +34,9 @@ export const backendServicesPaths = {
   collaboration: {
     root: COLLABORATION,
     getSessionAndWsTicket: `${COLLABORATION}/session`,
+  },
+  matching: {
+    root: MATCHING,
   },
   chatbot: {
     root: CHATBOT,

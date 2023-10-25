@@ -26,6 +26,6 @@ describe('AppController (e2e)', () => {
       .get('/question/questions')
       .expect(200);
 
-    expect(body).toHaveLength(0);
+    expect(body).toHaveLength(20);
   });
 });

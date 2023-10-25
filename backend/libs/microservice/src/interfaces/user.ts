@@ -36,6 +36,7 @@ export interface WebsocketTicket {
   id: string;
   expiry: Date | undefined;
   isUsed: boolean;
+  userId: string;
 }
 
 export interface JwtTokens {

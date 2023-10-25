@@ -2,6 +2,7 @@ import { Button, Dialog, DialogContent, DialogTitle, Stack, Typography } from '@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IDifficulty } from '../@types/question';
+import { useSnackbar } from 'notistack';
 import {
   getMatchingWebSocket,
   sendWsMessage,
@@ -25,6 +26,8 @@ export default function WaitingScreen({
   const awaitSearch = 'Would you like to search for a partner?';
   const searching = 'Please wait while we try to find you a partner';
   const noMatch = 'We could not find you a partner, would you like to search again?';
+  const matchFound = "We found you a partner, we will redirect you to the collaborative space!"
+  const { enqueueSnackbar } = useSnackbar();
 
   // Usestate to display the current search status for a partner
   const [searchStatus, setSearchStatus] = useState(awaitSearch);
@@ -56,6 +59,8 @@ export default function WaitingScreen({
 
   const handleMatchFound = (sessionId: string) => {
     handleCancelSearch();
+    setSearchStatus(matchFound);
+    enqueueSnackbar(matchFound, { variant: 'success' });
     navigate(`/session/${sessionId}`);
   };
 

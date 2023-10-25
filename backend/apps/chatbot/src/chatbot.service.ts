@@ -43,7 +43,7 @@ export class ChatbotService {
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionServiceClient: ClientGrpc,
   ) {
-    this.openai = configService.get('openai');
+    this.openai = new OpenAI(configService.get('openAiConfig'));
   }
 
   onModuleInit() {

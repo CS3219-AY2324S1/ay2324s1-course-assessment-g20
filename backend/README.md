@@ -24,6 +24,13 @@ UPDATE THE TESTS
 1. Create a knex (SQL) database migration file via `yarn migrate:make {microservice_name} {migration_file_name}`.
 1. To rollback a knex migration, run `yarn knex {microservice_name} migrate:rollback`.
 
-
+## Matching service
+1. Install redis if you have not done so
+1. Set env variables:
+  - MATCHING_SERVICE_HOST=0.0.0.0
+  - MATCHING_SERVICE_PORT=4004
+  - MATCHING_SERVICE_CONNECTION_TTL=30000
+  - REDIS_PORT=6379
+  - REDIS_HOST=localhost
 ## Making Commits
 1. Run `yarn lint` and `yarn format` in the `backend` directory to lint and format the backend codebase.

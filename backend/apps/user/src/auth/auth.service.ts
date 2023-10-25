@@ -109,7 +109,7 @@ export class AuthService {
   async consumeWebsocketTicket(ticketId: string) {
     const ticket = await this.websocketTicketDaoService.get(ticketId);
 
-    if (!ticket) {
+    if (!ticket || ticket.isUsed) {
       throw new PeerprepException(
         'Invalid ticket!',
         PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,

@@ -1,7 +1,38 @@
-import { Button, Stack, Typography, Box, useTheme } from '@mui/material';
+import { Button, Stack, Typography, Box } from '@mui/material';
+import SearchingScreen from '../components/SearchingScreen';
+import { useEffect, useState } from 'react';
+import { IDifficulty } from '../@types/question';
+import { getDifficulties } from '../api/questionBankApi';
 
 export default function Matching() {
-  const { palette } = useTheme();
+  const backgroundColors = {
+    Easy: 'green',
+    Medium: 'orange',
+    Hard: 'red',
+  };
+
+  const [difficultyLevel, setDifficultyLevel] = useState<IDifficulty>();
+
+  // Usestate and functions to handle the loading screen visibility
+  const [searchingVisibility, setSearchingVisibility] = useState(false);
+  const handleSearchingOnClick = (difficulty: IDifficulty) => {
+    setDifficultyLevel(difficulty);
+    setSearchingVisibility(true);
+  };
+  const handlePopupOnClose = () => setSearchingVisibility(false);
+
+  const [difficulties, setDifficulties] = useState<IDifficulty[]>([]);
+
+  useEffect(() => {
+    // Fetch difficulties from API
+    getDifficulties()
+      .then((response) => {
+        setDifficulties(response.data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }, []);
 
   return (
     <Box py={2}>
@@ -14,45 +45,27 @@ export default function Matching() {
       <br />
       <Box display="flex" justifyContent="center">
         <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
-          <Button
-            variant="contained"
-            onClick={() => console.log('CLICKED EASY')}
-            style={{ fontSize: '40px' }}
-            sx={{
-              backgroundColor: palette.easy.main,
-              '&:hover': {
-                backgroundColor: palette.easy.dark,
-              },
-            }}
-          >
-            Easy
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => console.log('CLICKED MEDIUM')}
-            style={{ fontSize: '40px' }}
-            sx={{
-              backgroundColor: palette.medium.main,
-              '&:hover': {
-                backgroundColor: palette.medium.dark,
-              },
-            }}
-          >
-            Medium
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => console.log('CLICKED HARD')}
-            style={{ fontSize: '40px' }}
-            sx={{
-              backgroundColor: palette.hard.main,
-              '&:hover': {
-                backgroundColor: palette.hard.dark,
-              },
-            }}
-          >
-            Hard
-          </Button>
+          {searchingVisibility && difficultyLevel && (
+            <SearchingScreen
+              title="SEARCHING FOR PARTNER - "
+              difficulty={difficultyLevel}
+              openScreen={true}
+              setCloseScreen={handlePopupOnClose}
+            ></SearchingScreen>
+          )}
+          {difficulties.map((difficulty) => (
+            <Button
+              key={difficulty._id}
+              variant={'contained'}
+              onClick={() => handleSearchingOnClick(difficulty)}
+              style={{ fontSize: '40px' }}
+              sx={{
+                backgroundColor: backgroundColors[difficulty.name as keyof typeof backgroundColors],
+              }}
+            >
+              {difficulty.name}
+            </Button>
+          ))}
         </Stack>
       </Box>
     </Box>

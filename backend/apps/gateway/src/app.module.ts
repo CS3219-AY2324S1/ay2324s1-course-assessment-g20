@@ -1,27 +1,29 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './controllers/app.controller';
-import gatewayConfiguration from './config/configuration';
 import { ConfigModule } from '@app/config';
-import { JwtModule } from './jwt/jwt.module';
-import { AuthController } from './controllers/auth.controller';
-import { UserController } from './controllers/user.controller';
-import { LanguagesController } from './controllers/languages.controller';
-import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
-import { YjsGateway } from './websocket-gateways/yjs.gateway';
-import { CollaborationController } from './controllers/collaboration.controller';
 import { Service } from '@app/microservice/services';
 import { registerGrpcClients } from '@app/microservice/utils';
-import { RolesModule } from './roles/roles.module';
+import { Module } from '@nestjs/common';
+import gatewayConfiguration from './config/configuration';
+import { AppController } from './controllers/app.controller';
+import { AuthController } from './controllers/auth.controller';
+import { CollaborationController } from './controllers/collaboration.controller';
+import { LanguagesController } from './controllers/languages.controller';
+import { MatchingWebsocketController } from './controllers/matchingWebsocket.controller';
+import { UserController } from './controllers/user.controller';
+import { JwtModule } from './jwt/jwt.module';
+import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
+import { MatchingWebsocketService } from './services/matchingWebsocketService';
+import { MatchingGateway } from './websocket-gateways/matching.gateway';
+import { YjsGateway } from './websocket-gateways/yjs.gateway';
 
 @Module({
   imports: [
     ConfigModule.loadConfiguration(gatewayConfiguration),
     JwtModule,
-    RolesModule,
     registerGrpcClients([
       Service.USER_SERVICE,
       Service.QUESTION_SERVICE,
       Service.COLLABORATION_SERVICE,
+      Service.MATCHING_SERVICE,
     ]),
   ],
   controllers: [
@@ -30,7 +32,13 @@ import { RolesModule } from './roles/roles.module';
     UserController,
     LanguagesController,
     CollaborationController,
+    MatchingWebsocketController,
   ],
-  providers: [GoogleOauthStrategy, YjsGateway],
+  providers: [
+    GoogleOauthStrategy,
+    YjsGateway,
+    MatchingGateway,
+    MatchingWebsocketService,
+  ],
 })
 export class AppModule {}

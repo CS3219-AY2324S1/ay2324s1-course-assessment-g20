@@ -187,7 +187,7 @@ export default function Dashboard() {
                 </StyledTableCell>
                 {isMaintainer && (
                   <StyledTableCell align="center">
-                    <Stack display={'block'} spacing={2} direction={{ xs: 'column', sm: 'row' }}>
+                    <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
                       <Button
                         variant={'contained'}
                         onClick={() => handleDeleteOnClick(row._id)}

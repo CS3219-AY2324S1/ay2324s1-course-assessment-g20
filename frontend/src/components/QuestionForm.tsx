@@ -91,7 +91,7 @@ export default function QuestionForm({
       setCurrDifficulty(updateQuestion.difficulty);
       setCurrDescription(updateQuestion.description);
     }
-  });
+  }, [updateQuestion]);
 
   // Functions to handle form submission
   const handleFormSubmission = () => {

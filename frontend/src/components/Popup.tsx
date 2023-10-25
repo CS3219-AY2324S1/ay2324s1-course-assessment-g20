@@ -10,13 +10,7 @@ interface PopupProps {
   closePopup: () => void;
 }
 
-export default function Popup({
-  questionId,
-  title,
-  children,
-  openPopup,
-  closePopup,
-}: PopupProps) {
+export default function Popup({ questionId, title, children, openPopup, closePopup }: PopupProps) {
   const { palette } = useTheme();
   const navigate = useNavigate();
 

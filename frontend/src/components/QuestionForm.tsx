@@ -13,7 +13,12 @@ import {
   useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { addQuestion, getCategories, getDifficulties, updateQuestionWithId } from '../api/questionBankApi';
+import {
+  addQuestion,
+  getCategories,
+  getDifficulties,
+  updateQuestionWithId,
+} from '../api/questionBankApi';
 import { EMPTY_QUESTION, ICategory, IDifficulty, IQuestion } from '../@types/question';
 
 interface FormProps {
@@ -32,8 +37,8 @@ export default function QuestionForm({
 }: FormProps) {
   const { palette } = useTheme();
 
-  const addQnsHeader = "Add a new question";
-  const updateQnsHeader = "Update this question";
+  const addQnsHeader = 'Add a new question';
+  const updateQnsHeader = 'Update this question';
 
   // Usestates and useeffect to handle the list of categories and difficulties available
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -91,11 +96,11 @@ export default function QuestionForm({
 
   // Functions to handle form submission
   const handleFormSubmission = () => {
-    const questionInput : IQuestion = {
+    const questionInput: IQuestion = {
       title: currTitle,
       categories: currCategory,
       difficulty: currDifficulty,
-      description: currDescription
+      description: currDescription,
     };
     if (updateQuestion != EMPTY_QUESTION) {
       questionInput._id = updateQuestion._id;
@@ -120,10 +125,10 @@ export default function QuestionForm({
 
   const validateForm = () => {
     return (
-      (!(currTitle.trim().length > 0) ||
+      !(currTitle.trim().length > 0) ||
       !currCategory ||
       !currDifficulty ||
-      !(currDescription.trim().length > 0))
+      !(currDescription.trim().length > 0)
     );
   };
   const isFormDisabled = validateForm();
@@ -131,7 +136,7 @@ export default function QuestionForm({
   return (
     <Dialog open={openForm} onClose={closeForm} fullWidth>
       <DialogTitle sx={{ backgroundColor: palette.primary.main, color: 'white' }}>
-        {(updateQuestion != EMPTY_QUESTION) ? updateQnsHeader : addQnsHeader}
+        {updateQuestion != EMPTY_QUESTION ? updateQnsHeader : addQnsHeader}
       </DialogTitle>
       <DialogContent dividers>
         <DialogContentText>

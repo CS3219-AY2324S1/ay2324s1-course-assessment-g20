@@ -12,6 +12,8 @@ export interface IChatbotProps {
 }
 
 export interface IChatbotPopupProps {
+  input: string;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
   handleChatbotClose: () => void;
 }
 
@@ -20,9 +22,10 @@ export default function Chatbot({
   language,
   userSolution,
   handleChatbotClose,
+  input,
+  setInput,
 }: IChatbotProps & IChatbotPopupProps) {
   const [messages, setMessages] = useState<IChatbotMessage[]>([]);
-  const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {

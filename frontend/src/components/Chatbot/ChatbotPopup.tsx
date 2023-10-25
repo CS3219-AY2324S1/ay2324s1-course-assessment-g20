@@ -5,6 +5,7 @@ import Chatbot, { IChatbotProps } from './Chatbot';
 
 export default function ChatbotPopover(chatbotProps: IChatbotProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [input, setInput] = useState<string>('');
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -60,7 +61,12 @@ export default function ChatbotPopover(chatbotProps: IChatbotProps) {
           },
         }}
       >
-        <Chatbot {...chatbotProps} handleChatbotClose={handleClose} />
+        <Chatbot
+          {...chatbotProps}
+          input={input}
+          setInput={setInput}
+          handleChatbotClose={handleClose}
+        />
       </Popover>
     </Box>
   );

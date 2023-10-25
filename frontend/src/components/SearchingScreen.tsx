@@ -26,7 +26,7 @@ export default function WaitingScreen({
   const awaitSearch = 'Would you like to search for a partner?';
   const searching = 'Please wait while we try to find you a partner';
   const noMatch = 'We could not find you a partner, would you like to search again?';
-  const matchFound = "We found you a partner, we will redirect you to the collaborative space!"
+  const matchFound = 'We found you a partner, we will redirect you to the collaborative space!';
   const { enqueueSnackbar } = useSnackbar();
 
   // Usestate to display the current search status for a partner

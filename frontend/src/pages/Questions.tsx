@@ -17,7 +17,7 @@ import {
 import QuestionForm from '../components/QuestionForm';
 import Popup from '../components/Popup';
 import { useEffect, useState } from 'react';
-import { addQuestion, deleteQuestionWithId, getQuestions } from '../api/questionBankApi';
+import { deleteQuestionWithId, getQuestions } from '../api/questionBankApi';
 import { EMPTY_QUESTION, IQuestion } from '../@types/question';
 import { useProfile } from '../hooks/useProfile';
 
@@ -69,58 +69,15 @@ export default function Dashboard() {
   };
   const handlePopupOnClose = () => setPopupVisibility(false);
 
-  // Usestate and functions to handle the change in record of a question
-  const [questionInput, setQuestionInput] = useState<IQuestion>(EMPTY_QUESTION);
-
-  const handleTitleInputChange = (event: any) => {
-    setQuestionInput({
-      ...questionInput,
-      title: event.target.value,
-    });
-  };
-
-  const handleCatInputChange = (event: any) => {
-    setQuestionInput({
-      ...questionInput,
-      categories: event.target.value,
-    });
-  };
-
-  const handleComplexInputChange = (event: any) => {
-    setQuestionInput({
-      ...questionInput,
-      difficulty: event.target.value,
-    });
-  };
-
-  const handleDescInputChange = (event: any) => {
-    setQuestionInput({
-      ...questionInput,
-      description: event.target.value,
-    });
-  };
-
   // Usestate and functions to handle the Add Question button's form
   const [openForm, setOpenForm] = useState(false);
   const handleButtonFormClick = () => {
+    setUpdateRowInfo(EMPTY_QUESTION);
     setOpenForm(true);
   };
   const handleFormClose = () => {
     setOpenForm(false);
-  };
-  const handleFormSubmit = () => {
-    addQuestion(questionInput)
-      .then(() => {
-        fetchAndSetQuestions();
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-
-    setOpenForm(false);
-
-    // Reset the useStates of the fields of the form
-    setQuestionInput(EMPTY_QUESTION);
+    setUpdateRowInfo(EMPTY_QUESTION);
   };
 
   // Functions to handle the Delete Question button
@@ -136,6 +93,15 @@ export default function Dashboard() {
       });
   };
 
+  // Usestates and functions to handle the Update Question button
+  const [updateRowInfo, setUpdateRowInfo] = useState<IQuestion>(EMPTY_QUESTION);
+  const handleUpdateOnClick = (row: IQuestion | undefined) => {
+    if (row == undefined) return;
+
+    setUpdateRowInfo(row);
+    setOpenForm(true);
+  };
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Easy':
@@ -148,16 +114,6 @@ export default function Dashboard() {
         return 'black';
     }
   };
-
-  const validateForm = () => {
-    return (
-      !questionInput.title ||
-      !questionInput.categories.toString() ||
-      !questionInput.difficulty ||
-      !questionInput.description
-    );
-  };
-  const isValidated = validateForm();
 
   return (
     <Box>
@@ -244,6 +200,20 @@ export default function Dashboard() {
                     >
                       DELETE
                     </Button>
+                    <Button
+                      variant={'contained'}
+                      onClick={() => handleUpdateOnClick(row)}
+                      sx={{
+                        width: 80,
+                        height: 35,
+                        backgroundColor: palette.info.main,
+                        '&:hover': {
+                          backgroundColor: palette.info.light,
+                        },
+                      }}
+                    >
+                      UPDATE
+                    </Button>
                   </StyledTableCell>
                 )}
               </StyledTableRow>
@@ -255,16 +225,10 @@ export default function Dashboard() {
       <Typography align="right">
         {openForm && (
           <QuestionForm
-            formType="Add a new question"
-            category={questionInput.categories}
-            inputTitle={handleTitleInputChange}
-            inputCategory={handleCatInputChange}
-            inputComplexity={handleComplexInputChange}
-            inputDescription={handleDescInputChange}
             openForm={openForm}
             closeForm={handleFormClose}
-            submitForm={handleFormSubmit}
-            isValidated={isValidated}
+            fetchAndSet={fetchAndSetQuestions}
+            updateQuestion={updateRowInfo}
           ></QuestionForm>
         )}
       </Typography>

@@ -74,7 +74,7 @@ export default function EditProfile() {
       username: newUsername,
       preferredLanguageId: newPreferredLanguageId,
     });
-    navigate(`/user/${newUsername}`);
+    navigate(`${frontendPaths.user}/${newUsername}`);
   };
   const handleDeleteAccount = async () => {
     await deleteUserProfile();

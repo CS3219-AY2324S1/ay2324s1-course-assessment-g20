@@ -5,6 +5,7 @@ import { Service } from '@app/microservice/services';
 import { SessionModel } from './database/models/session.model';
 import {
   CreateCollabSessionRequest,
+  GetQuestionIdFromSessionIdResponse,
   GetSessionAndWsTicketRequest,
 } from '@app/microservice/interfaces/collaboration';
 import {
@@ -16,6 +17,7 @@ import {
   QuestionServiceClient,
 } from '@app/microservice/interfaces/question';
 import { firstValueFrom } from 'rxjs';
+import { ID } from '@app/microservice/interfaces/common';
 import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
 import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
 
@@ -53,6 +55,12 @@ export class CollaborationService implements OnModuleInit {
     };
 
     return this.sessionDaoService.create(graphInfo);
+  }
+
+  async getQuestionIdFromSessionId(
+    request: ID,
+  ): Promise<GetQuestionIdFromSessionIdResponse> {
+    return this.sessionDaoService.getQuestionIdFromSession(request.id);
   }
 
   async getSessionAndCreateWsTicket(

@@ -1,6 +1,8 @@
 import { ConfigModule } from '@app/config';
 import { Service } from '@app/microservice/services';
 import { registerGrpcClients } from '@app/microservice/utils';
+import { RolesModule } from './roles/roles.module';
+import { ChatbotController } from './controllers/chatbot.controller';
 import { Module } from '@nestjs/common';
 import gatewayConfiguration from './config/configuration';
 import { AppController } from './controllers/app.controller';
@@ -19,11 +21,13 @@ import { YjsGateway } from './websocket-gateways/yjs.gateway';
   imports: [
     ConfigModule.loadConfiguration(gatewayConfiguration),
     JwtModule,
+    RolesModule,
     registerGrpcClients([
       Service.USER_SERVICE,
       Service.QUESTION_SERVICE,
       Service.COLLABORATION_SERVICE,
       Service.MATCHING_SERVICE,
+      Service.CHATBOT_SERVICE,
     ]),
   ],
   controllers: [
@@ -33,6 +37,7 @@ import { YjsGateway } from './websocket-gateways/yjs.gateway';
     LanguagesController,
     CollaborationController,
     MatchingWebsocketController,
+    ChatbotController,
   ],
   providers: [
     GoogleOauthStrategy,

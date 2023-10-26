@@ -21,6 +21,7 @@ import { YjsGateway } from './websocket-gateways/yjs.gateway';
   imports: [
     ConfigModule.loadConfiguration(gatewayConfiguration),
     JwtModule,
+    RolesModule,
     registerGrpcClients([
       Service.USER_SERVICE,
       Service.QUESTION_SERVICE,

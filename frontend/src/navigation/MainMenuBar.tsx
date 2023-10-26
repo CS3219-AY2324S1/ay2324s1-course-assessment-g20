@@ -124,7 +124,6 @@ export default function MainMenuBar() {
             </Box>
           </Box>
           <IconButton
-            // color="inherit"
             aria-label="open drawer"
             edge="end"
             onClick={handleMenuToggle}

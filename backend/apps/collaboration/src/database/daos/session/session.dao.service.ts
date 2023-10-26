@@ -47,4 +47,12 @@ export class SessionDaoService {
       .where('ticketId', ticketId)
       .first();
   }
+
+  getQuestionIdFromSession(sessionId: string) {
+    return this.sessionModel
+      .query()
+      .select('questionId')
+      .where('id', sessionId)
+      .first();
+  }
 }

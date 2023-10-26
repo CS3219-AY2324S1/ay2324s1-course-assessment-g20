@@ -43,3 +43,5 @@ const palette = {
 };
 
 export default palette;
+
+export type PaletteKey = keyof typeof palette;

@@ -9,11 +9,16 @@ service CollaborationService {
   rpc CreateCollabSession (CreateCollabSessionRequest) returns (Session);
   rpc GetSessionAndWsTicket (GetSessionAndWsTicketRequest) returns (GetSessionAndWsTicketResponse);
   rpc GetSessionIdFromTicket (common.ID) returns (GetSessionIdFromTicketResponse);
+  rpc GetQuestionIdFromSessionId (common.ID) returns (GetQuestionIdFromSessionIdResponse);
 }
 
 message CreateCollabSessionRequest {
   repeated string userIds = 1;
   string questionId = 2;
+}
+
+message GetQuestionIdFromSessionIdResponse {
+  string questionId = 1;
 }
 
 message GetSessionAndWsTicketRequest {

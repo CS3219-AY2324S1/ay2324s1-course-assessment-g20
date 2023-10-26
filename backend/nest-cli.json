@@ -33,6 +33,17 @@
         "watchAssets": true
       }
     },
+    "chatbot": {
+      "type": "application",
+      "root": "apps/chatbot",
+      "entryFile": "main",
+      "sourceRoot": "apps/chatbot/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/chatbot/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
+      }
+    },
     "user": {
       "type": "application",
       "root": "apps/user",
@@ -40,6 +51,17 @@
       "sourceRoot": "apps/user/src",
       "compilerOptions": {
         "tsConfigPath": "apps/user/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
+      }
+    },
+    "matching": {
+      "type": "application",
+      "root": "apps/matching",
+      "entryFile": "main",
+      "sourceRoot": "apps/matching/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/matching/tsconfig.app.json",
         "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
         "watchAssets": true
       }

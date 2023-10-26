@@ -58,6 +58,7 @@ message WebsocketTicket {
     string id = 1;
     google.protobuf.Timestamp expiry = 2;
     bool isUsed = 3;
+    string userId = 4;
 }
 
 message JwtTokens {

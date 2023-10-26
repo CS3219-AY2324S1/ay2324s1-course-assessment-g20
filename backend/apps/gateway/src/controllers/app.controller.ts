@@ -9,7 +9,6 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import { Public } from '../jwt/jwtPublic.decorator';
 import QuestionDto from '../dtos/question/question.dto';
 import DifficultyDto from '../dtos/question/difficulty.dto';
 import CategoryDto from '../dtos/question/category.dto';
@@ -39,7 +38,6 @@ export class AppController implements OnModuleInit {
 
   // QUESTIONS
 
-  @Public()
   @Get('questions')
   getQuestions() {
     return this.questionService
@@ -61,7 +59,6 @@ export class AppController implements OnModuleInit {
       .pipe(map(({ id }) => id));
   }
 
-  @Public()
   @Get('questions/:id')
   getQuestionWithId(@Param('id') id: string) {
     return this.questionService.getQuestionWithId({ id });
@@ -69,7 +66,6 @@ export class AppController implements OnModuleInit {
 
   // DIFFICULTIES
 
-  @Public()
   @Get('difficulties')
   getDifficulties() {
     return this.questionService

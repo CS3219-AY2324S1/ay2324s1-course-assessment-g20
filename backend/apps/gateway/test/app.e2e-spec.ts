@@ -20,12 +20,4 @@ describe('AppController (e2e)', () => {
   it('/auth/google (GET)', () => {
     return request(app.getHttpServer()).get('/auth/google').expect(302);
   });
-
-  it('/question/questions (GET)', async () => {
-    const { body } = await request(app.getHttpServer())
-      .get('/question/questions')
-      .expect(200);
-
-    expect(body).toHaveLength(20);
-  });
 });

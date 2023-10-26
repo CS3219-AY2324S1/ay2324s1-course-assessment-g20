@@ -112,37 +112,39 @@ const CodeEditor = () => {
         </Box>
       </Grid>
       <Grid item sm={6} xs={12} style={{ padding: 10 }}>
-        <FormControl sx={{ m: 1, minWidth: 200 }}>
-          <InputLabel id="demo-simple-select-autowidth-label">Language</InputLabel>
-          <Select
-            labelId="demo-simple-select-autowidth-label"
-            id="demo-simple-select-autowidth"
-            value={language}
-            onChange={handleLanguageChange}
-            autoWidth
-            label="Language"
-          >
-            {Object.values(languages).map((language) => {
-              return (
-                <MenuItem key={language} value={language}>
-                  {language}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
+        <Box sx={{ position: { xs: 'static', sm: 'fixed' }, width: { xs: 'auto', sm: '55%' } }}>
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel id="demo-simple-select-autowidth-label">Language</InputLabel>
+            <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={language}
+              onChange={handleLanguageChange}
+              autoWidth
+              label="Language"
+            >
+              {Object.values(languages).map((language) => {
+                return (
+                  <MenuItem key={language} value={language}>
+                    {language}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
 
-        <Editor
-          height="40vh"
-          width={'100%'}
-          value={code}
-          onChange={handleCodeChange}
-          language={language}
-          onMount={handleEditorDidMount}
-        />
-        <Button onClick={handleCompile} variant="contained" sx={{ textTransform: 'none' }}>
-          Execute
-        </Button>
+          <Editor
+            height="40vh"
+            width={'100%'}
+            value={code}
+            onChange={handleCodeChange}
+            language={language}
+            onMount={handleEditorDidMount}
+          />
+          <Button onClick={handleCompile} variant="contained" sx={{ textTransform: 'none' }}>
+            Execute
+          </Button>
+        </Box>
 
         <OutputBlock label="Debug output" output={codeEvalOutput.logs} />
         <OutputBlock label="Your output" output={codeEvalOutput.result} />

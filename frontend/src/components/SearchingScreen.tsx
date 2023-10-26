@@ -1,4 +1,13 @@
-import { Button, Dialog, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IDifficulty } from '../@types/question';
@@ -11,22 +20,16 @@ import {
 let ws: WebSocket;
 
 interface PopupProps {
-  title: string;
   difficulty: IDifficulty;
   openScreen: boolean;
   setCloseScreen: () => void;
 }
 
-export default function WaitingScreen({
-  title,
-  difficulty,
-  openScreen,
-  setCloseScreen,
-}: PopupProps) {
-  const awaitSearch = 'Would you like to search for a partner?';
-  const searching = 'Please wait while we try to find you a partner';
+export default function WaitingScreen({ difficulty, openScreen, setCloseScreen }: PopupProps) {
+  const awaitSearch = `Find someone to do a ${difficulty.name.toLowerCase()} difficulty question with you?`;
+  const searching = 'Searching for a partner...';
   const noMatch = 'We could not find you a partner, would you like to search again?';
-  const matchFound = 'We found you a partner, we will redirect you to the collaborative space!';
+  const matchFound = 'Partner found! Taking you to the collaborative space...';
   const { enqueueSnackbar } = useSnackbar();
 
   // Usestate to display the current search status for a partner
@@ -38,6 +41,7 @@ export default function WaitingScreen({
   // Usestate to handle the time elapsed whilst searching for a partner
   const [timeWaited, setTimeWaited] = useState(0);
 
+  const { palette } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -89,28 +93,29 @@ export default function WaitingScreen({
   };
 
   return (
-    <Dialog open={openScreen}>
-      <div style={{ display: 'flex' }}>
-        <DialogTitle style={{ fontSize: '26px', color: 'black' }}>
-          {title + difficulty.name}
-        </DialogTitle>
-      </div>
-      <DialogContent style={{ fontSize: '30px', color: 'black' }}>{searchStatus}</DialogContent>
-      <DialogContent style={{ fontSize: '30px', color: 'black' }}>
-        {isSearching && 'Time Elapsed: ' + timeWaited + 's'}
-      </DialogContent>
-      <DialogContent style={{ fontSize: '30px', color: 'black' }}>
-        <Typography align="center" component={'span'}>
-          <Stack display={'block'} spacing={4} direction={'row'}>
+    <Dialog open={openScreen} onClose={handleCancelSearch} fullWidth>
+      <DialogTitle style={{ fontSize: '26px', color: 'black', textAlign: 'center' }}>
+        {searchStatus}
+      </DialogTitle>
+      <DialogContent>
+        {isSearching && (
+          <Typography pb={3} textAlign="center">
+            {`Time Elapsed: ${timeWaited}s`}
+          </Typography>
+        )}
+        <Box>
+          <Stack spacing={12} direction={'row'}>
             <Button
               variant={'contained'}
+              fullWidth
               onClick={handleSearch}
               disabled={isSearching}
-              style={{ fontSize: '15px', marginLeft: 'auto' }}
+              style={{ fontSize: '15px', textAlign: 'center' }}
               sx={{
-                width: 80,
-                height: 50,
-                backgroundColor: 'green',
+                backgroundColor: palette.success.main,
+                '&:hover': {
+                  backgroundColor: palette.success.dark,
+                },
                 color: 'white',
               }}
             >
@@ -118,19 +123,21 @@ export default function WaitingScreen({
             </Button>
             <Button
               variant={'contained'}
+              fullWidth
               onClick={handleCancelSearch}
-              style={{ fontSize: '15px', marginLeft: 'auto' }}
+              style={{ fontSize: '15px', textAlign: 'center' }}
               sx={{
-                width: 80,
-                height: 50,
-                backgroundColor: 'red',
+                backgroundColor: palette.error.main,
+                '&:hover': {
+                  backgroundColor: palette.error.dark,
+                },
                 color: 'white',
               }}
             >
               Cancel
             </Button>
           </Stack>
-        </Typography>
+        </Box>
       </DialogContent>
     </Dialog>
   );

@@ -1,5 +1,4 @@
-import { Button, Dialog, DialogContent, DialogTitle, useTheme } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import TextContent from './TextContent';
 
 interface PopupProps {
@@ -10,16 +9,7 @@ interface PopupProps {
   setOpenPopup: () => void;
 }
 
-export default function Popup({
-  questionId,
-  title,
-  children,
-  openPopup,
-  setOpenPopup,
-}: PopupProps) {
-  const { palette } = useTheme();
-  const navigate = useNavigate();
-
+export default function Popup({ title, children, openPopup, setOpenPopup }: PopupProps) {
   return (
     <Dialog open={openPopup} onClose={setOpenPopup}>
       <div style={{ display: 'flex' }}>
@@ -42,21 +32,6 @@ export default function Popup({
       </div>
       <DialogContent sx={{ pb: 5 }}>
         <TextContent content={children} />
-        <Button
-          onClick={() => navigate(`/question/${questionId}`)}
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderRadius: 0,
-            width: '100%',
-            color: 'white',
-            backgroundColor: palette.primary.main,
-            '&:hover': { backgroundColor: palette.primary.light },
-          }}
-        >
-          Solve with a peer
-        </Button>
       </DialogContent>
     </Dialog>
   );

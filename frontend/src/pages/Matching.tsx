@@ -31,8 +31,6 @@ export default function Matching() {
       });
   }, []);
 
-  palette['easy']
-
   return (
     <Box py={2}>
       <Typography variant="h4" align="center" mb={2}>
@@ -45,7 +43,6 @@ export default function Matching() {
       <Box display="flex" justifyContent="center">
         {searchingVisibility && difficultyLevel && (
           <SearchingScreen
-            title="SEARCHING FOR PARTNER - "
             difficulty={difficultyLevel}
             openScreen={true}
             setCloseScreen={handlePopupOnClose}

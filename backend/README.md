@@ -34,3 +34,6 @@ UPDATE THE TESTS
   - REDIS_HOST=localhost
 ## Making Commits
 1. Run `yarn lint` and `yarn format` in the `backend` directory to lint and format the backend codebase.
+
+## Chatbot microservice
+- Populate CHATBOT_SERVICE_OPENAI_API_KEY={Your own API key from open AI}

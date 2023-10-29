@@ -33,6 +33,17 @@
         "watchAssets": true
       }
     },
+    "chatbot": {
+      "type": "application",
+      "root": "apps/chatbot",
+      "entryFile": "main",
+      "sourceRoot": "apps/chatbot/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/chatbot/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
+      }
+    },
     "user": {
       "type": "application",
       "root": "apps/user",

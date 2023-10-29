@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Grid } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { CodeEvaluator } from '../utils/codeEvaluator';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -15,6 +15,7 @@ import { bindYjsToMonacoEditor, tsCompile } from '../utils/editorUtils';
 import { getSessionAndWsTicket } from '../api/collaborationServiceApi';
 import { useThrowAsyncError } from '../hooks/useThrowAsyncError';
 import TextContent from '../components/TextContent';
+import ChatbotPopup from '../components/Chatbot/ChatbotPopup';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.
@@ -28,6 +29,7 @@ import TextContent from '../components/TextContent';
 const CodeEditor = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const [question, setQuestion] = useState<IQuestion | undefined>(undefined);
+
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState('// some comment');
   const [codeEvalOutput, setCodeEvalOutput] = useState<ICodeEvalOutput>({
@@ -102,10 +104,12 @@ const CodeEditor = () => {
   }
 
   return (
-    <Grid container>
+    <Grid container sx={{ p: 2 }}>
       <Grid item sm={6} xs={12}>
-        <h2>{question?.title}</h2>
-        <TextContent content={question?.description ?? ''} />
+        <Typography variant="h4">{question?.title}</Typography>
+        <Box sx={{ typography: 'body1' }} color="text.primary">
+          <TextContent content={question?.description ?? ''} />
+        </Box>
       </Grid>
       <Grid item sm={6} xs={12} style={{ padding: 10 }}>
         <FormControl sx={{ m: 1, minWidth: 200 }}>
@@ -136,11 +140,14 @@ const CodeEditor = () => {
           language={language}
           onMount={handleEditorDidMount}
         />
-        <button onClick={handleCompile}>Execute</button>
+        <Button onClick={handleCompile} variant="contained" sx={{ textTransform: 'none' }}>
+          Execute
+        </Button>
 
         <OutputBlock label="Debug output" output={codeEvalOutput.logs} />
         <OutputBlock label="Your output" output={codeEvalOutput.result} />
         <OutputBlock label="Error" output={codeEvalOutput.error} />
+        <ChatbotPopup sessionId={sessionId} language={language} userSolution={code} />
       </Grid>
     </Grid>
   );
@@ -148,10 +155,10 @@ const CodeEditor = () => {
 
 const OutputBlock = ({ label, output }: { label: string; output: string }) => {
   return output ? (
-    <div>
-      <h3>{label}</h3>
-      <pre>{output}</pre>
-    </div>
+    <Box sx={{ p: 2 }}>
+      <Typography variant="h6">{label}</Typography>
+      <Typography variant="body1">{output}</Typography>
+    </Box>
   ) : (
     <></>
   );

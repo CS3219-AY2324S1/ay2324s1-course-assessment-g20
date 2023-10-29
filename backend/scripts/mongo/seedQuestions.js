@@ -4,10 +4,11 @@ const questionsJson = require('../../data/questions.json');
 const fs = require('fs');
 const dotenv = require('dotenv');
 
-dotenv.config({ path: `.env` });
+const NODE_ENV = process.env.NODE_ENV;
+dotenv.config({ path: `../../.env${NODE_ENV ? `.${NODE_ENV}` : ''}` });
 const uri = process.env.QUESTION_SERVICE_MONGODB_URL;
 
-const QUESTION_DESCRIPTION_DIRECTORY_PATH = 'data/question-descriptions';
+const QUESTION_DESCRIPTION_DIRECTORY_PATH = '../../data/question-descriptions';
 const generateFilePathFromId = (id) =>
   `${QUESTION_DESCRIPTION_DIRECTORY_PATH}/${id}.md`;
 
@@ -54,7 +55,7 @@ const getDifficultyIds = async (database) => {
 async function connectToDatabase() {
   try {
     // Open connection to MongoDB
-    const client = new MongoClient(uri);
+    const client = new MongoClient(uri, { authSource: 'admin' });
     await client.connect().then(() => console.log('Connected to MongoDB'));
     const database = client.db();
 

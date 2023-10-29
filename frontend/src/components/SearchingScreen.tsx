@@ -101,7 +101,12 @@ export default function WaitingScreen({
       </DialogContent>
       <DialogContent style={{ fontSize: '30px', color: 'black' }}>
         <Typography align="center" component={'span'}>
-          <Stack display={'block'} spacing={2} direction={{ xs: 'column', sm: 'row' }}>
+          <Stack
+            justifyContent={'center'}
+            alignItems={'center'}
+            spacing={2}
+            direction={{ xs: 'column', sm: 'row' }}
+          >
             <Button
               variant={'contained'}
               onClick={handleSearch}

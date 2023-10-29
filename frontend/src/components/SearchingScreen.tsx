@@ -101,12 +101,17 @@ export default function WaitingScreen({
       </DialogContent>
       <DialogContent style={{ fontSize: '30px', color: 'black' }}>
         <Typography align="center" component={'span'}>
-          <Stack display={'block'} spacing={4} direction={'row'}>
+          <Stack
+            justifyContent={'center'}
+            alignItems={'center'}
+            spacing={2}
+            direction={{ xs: 'column', sm: 'row' }}
+          >
             <Button
               variant={'contained'}
               onClick={handleSearch}
               disabled={isSearching}
-              style={{ fontSize: '15px', marginLeft: 'auto' }}
+              style={{ fontSize: '15px' }}
               sx={{
                 width: 80,
                 height: 50,
@@ -119,7 +124,7 @@ export default function WaitingScreen({
             <Button
               variant={'contained'}
               onClick={handleCancelSearch}
-              style={{ fontSize: '15px', marginLeft: 'auto' }}
+              style={{ fontSize: '15px' }}
               sx={{
                 width: 80,
                 height: 50,

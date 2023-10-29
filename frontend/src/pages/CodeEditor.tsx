@@ -13,7 +13,7 @@ import { ICodeEvalOutput } from '../@types/codeEditor';
 import { editor as MonacoEditor } from 'monaco-editor';
 import { bindYjsToMonacoEditor, tsCompile } from '../utils/editorUtils';
 import { getSessionAndWsTicket } from '../api/collaborationServiceApi';
-import { useThrowAsyncError } from '../utils/hooks';
+import { useThrowAsyncError } from '../hooks/useThrowAsyncError';
 import TextContent from '../components/TextContent';
 import ChatbotPopup from '../components/Chatbot/ChatbotPopup';
 

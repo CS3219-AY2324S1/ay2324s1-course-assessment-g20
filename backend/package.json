@@ -23,7 +23,7 @@
     "prepare": "cd .. && husky install backend/.husky",
     "knex-script": "knex --knexfile",
     "knex": "./scripts/knex/knex.sh",
-    "migrate:sql:all": "node ./scripts/knex/createSqlDatabases.js && yarn migrate:sql user && yarn migrate:sql collaboration",
+    "migrate:sql:all": "node ./scripts/knex/createSqlDatabases.js && yarn migrate:sql user && yarn migrate:sql collaboration && yarn migrate:sql history",
     "migrate:sql": "./scripts/knex/migrate_latest.sh",
     "migrate:sql:make": "./scripts/knex/migrate_make.sh",
     "seed:all": "yarn seed:sql:all && yarn seed:mongo:all",

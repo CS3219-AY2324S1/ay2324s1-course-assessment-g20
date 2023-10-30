@@ -28,6 +28,7 @@ import { YjsGateway } from './websocket-gateways/yjs.gateway';
       Service.COLLABORATION_SERVICE,
       Service.MATCHING_SERVICE,
       Service.CHATBOT_SERVICE,
+      Service.HISTORY_SERVICE,
     ]),
   ],
   controllers: [

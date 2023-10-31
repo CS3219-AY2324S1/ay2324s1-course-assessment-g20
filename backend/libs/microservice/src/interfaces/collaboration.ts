@@ -9,6 +9,10 @@ export interface CreateCollabSessionRequest {
   questionId: string;
 }
 
+export interface GetQuestionIdFromSessionIdResponse {
+  questionId: string;
+}
+
 export interface GetSessionAndWsTicketRequest {
   sessionId: string;
   userId: string;
@@ -48,6 +52,10 @@ export interface CollaborationServiceClient {
   getSessionIdFromTicket(
     request: ID,
   ): Observable<GetSessionIdFromTicketResponse>;
+
+  getQuestionIdFromSessionId(
+    request: ID,
+  ): Observable<GetQuestionIdFromSessionIdResponse>;
 }
 
 export interface CollaborationServiceController {
@@ -68,6 +76,13 @@ export interface CollaborationServiceController {
     | Promise<GetSessionIdFromTicketResponse>
     | Observable<GetSessionIdFromTicketResponse>
     | GetSessionIdFromTicketResponse;
+
+  getQuestionIdFromSessionId(
+    request: ID,
+  ):
+    | Promise<GetQuestionIdFromSessionIdResponse>
+    | Observable<GetQuestionIdFromSessionIdResponse>
+    | GetQuestionIdFromSessionIdResponse;
 }
 
 export function CollaborationServiceControllerMethods() {
@@ -76,6 +91,7 @@ export function CollaborationServiceControllerMethods() {
       'createCollabSession',
       'getSessionAndWsTicket',
       'getSessionIdFromTicket',
+      'getQuestionIdFromSessionId',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

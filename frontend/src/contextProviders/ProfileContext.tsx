@@ -1,57 +1,80 @@
-import React, { useEffect, useState } from 'react';
-import { getUserProfile, updateUserProfile } from '../api/userApi';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { getUserProfile, updateUserProfile, deleteUserProfile } from '../api/userApi';
 import { UpdateUserProfile } from '../@types/userProfile';
-import { useSnackbar } from 'notistack';
 import { IProfileContext } from '../@types/userProfile';
 
 export const ProfileContext = React.createContext<IProfileContext>(null!);
 
 export const ProfileProvider = ({ children }: { children: React.ReactNode }) => {
-  /* 
-    Values in Profile Context:
-    Name
-    Preferred Language
-    Role
-  */
   const [name, setName] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
   const [preferredLanguageId, setPreferredLanguageId] = useState<number>(1);
+  const [preferredLanguage, setPreferredLanguage] = useState<string>('');
   const [roleId, setRoleId] = useState<number>(2);
   const [isMaintainer, setIsMaintainer] = useState<boolean>(false);
-  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    const fetchAndSetProfile = async () => {
-      await getUserProfile().then(({ data }) => {
-        setName(data.name ?? '');
-        setPreferredLanguageId(data.preferredLanguage?.id ?? 1);
-        setRoleId(data.role?.id ?? 2);
-        setIsMaintainer(data.role?.name === 'MAINTAINER');
-      });
-    };
     fetchAndSetProfile();
   }, []);
 
-  const updateProfile = (newProfile: UpdateUserProfile) => {
-    updateUserProfile(newProfile)
-      .then((res) => {
-        if (res.status === 200) {
-          enqueueSnackbar('Profile updated!', { variant: 'success' });
-          if (newProfile.name) {
-            setName(newProfile.name);
-          }
-          if (newProfile.preferredLanguageId) {
-            setPreferredLanguageId(newProfile.preferredLanguageId);
-          }
-        } else {
-          enqueueSnackbar('Error when updating profile', { variant: 'error' });
-        }
+  const fetchAndSetProfile = useCallback(async () => {
+    await getUserProfile()
+      .then(({ data }) => {
+        setName(data.name ?? '');
+        setUsername(data.username ?? '');
+        setPreferredLanguageId(data.preferredLanguage?.id ?? 1);
+        setPreferredLanguage(data.preferredLanguage?.name ?? 'JavaScript');
+        setRoleId(data.role?.id ?? 2);
+        setIsMaintainer(data.role?.name === 'MAINTAINER');
       })
-      .catch(() => {
-        enqueueSnackbar('Error when updating profile', { variant: 'error' });
+      .catch((error) => {
+        console.error(error);
       });
+  }, []);
+
+  const updateProfile = async (newProfile: UpdateUserProfile) => {
+    try {
+      const response = await updateUserProfile(newProfile);
+      if (response.status === 200) {
+        fetchAndSetProfile();
+        return response.data;
+      } else {
+        throw new Error('Error occurred when updating profile');
+      }
+    } catch (error) {
+      throw new Error('Error occurred when updating profile');
+    }
   };
 
-  const value = { name, preferredLanguageId, roleId, isMaintainer, updateProfile };
+  const deleteProfile = async () => {
+    try {
+      const response = await deleteUserProfile();
+      if (response.status === 200) {
+        setName('');
+        setUsername('');
+        setPreferredLanguageId(1);
+        setPreferredLanguage('');
+        setRoleId(2);
+        setIsMaintainer(false);
+      }
+    } catch (error) {
+      console.error('There was a problem deleting the user: ', error);
+    }
+  };
+
+  const isOnboarded = useMemo(() => username.length > 0, [username]);
+
+  const value = {
+    name,
+    username,
+    preferredLanguageId,
+    preferredLanguage,
+    roleId,
+    isMaintainer,
+    isOnboarded,
+    updateProfile,
+    deleteProfile,
+  };
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
 };

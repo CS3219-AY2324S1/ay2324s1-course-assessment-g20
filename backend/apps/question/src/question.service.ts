@@ -32,6 +32,21 @@ export class QuestionService {
       );
   }
 
+  async getQuestionsByDifficulty(difficulty: string | Difficulty) {
+    const difficultyObject = await this.getDifficultyIfExists(difficulty);
+    const questionObjects = await this.questionModel
+      .find({
+        difficulty: difficultyObject,
+      })
+      .exec();
+
+    return await Promise.all(
+      questionObjects.map(async (question) => {
+        return await this.getQuestionWithId(question._id.toString());
+      }),
+    );
+  }
+
   async addQuestion(
     questionWithCategoriesAndDifficulty: QuestionWithCategoryAndDifficulty,
   ): Promise<QuestionWithCategoryAndDifficulty> {
@@ -117,6 +132,38 @@ export class QuestionService {
   async deleteQuestionWithId(questionId: string): Promise<string> {
     await this.questionModel.findByIdAndDelete(questionId);
     return questionId;
+  }
+
+  async updateQuestionWithId(
+    questionWithCategoriesAndDifficulty: QuestionWithCategoryAndDifficulty,
+  ): Promise<QuestionWithCategoryAndDifficulty> {
+    // Check if difficulty and categories exist
+    const difficultyObject = await this.getDifficultyIfExists(
+      questionWithCategoriesAndDifficulty.difficulty,
+    );
+    const categoryObjects = await Promise.all(
+      questionWithCategoriesAndDifficulty.categories.map((category) =>
+        this.getCategoryIfExists(category),
+      ),
+    );
+
+    // Find and update question
+    const newQuestion = await this.questionModel.findByIdAndUpdate(
+      questionWithCategoriesAndDifficulty._id ?? '',
+      {
+        title: questionWithCategoriesAndDifficulty.title,
+        description: questionWithCategoriesAndDifficulty.description,
+        difficulty: difficultyObject,
+        categories: categoryObjects,
+      },
+      { new: true },
+    );
+
+    return {
+      ...newQuestion.toObject(),
+      difficulty: questionWithCategoriesAndDifficulty.difficulty,
+      categories: categoryObjects.map((category) => category.name),
+    };
   }
 
   // CATEGORIES

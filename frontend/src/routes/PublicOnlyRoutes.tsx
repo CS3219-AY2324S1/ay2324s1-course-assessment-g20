@@ -1,11 +1,16 @@
 import { Navigate, useLocation, Outlet } from 'react-router-dom';
-import { useAuth } from '../utils/hooks';
+import { useAuth } from '../hooks/useAuth';
+import { frontendPaths } from './paths';
 
 export default function PublicOnlyRoutes() {
-  const auth = useAuth();
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
-  if (auth.isAuthenticated) {
-    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+
+  if (isAuthenticated) {
+    if (location.state?.from?.pathname) {
+      return <Navigate to={location.state.from.pathname} replace />;
+    }
+    return <Navigate to={frontendPaths.dashboard} replace />;
   } else {
     return <Outlet />;
   }

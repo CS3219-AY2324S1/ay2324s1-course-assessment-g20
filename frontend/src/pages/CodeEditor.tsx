@@ -118,7 +118,7 @@ const CodeEditor = () => {
     <Grid container sx={{ p: 2 }}>
       <Grid item sm={6} xs={12}>
         <Typography variant="h4">{question?.title}</Typography>
-        <Box sx={{ typography: 'body1' }} color="text.primary">
+        <Box sx={{ typography: 'body1', overflow: 'scroll' }} color="text.primary">
           <TextContent content={question?.description ?? ''} />
         </Box>
       </Grid>

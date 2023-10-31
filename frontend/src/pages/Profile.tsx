@@ -1,126 +1,66 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  MenuItem,
-  Modal,
-  Paper,
-  Select,
-  SelectChangeEvent,
-  Typography,
-} from '@mui/material';
-import { useEffect, useState } from 'react';
-import { getAllLanguages, deleteUserProfile } from '../api/userApi';
-import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import { Language } from '../@types/language';
+import { Box, Button, Divider, Paper, Typography } from '@mui/material';
 import { useProfile } from '../hooks/useProfile';
-
-const modalStyle = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-};
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { getUserProfileByUsername } from '../api/userApi';
+import { UserProfile } from '../@types/userProfile';
+import { frontendPaths } from '../routes/paths';
+import { formatLanguage } from '../utils/stringUtils';
 
 export default function Profile() {
-  const authContext = useAuth();
-  const { name, preferredLanguageId, updateProfile } = useProfile();
+  const { username } = useParams();
+  const { username: ownUsername, preferredLanguage, name } = useProfile();
+  const [isOwnProfile, setIsOwnProfile] = useState(true);
+  const [profile, setProfile] = useState<UserProfile>();
   const navigate = useNavigate();
-  const [languages, setLanguages] = useState<Language[]>([]);
-  const [isModalOpen, setisModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchAndSetLanguages = async () => {
-      await getAllLanguages().then(({ data }) => {
-        setLanguages(data);
-      });
-    };
-    fetchAndSetLanguages();
-  }, []);
+    setIsOwnProfile(username === ownUsername);
+    if (!isOwnProfile) {
+      const fetchAndSetProfile = async () => {
+        try {
+          const { data } = await getUserProfileByUsername(username ?? '');
+          setProfile(data);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchAndSetProfile();
+    }
+  }, [isOwnProfile, username]);
 
-  const handlePreferredLanguageChange = (event: SelectChangeEvent) => {
-    const newPreferredLanguage = parseInt(event.target.value, 10);
-    updateProfile({ preferredLanguageId: newPreferredLanguage });
+  const handleEditProfile = () => {
+    navigate(frontendPaths.editProfile);
   };
-  const handleDeleteAccount = async () => {
-    await deleteUserProfile();
-    logUserOut();
-  };
-  const logUserOut = () => {
-    authContext.signout();
-    navigate('/login', { replace: true });
-  };
-  const handleOpenModal = () => setisModalOpen(true);
-  const handleCloseModal = () => setisModalOpen(false);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" padding="2rem" minWidth="400px">
-      <Paper
-        elevation={3}
-        sx={{ padding: '2rem', minWidth: '400px', width: { xs: '100%', md: '60%' } }}
-      >
+      <Paper elevation={3} sx={{ padding: '2rem', width: { xs: '100%', md: '60%' } }}>
         <Box display="flex" flexDirection="column">
-          <Typography fontSize={30} fontWeight={10} paddingBottom={3} align="center">
-            {name}
-          </Typography>
-          <Box paddingBottom={3}>
-            <Typography fontSize={16} fontWeight={5} paddingBottom={1} sx={{ opacity: 0.6 }}>
+          <Box pb={2}>
+            <Typography fontSize={30} fontWeight={10} align="center">
+              {isOwnProfile ? name : profile?.name}
+            </Typography>
+            <Typography fontSize={16} align="center" sx={{ opacity: 0.6 }}>
+              {isOwnProfile ? ownUsername : profile?.username}
+            </Typography>
+          </Box>
+          <Divider />
+          <Box py={3}>
+            <Typography fontSize={16} fontWeight={5} paddingBottom={1}>
               Preferred Language
             </Typography>
-            <FormControl fullWidth>
-              <Select
-                labelId="preferred-language-label"
-                id="preferred-language-select"
-                value={preferredLanguageId.toString()}
-                onChange={handlePreferredLanguageChange}
-              >
-                {languages.map((language: Language) => (
-                  <MenuItem key={language.id} value={language.id}>
-                    {language.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Typography sx={{ opacity: 0.6 }}>
+              {formatLanguage(
+                isOwnProfile ? preferredLanguage : profile?.preferredLanguage.name ?? '',
+              )}
+            </Typography>
           </Box>
-          <Button variant="outlined" color="error" onClick={handleOpenModal}>
-            Delete account
-          </Button>
-          <Modal
-            open={isModalOpen}
-            onClose={handleCloseModal}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={modalStyle}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                We hate to see you go :(
-              </Typography>
-              <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
-                Are you sure you want to delete your account?
-              </Typography>
-              <Box display="flex" flexDirection="row">
-                <Box paddingRight={2}>
-                  <Button variant="outlined" color="error" onClick={handleDeleteAccount}>
-                    YES
-                  </Button>
-                </Box>
-                <Box paddingLeft={2}>
-                  <Button variant="outlined" onClick={handleCloseModal}>
-                    NO
-                  </Button>
-                </Box>
-              </Box>
-            </Box>
-          </Modal>
+          {isOwnProfile && (
+            <Button variant="contained" color="primary" onClick={handleEditProfile}>
+              Edit profile
+            </Button>
+          )}
         </Box>
       </Paper>
     </Box>

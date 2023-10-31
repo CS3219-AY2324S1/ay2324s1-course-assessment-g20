@@ -10,6 +10,13 @@ export async function getUserProfile() {
   });
 }
 
+export async function getUserProfileByUsername(username: string) {
+  return requestBackend<UserProfile>({
+    url: `${backendServicesPaths.user.root}/${username}`,
+    method: HttpRequestMethod.GET,
+  });
+}
+
 export async function updateUserProfile(updatedProfile: UpdateUserProfile) {
   return requestBackend<UserProfile>({
     url: backendServicesPaths.user.root,

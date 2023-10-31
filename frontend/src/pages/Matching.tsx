@@ -1,16 +1,13 @@
-import { Button, Stack, Typography, Box } from '@mui/material';
+import { Button, Stack, Typography, Box, useTheme } from '@mui/material';
 import SearchingScreen from '../components/SearchingScreen';
 import { useEffect, useState } from 'react';
 import { IDifficulty } from '../@types/question';
 import { getDifficulties } from '../api/questionBankApi';
+import { PaletteKey } from '../theme/palette';
 
 export default function Matching() {
-  const backgroundColors = {
-    Easy: 'green',
-    Medium: 'orange',
-    Hard: 'red',
-  };
-
+  const { palette } = useTheme();
+  // Usestate to handle the difficulty selected
   const [difficultyLevel, setDifficultyLevel] = useState<IDifficulty>();
 
   // Usestate and functions to handle the loading screen visibility
@@ -44,23 +41,24 @@ export default function Matching() {
       </Typography>
       <br />
       <Box display="flex" justifyContent="center">
+        {searchingVisibility && difficultyLevel && (
+          <SearchingScreen
+            difficulty={difficultyLevel}
+            openScreen={true}
+            setCloseScreen={handlePopupOnClose}
+          ></SearchingScreen>
+        )}
         <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
-          {searchingVisibility && difficultyLevel && (
-            <SearchingScreen
-              title="SEARCHING FOR PARTNER - "
-              difficulty={difficultyLevel}
-              openScreen={true}
-              setCloseScreen={handlePopupOnClose}
-            ></SearchingScreen>
-          )}
           {difficulties.map((difficulty) => (
             <Button
-              key={difficulty._id}
-              variant={'contained'}
+              variant="contained"
               onClick={() => handleSearchingOnClick(difficulty)}
               style={{ fontSize: '40px' }}
               sx={{
-                backgroundColor: backgroundColors[difficulty.name as keyof typeof backgroundColors],
+                backgroundColor: palette[difficulty.name.toLowerCase() as PaletteKey].main,
+                '&:hover': {
+                  backgroundColor: palette[difficulty.name.toLowerCase() as PaletteKey].dark,
+                },
               }}
             >
               {difficulty.name}

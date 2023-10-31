@@ -19,11 +19,14 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useProfile } from '../hooks/useProfile';
+import { frontendPaths } from '../routes/paths';
 
 export default function MainMenuBar() {
   const authContext = useAuth();
   const navigate = useNavigate();
   const { palette } = useTheme();
+  const { username } = useProfile();
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -34,7 +37,7 @@ export default function MainMenuBar() {
     {
       title: 'Profile',
       onClick: () => {
-        navigate('/profile');
+        navigate(`${frontendPaths.user}/${username}`);
       },
       icon: <AccountCircleIcon />,
     },
@@ -42,7 +45,7 @@ export default function MainMenuBar() {
       title: 'Logout',
       onClick: () => {
         authContext.signout();
-        navigate('/login', { replace: true });
+        navigate(frontendPaths.login, { replace: true });
       },
       icon: <LogoutIcon />,
     },
@@ -121,7 +124,6 @@ export default function MainMenuBar() {
             </Box>
           </Box>
           <IconButton
-            // color="inherit"
             aria-label="open drawer"
             edge="end"
             onClick={handleMenuToggle}

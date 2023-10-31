@@ -52,6 +52,7 @@ export class GoogleOauthStrategy
   ) {
     const { id, name, emails } = profile;
     const defaultName = `${name.givenName} ${name.familyName}`;
+    const defautUsername = '';
 
     const oauthUser = {
       authProvider: AuthProvider.GOOGLE,
@@ -60,6 +61,7 @@ export class GoogleOauthStrategy
       oauthName: defaultName,
       userProfile: {
         name: defaultName,
+        username: defautUsername,
         preferredLanguageId: DEFAULT_LANGUAGE,
         roleId: DEFAULT_ROLE,
       },

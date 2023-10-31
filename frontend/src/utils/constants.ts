@@ -55,8 +55,3 @@ export enum HttpRequestMethod {
   DELETE = 'delete',
   PATCH = 'patch',
 }
-
-export const languages = {
-  javascript: 'javascript',
-  typescript: 'typescript',
-};

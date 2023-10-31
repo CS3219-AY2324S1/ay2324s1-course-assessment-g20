@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { CircularProgress } from '@mui/material';
+import { frontendPaths } from '../routes/paths';
 
 export default function AuthRedirect() {
   const auth = useAuth();
@@ -23,7 +24,7 @@ export default function AuthRedirect() {
   });
 
   if (auth.isAuthenticated) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to={frontendPaths.onboarding} />;
   }
 
   return (

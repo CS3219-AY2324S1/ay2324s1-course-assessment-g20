@@ -6,7 +6,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { languages } from '../utils/constants';
 import { useParams } from 'react-router-dom';
 import { IQuestion } from '../@types/question';
 import { ICodeEvalOutput } from '../@types/codeEditor';
@@ -16,6 +15,9 @@ import { getSessionAndWsTicket } from '../api/collaborationServiceApi';
 import { useThrowAsyncError } from '../hooks/useThrowAsyncError';
 import TextContent from '../components/TextContent';
 import ChatbotPopup from '../components/Chatbot/ChatbotPopup';
+import { Language } from '../@types/language';
+import { getAllLanguages } from '../api/userApi';
+import { formatLanguage } from '../utils/stringUtils';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.
@@ -30,7 +32,8 @@ const CodeEditor = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const [question, setQuestion] = useState<IQuestion | undefined>(undefined);
 
-  const [language, setLanguage] = useState('javascript');
+  const [selectedLanguage, setSelectedLanguage] = useState('javascript');
+  const [languages, setLanguages] = useState<string[]>([]);
   const [code, setCode] = useState('// some comment');
   const [codeEvalOutput, setCodeEvalOutput] = useState<ICodeEvalOutput>({
     error: '',
@@ -50,6 +53,14 @@ const CodeEditor = () => {
 
   // Fetch question information and get single-use websocket ticket to this session
   useEffect(() => {
+    getAllLanguages()
+      .then((resp) => {
+        setLanguages(resp.data.map((language: Language) => language.name.toLowerCase()));
+      })
+      .catch(() => {
+        throwAsyncError('Error getting supported languages');
+      });
+
     if (sessionId) {
       getSessionAndWsTicket(sessionId)
         .then((resp) => {
@@ -73,13 +84,13 @@ const CodeEditor = () => {
   }, [editor, wsTicket, throwAsyncError]);
 
   const handleLanguageChange = (event: SelectChangeEvent) => {
-    setLanguage(event.target.value as string);
+    setSelectedLanguage(event.target.value as string);
   };
 
   const handleCompile = () => {
     const codeEvaluator = new CodeEvaluator();
 
-    const transpiledCode = language === languages.typescript ? tsCompile(code) : code;
+    const transpiledCode = selectedLanguage === 'typescript' ? tsCompile(code) : code;
 
     codeEvaluator
       .evalAsync(transpiledCode)
@@ -107,47 +118,50 @@ const CodeEditor = () => {
     <Grid container sx={{ p: 2 }}>
       <Grid item sm={6} xs={12}>
         <Typography variant="h4">{question?.title}</Typography>
-        <Box sx={{ typography: 'body1' }} color="text.primary">
+        <Box sx={{ typography: 'body1', overflow: 'scroll' }} color="text.primary">
           <TextContent content={question?.description ?? ''} />
         </Box>
       </Grid>
       <Grid item sm={6} xs={12} style={{ padding: 10 }}>
-        <FormControl sx={{ m: 1, minWidth: 200 }}>
-          <InputLabel id="demo-simple-select-autowidth-label">Language</InputLabel>
-          <Select
-            labelId="demo-simple-select-autowidth-label"
-            id="demo-simple-select-autowidth"
-            value={language}
-            onChange={handleLanguageChange}
-            autoWidth
-            label="Language"
-          >
-            {Object.values(languages).map((language) => {
-              return (
-                <MenuItem key={language} value={language}>
-                  {language}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
+        <Box sx={{ position: { xs: 'static', sm: 'fixed' }, width: { xs: 'auto', sm: '55%' } }}>
+          <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <InputLabel id="demo-simple-select-autowidth-label">Language</InputLabel>
+            <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={selectedLanguage}
+              onChange={handleLanguageChange}
+              autoWidth
+              label="Language"
+            >
+              {Object.values(languages).map((language) => {
+                return (
+                  <MenuItem key={language} value={language}>
+                    {formatLanguage(language)}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
 
-        <Editor
-          height="40vh"
-          width={'100%'}
-          value={code}
-          onChange={handleCodeChange}
-          language={language}
-          onMount={handleEditorDidMount}
-        />
-        <Button onClick={handleCompile} variant="contained" sx={{ textTransform: 'none' }}>
-          Execute
-        </Button>
+          <Editor
+            height="40vh"
+            width={'100%'}
+            value={code}
+            onChange={handleCodeChange}
+            language={selectedLanguage}
+            onMount={handleEditorDidMount}
+          />
+          <Button onClick={handleCompile} variant="contained" sx={{ textTransform: 'none' }}>
+            Execute
+          </Button>
 
-        <OutputBlock label="Debug output" output={codeEvalOutput.logs} />
-        <OutputBlock label="Your output" output={codeEvalOutput.result} />
-        <OutputBlock label="Error" output={codeEvalOutput.error} />
-        <ChatbotPopup sessionId={sessionId} language={language} userSolution={code} />
+          <OutputBlock label="Debug output" output={codeEvalOutput.logs} />
+          <OutputBlock label="Your output" output={codeEvalOutput.result} />
+          <OutputBlock label="Error" output={codeEvalOutput.error} />
+        </Box>
+
+        <ChatbotPopup sessionId={sessionId} language={selectedLanguage} userSolution={code} />
       </Grid>
     </Grid>
   );

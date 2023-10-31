@@ -42,7 +42,7 @@ export class RolesGuard implements CanActivate, OnModuleInit {
     }
     const { user } = context.switchToHttp().getRequest();
     const { roleId } = await firstValueFrom(
-      this.userProfileService.getUserProfile({ id: user.id }),
+      this.userProfileService.getUserProfileById({ id: user.id }),
     );
     return requiredRoles.some((requiredRoleId) => roleId === requiredRoleId);
   }

@@ -5,10 +5,10 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 
 const NODE_ENV = process.env.NODE_ENV;
-dotenv.config({ path: `../../.env${NODE_ENV ? `.${NODE_ENV}` : ''}` });
+dotenv.config(`.env${NODE_ENV ? `.${NODE_ENV}` : ''}`);
 const uri = process.env.QUESTION_SERVICE_MONGODB_URL;
 
-const QUESTION_DESCRIPTION_DIRECTORY_PATH = '../../data/question-descriptions';
+const QUESTION_DESCRIPTION_DIRECTORY_PATH = 'data/question-descriptions';
 const generateFilePathFromId = (id) =>
   `${QUESTION_DESCRIPTION_DIRECTORY_PATH}/${id}.md`;
 

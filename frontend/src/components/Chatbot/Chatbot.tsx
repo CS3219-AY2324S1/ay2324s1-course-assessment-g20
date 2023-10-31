@@ -71,10 +71,13 @@ export default function Chatbot({
         <Button
           sx={{
             position: 'absolute',
-            top: '10px',
+            top: '15px',
             right: '10px',
             textTransform: 'none',
             color: 'primary.contrastText',
+            '&:hover': {
+              backgroundColor: 'primary.dark',
+            },
           }}
           variant="text"
           onClick={handleChatbotClose}

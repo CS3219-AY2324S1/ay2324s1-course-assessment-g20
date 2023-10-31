@@ -14,11 +14,7 @@ import { AttemptDaoModule } from './database/daos/attempt/attempt.dao.module';
 @Module({
   imports: [
     ConfigModule.loadConfiguration(historyConfiguration),
-    registerGrpcClients([
-      Service.QUESTION_SERVICE,
-      Service.USER_SERVICE,
-      Service.COLLABORATION_SERVICE,
-    ]),
+    registerGrpcClients([Service.USER_SERVICE, Service.COLLABORATION_SERVICE]),
     // Database and DAOs
     SqlDatabaseModule.factory([HistoryModel, AttemptModel]),
     HistoryDaoModule,

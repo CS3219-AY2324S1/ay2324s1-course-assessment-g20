@@ -8,13 +8,13 @@ export class HistoryDaoService {
     private historyModel: ModelClass<HistoryModel>,
   ) {}
 
-  async create(userId: string) {
+  async create(username: string) {
     return await this.historyModel.query().insert({
-      userId: userId,
+      username: username,
     });
   }
 
-  async findByUserId(userId: string) {
-    return await this.historyModel.query().where('userId', userId).first();
+  async findByUsername(username: string) {
+    return await this.historyModel.query().where('username', username).first();
   }
 }

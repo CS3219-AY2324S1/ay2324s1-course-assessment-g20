@@ -26,16 +26,16 @@ export class HistoryController implements OnModuleInit {
   @Get('create')
   createHistoryAttempt() {
     return this.historyService.createHistoryAttempt({
-      sessionId: 'a4f7aa88-72d6-40cd-9bf8-ae77d646dabf',
+      sessionId: 'fb72fb0b-4131-4f52-87d5-180f5d6a21df',
       questionAttempt: 'test',
     });
   }
 
   @Get('attempts')
-  getAttemptsByUserId() {
+  GetAttemptsByUsername() {
     return this.historyService
-      .getAttemptsByUserId({
-        id: '46d8f468-abcb-4b8f-908c-2e68d344cc4c',
+      .getAttemptsByUsername({
+        username: 'bryann',
       })
       .pipe(map(({ attempts }) => attempts || []));
   }

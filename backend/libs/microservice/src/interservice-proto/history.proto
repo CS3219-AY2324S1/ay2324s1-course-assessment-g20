@@ -7,7 +7,7 @@ import "common.proto";
 
 service HistoryService {
   rpc CreateHistoryAttempt (CreateHistoryAttemptRequest) returns (CreateHistoryAttemptResponse);
-  rpc GetAttemptsByUserId (common.ID) returns (GetAttemptsByUserIdResponse);
+  rpc GetAttemptsByUsername (GetAttemptsByUsernameRequest) returns (GetAttemptsByUsernameResponse);
 }
 
 message CreateHistoryAttemptRequest {
@@ -19,13 +19,17 @@ message CreateHistoryAttemptResponse {
   repeated History histories = 1;
 }
 
-message GetAttemptsByUserIdResponse {
+message GetAttemptsByUsernameRequest {
+  string username = 1;
+}
+
+message GetAttemptsByUsernameResponse {
     repeated Attempt attempts = 1;
 }
 
 message History {
   string id = 1;
-  string userId = 2;
+  string username = 2;
   repeated Attempt attempts = 3;
 }
 

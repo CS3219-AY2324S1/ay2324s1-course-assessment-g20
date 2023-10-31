@@ -3,7 +3,7 @@ import { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('history', (t) => {
     t.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
-    t.uuid('userId').notNullable().unique();
+    t.string('username').notNullable().unique();
     t.timestamps(true, true);
   });
 

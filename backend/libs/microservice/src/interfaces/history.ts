@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
-import { ID } from './common';
 
 export const HISTORY_SERVICE_NAME = 'HistoryService';
 
@@ -14,13 +13,17 @@ export interface CreateHistoryAttemptResponse {
   histories: History[];
 }
 
-export interface GetAttemptsByUserIdResponse {
+export interface GetAttemptsByUsernameRequest {
+  username: string;
+}
+
+export interface GetAttemptsByUsernameResponse {
   attempts: Attempt[];
 }
 
 export interface History {
   id: string;
-  userId: string;
+  username: string;
   attempts: Attempt[];
 }
 
@@ -35,7 +38,9 @@ export interface HistoryServiceClient {
     request: CreateHistoryAttemptRequest,
   ): Observable<CreateHistoryAttemptResponse>;
 
-  getAttemptsByUserId(request: ID): Observable<GetAttemptsByUserIdResponse>;
+  getAttemptsByUsername(
+    request: GetAttemptsByUsernameRequest,
+  ): Observable<GetAttemptsByUsernameResponse>;
 }
 
 export interface HistoryServiceController {
@@ -46,19 +51,19 @@ export interface HistoryServiceController {
     | Observable<CreateHistoryAttemptResponse>
     | CreateHistoryAttemptResponse;
 
-  getAttemptsByUserId(
-    request: ID,
+  getAttemptsByUsername(
+    request: GetAttemptsByUsernameRequest,
   ):
-    | Promise<GetAttemptsByUserIdResponse>
-    | Observable<GetAttemptsByUserIdResponse>
-    | GetAttemptsByUserIdResponse;
+    | Promise<GetAttemptsByUsernameResponse>
+    | Observable<GetAttemptsByUsernameResponse>
+    | GetAttemptsByUsernameResponse;
 }
 
 export function HistoryServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
       'createHistoryAttempt',
-      'getAttemptsByUserId',
+      'getAttemptsByUsername',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

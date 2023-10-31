@@ -5,7 +5,7 @@ import { AttemptModel } from './attempt.model';
 export class HistoryModel extends BaseModelUUID {
   static tableName = 'history';
 
-  readonly userId: string;
+  readonly username: string;
   readonly attempts: {
     attemptId: string;
     questionId: string;

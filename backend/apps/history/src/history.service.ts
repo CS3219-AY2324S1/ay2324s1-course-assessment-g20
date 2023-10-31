@@ -2,29 +2,29 @@ import {
   COLLABORATION_SERVICE_NAME,
   CollaborationServiceClient,
 } from '@app/microservice/interfaces/collaboration';
-import {
-  QUESTION_SERVICE_NAME,
-  QuestionServiceClient,
-} from '@app/microservice/interfaces/question';
 import { Service } from '@app/microservice/services';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { HistoryDaoService } from './database/daos/history/history.dao.service';
-import { CreateHistoryAttemptRequest } from '@app/microservice/interfaces/history';
+import {
+  CreateHistoryAttemptRequest,
+  GetAttemptsByUsernameRequest,
+} from '@app/microservice/interfaces/history';
 import { firstValueFrom } from 'rxjs';
 import { AttemptDaoService } from './database/daos/attempt/attempt.dao.service';
 import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
 import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
-import { ID } from '@app/microservice/interfaces/common';
+import { UserProfileServiceClient } from '@app/microservice/interfaces/user';
+import { USER_PROFILE_SERVICE_NAME } from '../../../libs/microservice/src/interfaces/user';
 
 @Injectable()
 export class HistoryService implements OnModuleInit {
-  private questionService: QuestionServiceClient;
+  private userProfileService: UserProfileServiceClient;
   private collabService: CollaborationServiceClient;
 
   constructor(
-    @Inject(Service.QUESTION_SERVICE)
-    private readonly questionServiceClient: ClientGrpc,
+    @Inject(Service.USER_SERVICE)
+    private readonly userProfileServiceClient: ClientGrpc,
     @Inject(Service.COLLABORATION_SERVICE)
     private readonly collabServiceClient: ClientGrpc,
     private readonly historyDaoService: HistoryDaoService,
@@ -32,9 +32,9 @@ export class HistoryService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.questionService =
-      this.questionServiceClient.getService<QuestionServiceClient>(
-        QUESTION_SERVICE_NAME,
+    this.userProfileService =
+      this.userProfileServiceClient.getService<UserProfileServiceClient>(
+        USER_PROFILE_SERVICE_NAME,
       );
     this.collabService =
       this.collabServiceClient.getService<CollaborationServiceClient>(
@@ -50,15 +50,13 @@ export class HistoryService implements OnModuleInit {
     // Get questionId
     const questionId = await this.validateSessionIdAndGetQuestionId(sessionId);
 
-    // Get userIds
-    const userIds = await firstValueFrom(
-      this.collabService.getUserIdsFromSessionId({ id: sessionId }),
-    ).then(({ userIds }) => userIds.map(({ userId }) => userId));
+    // Get usernames
+    const usernames = await this.getUsernamesFromSessionId(sessionId);
 
     // Create history for each user
     return await Promise.all(
-      userIds.map((userId) =>
-        this.createHistoryForUser(userId, questionId, questionAttempt),
+      usernames.map((username) =>
+        this.createHistoryForUser(username, questionId, questionAttempt),
       ),
     ).then((historiesCreated) => {
       return { histories: historiesCreated };
@@ -82,15 +80,29 @@ export class HistoryService implements OnModuleInit {
     return questionId;
   }
 
+  private async getUsernamesFromSessionId(sessionId: string) {
+    const userIds = await firstValueFrom(
+      this.collabService.getUserIdsFromSessionId({ id: sessionId }),
+    ).then(({ userIds }) => userIds.map(({ userId }) => userId));
+
+    return await Promise.all(
+      userIds.map(async (userId) => {
+        return firstValueFrom(
+          this.userProfileService.getUserProfileById({ id: userId }),
+        ).then(({ username }) => username);
+      }),
+    );
+  }
+
   private async createHistoryForUser(
-    userId: string,
+    username: string,
     questionId: string,
     questionAttempt: string,
   ) {
-    let history = await this.historyDaoService.findByUserId(userId);
+    let history = await this.historyDaoService.findByUsername(username);
 
     if (!history) {
-      history = await this.historyDaoService.create(userId);
+      history = await this.historyDaoService.create(username);
     }
 
     await this.attemptDaoService.createAttempt({
@@ -102,12 +114,14 @@ export class HistoryService implements OnModuleInit {
     return history;
   }
 
-  async getAttemptsByUserId(request: ID) {
-    const history = await this.historyDaoService.findByUserId(request.id);
+  async GetAttemptsByUsername(request: GetAttemptsByUsernameRequest) {
+    const history = await this.historyDaoService.findByUsername(
+      request.username,
+    );
 
     if (!history) {
       throw new PeerprepException(
-        'Invalid userId provided!',
+        'Invalid username provided!',
         PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
       );
     }

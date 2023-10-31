@@ -1,13 +1,13 @@
 import {
   CreateHistoryAttemptRequest,
   CreateHistoryAttemptResponse,
-  GetAttemptsByUserIdResponse,
+  GetAttemptsByUsernameRequest,
+  GetAttemptsByUsernameResponse,
   HistoryServiceController,
   HistoryServiceControllerMethods,
 } from '@app/microservice/interfaces/history';
 import { Controller } from '@nestjs/common';
 import { HistoryService } from './history.service';
-import { ID } from '@app/microservice/interfaces/common';
 
 @Controller()
 @HistoryServiceControllerMethods()
@@ -22,7 +22,9 @@ export class HistoryController implements HistoryServiceController {
     );
   }
 
-  async getAttemptsByUserId(request: ID): Promise<GetAttemptsByUserIdResponse> {
-    return await this.historyService.getAttemptsByUserId(request);
+  async getAttemptsByUsername(
+    request: GetAttemptsByUsernameRequest,
+  ): Promise<GetAttemptsByUsernameResponse> {
+    return await this.historyService.GetAttemptsByUsername(request);
   }
 }

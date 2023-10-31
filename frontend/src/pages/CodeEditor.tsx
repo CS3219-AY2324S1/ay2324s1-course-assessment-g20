@@ -17,6 +17,7 @@ import TextContent from '../components/TextContent';
 import ChatbotPopup from '../components/Chatbot/ChatbotPopup';
 import { Language } from '../@types/language';
 import { getAllLanguages } from '../api/userApi';
+import { formatLanguage } from '../utils/stringUtils';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.
@@ -136,7 +137,7 @@ const CodeEditor = () => {
               {Object.values(languages).map((language) => {
                 return (
                   <MenuItem key={language} value={language}>
-                    {language}
+                    {formatLanguage(language)}
                   </MenuItem>
                 );
               })}

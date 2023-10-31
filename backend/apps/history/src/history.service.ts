@@ -15,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { AttemptDaoService } from './database/daos/attempt/attempt.dao.service';
 import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
 import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Injectable()
 export class HistoryService implements OnModuleInit {
@@ -99,5 +100,20 @@ export class HistoryService implements OnModuleInit {
     });
 
     return history;
+  }
+
+  async getAttemptsByUserId(request: ID) {
+    const history = await this.historyDaoService.findByUserId(request.id);
+
+    if (!history) {
+      throw new PeerprepException(
+        'Invalid userId provided!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
+
+    return await this.attemptDaoService
+      .findByHistoryId(history.id)
+      .then((attempts) => ({ attempts }));
   }
 }

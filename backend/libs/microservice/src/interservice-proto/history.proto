@@ -2,11 +2,12 @@ syntax = "proto3";
 
 package HistoryPackage;
 
-import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "common.proto";
 
 service HistoryService {
   rpc CreateHistoryAttempt (CreateHistoryAttemptRequest) returns (CreateHistoryAttemptResponse);
+  rpc GetAttemptsByUserId (common.ID) returns (GetAttemptsByUserIdResponse);
 }
 
 message CreateHistoryAttemptRequest {
@@ -16,6 +17,10 @@ message CreateHistoryAttemptRequest {
 
 message CreateHistoryAttemptResponse {
   repeated History histories = 1;
+}
+
+message GetAttemptsByUserIdResponse {
+    repeated Attempt attempts = 1;
 }
 
 message History {

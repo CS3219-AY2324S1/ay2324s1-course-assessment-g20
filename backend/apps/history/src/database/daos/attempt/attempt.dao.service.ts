@@ -18,4 +18,11 @@ export class AttemptDaoService {
       .query()
       .insert({ ...attempt, dateTimeAttempted: new Date() });
   }
+
+  async findByHistoryId(historyId: string) {
+    return await this.attemptModel
+      .query()
+      .select('questionId', 'questionAttempt', 'dateTimeAttempted')
+      .where('historyId', historyId);
+  }
 }

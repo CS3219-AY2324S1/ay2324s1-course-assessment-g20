@@ -19,6 +19,10 @@ import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 import { Language } from '@app/microservice/interfaces/user';
+import {
+  HISTORY_SERVICE_NAME,
+  HistoryServiceClient,
+} from '@app/microservice/interfaces/history';
 
 type YjsWebsocket = AuthenticatedWebsocket & RedisAwareWebsocket;
 
@@ -28,11 +32,14 @@ export class YjsGateway extends BaseWebsocketGateway {
   private static CURRENT_LANGUAGE = 'current_language';
   private mongoUri;
   private collaborationService: CollaborationServiceClient;
+  private historyService: HistoryServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
     @Inject(Service.COLLABORATION_SERVICE)
     private readonly collaborationServiceClient: ClientGrpc,
+    @Inject(Service.HISTORY_SERVICE)
+    private readonly historyServiceClient: ClientGrpc,
     private readonly configService: ConfigService,
   ) {
     super(userServiceClient);
@@ -44,6 +51,10 @@ export class YjsGateway extends BaseWebsocketGateway {
     this.collaborationService =
       this.collaborationServiceClient.getService<CollaborationServiceClient>(
         COLLABORATION_SERVICE_NAME,
+      );
+    this.historyService =
+      this.historyServiceClient.getService<HistoryServiceClient>(
+        HISTORY_SERVICE_NAME,
       );
   }
   async handleDisconnect(connection: YjsWebsocket): Promise<void> {
@@ -67,7 +78,12 @@ export class YjsGateway extends BaseWebsocketGateway {
 
     YjsGateway.propagateLanguageToClient(connection, language);
     YjsGateway.subscribeAndHandleLanguageChange(connection, sessionId);
-    YjsGateway.setupYjs(connection, docName, this.mongoUri);
+    YjsGateway.setupYjs(
+      connection,
+      sessionId,
+      this.mongoUri,
+      this.historyService,
+    );
 
     return YjsGateway.sessionInitialized(connection);
   }
@@ -107,7 +123,12 @@ export class YjsGateway extends BaseWebsocketGateway {
     });
   }
 
-  private static setupYjs(connection, docName, mongoUri) {
+  private static setupYjs(
+    connection: AuthenticatedWebsocket,
+    docName: string,
+    mongoUri,
+    historyService: HistoryServiceClient,
+  ) {
     /**
      * Yjs `setupWSConnection` expects a Request object for auto room detection.
      * We are not using this feature, and can just pass in a dummy object.
@@ -152,8 +173,16 @@ export class YjsGateway extends BaseWebsocketGateway {
       },
       writeState: async (docName, ydoc) => {
         // This is called when all connections to the document are closed.
-        // const yText = ydoc.getText('monaco').toString();
-        // history service method (sessionId, yText);
+
+        // Save attempt to history service
+        const yText = ydoc.getText('monaco').toString();
+
+        await historyService
+          .createHistoryAttempt({
+            sessionId: docName,
+            questionAttempt: yText,
+          })
+          .forEach(({ histories }) => histories);
 
         // flush document on close to have the smallest possible database
         await mdb.flushDocument(docName);

@@ -78,6 +78,17 @@
         "watchAssets": true
       }
     },
+    "history": {
+      "type": "application",
+      "root": "apps/history",
+      "entryFile": "main",
+      "sourceRoot": "apps/history/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/history/tsconfig.app.json",
+        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "watchAssets": true
+      }
+    },
     "config": {
       "type": "library",
       "root": "libs/config",

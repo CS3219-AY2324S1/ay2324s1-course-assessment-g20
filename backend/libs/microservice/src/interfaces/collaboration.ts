@@ -6,6 +6,8 @@ import { Empty } from './google/protobuf/empty';
 import { Question } from './question';
 import { Language } from './user';
 
+export const COLLABORATION_SERVICE_NAME = 'CollaborationService';
+
 export interface CreateCollabSessionRequest {
   userIds: string[];
   questionId: string;
@@ -133,7 +135,7 @@ export function CollaborationServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcMethod('CollaborationService', method)(
+      GrpcMethod(COLLABORATION_SERVICE_NAME, method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -145,7 +147,7 @@ export function CollaborationServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcStreamMethod('CollaborationService', method)(
+      GrpcStreamMethod(COLLABORATION_SERVICE_NAME, method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -153,5 +155,3 @@ export function CollaborationServiceControllerMethods() {
     }
   };
 }
-
-export const COLLABORATION_SERVICE_NAME = 'CollaborationService';

@@ -124,9 +124,13 @@ export class YjsGateway extends BaseWebsocketGateway {
 
     setPersistence({
       bindState: async (docName, ydoc) => {
-        const persistedYdoc = await mdb.getYDoc(docName);
-        const persistedStateVector = Y.encodeStateVector(persistedYdoc);
-        const diff = Y.encodeStateAsUpdate(ydoc, persistedStateVector);
+        const persistedYdoc: Y.Doc = await mdb.getYDoc(docName);
+        const persistedStateVector: Uint8Array =
+          Y.encodeStateVector(persistedYdoc);
+        const diff: Uint8Array = Y.encodeStateAsUpdate(
+          ydoc,
+          persistedStateVector,
+        );
 
         // store the new data in db (if there is any: empty update is an array of 0s)
         if (
@@ -139,7 +143,6 @@ export class YjsGateway extends BaseWebsocketGateway {
 
         // send the persisted data to clients
         Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
-
         // store updates of the document in db
         ydoc.on('update', async (update) => {
           mdb.storeUpdate(docName, update);
@@ -147,8 +150,10 @@ export class YjsGateway extends BaseWebsocketGateway {
 
         persistedYdoc.destroy();
       },
-      writeState: async (docName) => {
+      writeState: async (docName, ydoc) => {
         // This is called when all connections to the document are closed.
+        // const yText = ydoc.getText('monaco').toString();
+        // history service method (sessionId, yText);
 
         // flush document on close to have the smallest possible database
         await mdb.flushDocument(docName);

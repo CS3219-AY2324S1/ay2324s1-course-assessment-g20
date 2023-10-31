@@ -8,12 +8,19 @@ import { AttemptModel } from './database/models/attempt.model';
 import { HistoryModel } from './database/models/history.model';
 import { HistoryController } from './history.controller';
 import { HistoryService } from './history.service';
+import { HistoryDaoModule } from './database/daos/history/history.dao.module';
 
 @Module({
   imports: [
     ConfigModule.loadConfiguration(historyConfiguration),
-    registerGrpcClients([Service.QUESTION_SERVICE]),
+    registerGrpcClients([
+      Service.QUESTION_SERVICE,
+      Service.USER_SERVICE,
+      Service.COLLABORATION_SERVICE,
+    ]),
+    // Database and DAOs
     SqlDatabaseModule.factory([HistoryModel, AttemptModel]),
+    HistoryDaoModule,
   ],
   controllers: [HistoryController],
   providers: [HistoryService],

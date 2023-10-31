@@ -1,7 +1,7 @@
-version: "3"
+version: '3'
 services:
   gateway:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/gateway/Dockerfile
       target: dev
@@ -14,11 +14,10 @@ services:
       - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
     networks:
       - backend
-    env_file:
-      .env.docker
+    env_file: .env.docker
 
   question:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/question/Dockerfile
     depends_on:
@@ -26,11 +25,10 @@ services:
         condition: service_completed_successfully
     networks:
       - backend
-    env_file:
-      .env.docker
+    env_file: .env.docker
 
   user:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/user/Dockerfile
     depends_on:
@@ -38,11 +36,10 @@ services:
         condition: service_completed_successfully
     networks:
       - backend
-    env_file:
-      .env.docker
+    env_file: .env.docker
 
   collaboration:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/collaboration/Dockerfile
     depends_on:
@@ -50,11 +47,10 @@ services:
         condition: service_completed_successfully
     networks:
       - backend
-    env_file:
-      .env.docker
+    env_file: .env.docker
 
   matching:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/matching/Dockerfile
     depends_on:
@@ -64,11 +60,10 @@ services:
         condition: service_healthy
     networks:
       - backend
-    env_file:
-      .env.docker
+    env_file: .env.docker
 
   chatbot:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/chatbot/Dockerfile
     depends_on:
@@ -76,8 +71,18 @@ services:
         condition: service_completed_successfully
     networks:
       - backend
-    env_file:
-      .env.docker
+    env_file: .env.docker
+
+  history:
+    build:
+      context: .
+      dockerfile: ./apps/history/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+    networks:
+      - backend
+    env_file: .env.docker
 
   postgres:
     image: postgres:14.1-alpine
@@ -90,7 +95,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ['CMD-SHELL', 'pg_isready']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -111,7 +116,7 @@ services:
       start_period: 20s
 
   sql-migrations:
-    build: 
+    build:
       context: .
       dockerfile: ./scripts/Dockerfile
     depends_on:
@@ -119,8 +124,7 @@ services:
         condition: service_healthy
       mongo:
         condition: service_healthy
-    env_file:
-      .env.docker
+    env_file: .env.docker
     environment:
       - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question?authMechanism=DEFAULT
       - COLLABORATION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-collaboration?authMechanism=DEFAULT
@@ -145,11 +149,10 @@ services:
     restart: always
     networks:
       - backend
-    env_file:
-      .env.docker
+    env_file: .env.docker
     command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
     healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5

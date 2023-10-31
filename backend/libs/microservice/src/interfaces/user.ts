@@ -6,6 +6,8 @@ import { Deleted, ID, IDs, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
 import { BoolValue } from './google/protobuf/wrappers';
 
+export const USER_PROFILE_SERVICE_NAME = 'UserProfileService';
+
 export interface User {
   id?: string | undefined;
   authProvider: string;
@@ -246,7 +248,7 @@ export function UserProfileServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcMethod('UserProfileService', method)(
+      GrpcMethod(USER_PROFILE_SERVICE_NAME, method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -258,7 +260,7 @@ export function UserProfileServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcStreamMethod('UserProfileService', method)(
+      GrpcStreamMethod(USER_PROFILE_SERVICE_NAME, method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -266,5 +268,3 @@ export function UserProfileServiceControllerMethods() {
     }
   };
 }
-
-export const USER_PROFILE_SERVICE_NAME = 'UserProfileService';

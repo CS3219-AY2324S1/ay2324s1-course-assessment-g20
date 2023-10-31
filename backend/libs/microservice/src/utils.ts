@@ -80,4 +80,8 @@ const SERVICE_TO_PROTO_OPTIONS_MAP = new Map<Service, GrpcOptions['options']>([
     Service.MATCHING_SERVICE,
     { package: 'MatchingPackage', protoPath: getFullProtoPath('matching') },
   ],
+  [
+    Service.HISTORY_SERVICE,
+    { package: 'HistoryPackage', protoPath: getFullProtoPath('history') },
+  ],
 ]);

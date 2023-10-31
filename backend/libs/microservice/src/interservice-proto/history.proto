@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package HistoryPackage;
+
+import "google/protobuf/empty.proto";
+
+service HistoryService {
+  rpc CreateHistoryAttempt (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
+
+message UserId {
+  string userId = 1;
+}
+
+message SessionTicket {
+  string ticketId = 1;
+}
+
+ 

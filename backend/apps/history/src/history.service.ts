@@ -10,6 +10,11 @@ import { Service } from '@app/microservice/services';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { HistoryDaoService } from './database/daos/history/history.dao.service';
+import { CreateHistoryAttemptRequest } from '@app/microservice/interfaces/history';
+import { firstValueFrom } from 'rxjs';
+import { AttemptDaoService } from './database/daos/attempt/attempt.dao.service';
+import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
+import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
 
 @Injectable()
 export class HistoryService implements OnModuleInit {
@@ -22,6 +27,7 @@ export class HistoryService implements OnModuleInit {
     @Inject(Service.COLLABORATION_SERVICE)
     private readonly collabServiceClient: ClientGrpc,
     private readonly historyDaoService: HistoryDaoService,
+    private readonly attemptDaoService: AttemptDaoService,
   ) {}
 
   onModuleInit() {
@@ -35,7 +41,65 @@ export class HistoryService implements OnModuleInit {
       );
   }
 
-  createHistoryAttempt() {
-    this.historyDaoService.create('test');
+  async createHistoryAttempt(
+    createHistoryAttemptInfo: CreateHistoryAttemptRequest,
+  ) {
+    const { sessionId, questionAttempt } = createHistoryAttemptInfo;
+
+    // Get questionId
+    const questionId = await this.validateSessionIdAndGetQuestionId(sessionId);
+
+    // Get userIds
+    const userIds = [
+      '46d8f468-abcb-4b8f-908c-2e68d344cc4c',
+      '3bf8c004-0ecf-494f-9aff-2b7afb618881',
+    ];
+
+    // Create history for each user
+    return await Promise.all(
+      userIds.map((userId) =>
+        this.createHistoryForUser(userId, questionId, questionAttempt),
+      ),
+    ).then((historiesCreated) => {
+      console.log(historiesCreated);
+      return { histories: historiesCreated };
+    });
+  }
+
+  private async validateSessionIdAndGetQuestionId(sessionId: string) {
+    const questionId = await firstValueFrom(
+      this.collabService.getQuestionIdFromSessionId({
+        id: sessionId,
+      }),
+    ).then(({ questionId }) => questionId);
+
+    if (!questionId) {
+      throw new PeerprepException(
+        'Invalid sessionId provided!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
+
+    return questionId;
+  }
+
+  private async createHistoryForUser(
+    userId: string,
+    questionId: string,
+    questionAttempt: string,
+  ) {
+    let history = await this.historyDaoService.findByUserId(userId);
+
+    if (!history) {
+      history = await this.historyDaoService.create(userId);
+    }
+
+    await this.attemptDaoService.createAttempt({
+      historyId: history.id,
+      questionId,
+      questionAttempt,
+    });
+
+    return history;
   }
 }

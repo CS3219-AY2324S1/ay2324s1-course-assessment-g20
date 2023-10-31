@@ -1,4 +1,7 @@
 import {
+  CreateHistoryAttemptRequest,
+  CreateHistoryAttemptResponse,
+  History,
   HistoryServiceController,
   HistoryServiceControllerMethods,
 } from '@app/microservice/interfaces/history';
@@ -10,7 +13,11 @@ import { HistoryService } from './history.service';
 export class HistoryController implements HistoryServiceController {
   constructor(private readonly historyService: HistoryService) {}
 
-  createHistoryAttempt() {
-    this.historyService.createHistoryAttempt();
+  async createHistoryAttempt(
+    createHistoryAttemptInfo: CreateHistoryAttemptRequest,
+  ): Promise<CreateHistoryAttemptResponse> {
+    return await this.historyService.createHistoryAttempt(
+      createHistoryAttemptInfo,
+    );
   }
 }

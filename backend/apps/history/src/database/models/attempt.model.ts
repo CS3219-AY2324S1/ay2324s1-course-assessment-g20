@@ -5,10 +5,10 @@ export class AttemptModel extends BaseModelUUID {
 
   readonly historyId: string;
   readonly questionId: string;
-  readonly attempt: string;
-  dateTimeAttemped: Date;
+  readonly questionAttempt: string;
+  dateTimeAttempted: Date;
 
   $beforeInsert() {
-    this.dateTimeAttemped = new Date();
+    this.dateTimeAttempted = new Date();
   }
 }

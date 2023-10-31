@@ -1,55 +1,47 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
+import { Empty } from './google/protobuf/empty';
 // import { Observable } from 'rxjs';
 // import { ID } from './common';
 // import { Question } from './question';
 
 export const HISTORY_SERVICE_NAME = 'HistoryService';
 
-// export interface CreateCollabSessionRequest {
-//   userIds: string[];
-//   questionId: string;
-// }
-
-// export interface GetQuestionIdFromSessionIdResponse {
-//   questionId: string;
-// }
-
-// export interface GetSessionAndWsTicketRequest {
-//   sessionId: string;
-//   userId: string;
-// }
-
-// export interface GetSessionAndWsTicketResponse {
-//   question: Question | undefined;
-//   ticket: string;
-// }
-
-// export interface GetSessionIdFromTicketResponse {
-//   sessionId: string;
-// }
-
-// export interface Session {
-//   id: string;
-//   questionId: string;
-//   userIds: UserId[];
-//   sessionTickets: SessionTicket[];
-// }
-
-export interface UserId {
-  userId: string;
+export interface CreateHistoryAttemptRequest {
+  sessionId: string;
+  questionAttempt: string;
 }
 
-export interface SessionTicket {
-  ticketId: string;
+export interface CreateHistoryAttemptResponse {
+  histories: History[];
+}
+
+export interface History {
+  id: string;
+  userId: string;
+  attempts: Attempt[];
+}
+
+export interface Attempt {
+  questionId: string;
+  questionAttempt: string;
+  dateTimeAttempted: Date;
 }
 
 export interface HistoryServiceClient {
-  createHistoryAttempt(): void;
+  createHistoryAttempt(
+    request: CreateHistoryAttemptRequest,
+  ): Observable<CreateHistoryAttemptResponse>;
 }
 
 export interface HistoryServiceController {
-  createHistoryAttempt(): void;
+  createHistoryAttempt(
+    request: CreateHistoryAttemptRequest,
+  ):
+    | Promise<CreateHistoryAttemptResponse>
+    | Observable<CreateHistoryAttemptResponse>
+    | CreateHistoryAttemptResponse;
 }
 
 export function HistoryServiceControllerMethods() {

@@ -57,4 +57,8 @@ export class CollaborationController implements CollaborationServiceController {
   }: ID): Promise<GetSessionIdFromTicketResponse> {
     return this.collaborationService.getSessionIdFromTicket(id);
   }
+
+  // getUserIdsFromSessionId({ id }: ID) {
+  //   return this.collaborationService.getUserIdsFromSessionId(id);
+  // }
 }

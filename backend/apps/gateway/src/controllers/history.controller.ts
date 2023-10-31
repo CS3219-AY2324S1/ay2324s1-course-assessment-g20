@@ -22,8 +22,11 @@ export class HistoryController implements OnModuleInit {
       );
   }
 
-  @Get('create')
+  @Get('')
   createHistoryAttempt() {
-    return this.historyService.createHistoryAttempt();
+    return this.historyService.createHistoryAttempt({
+      sessionId: 'a4f7aa88-72d6-40cd-9bf8-ae77d646dabf',
+      questionAttempt: 'test',
+    });
   }
 }

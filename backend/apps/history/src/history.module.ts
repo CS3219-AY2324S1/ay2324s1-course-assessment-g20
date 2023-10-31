@@ -9,6 +9,7 @@ import { HistoryModel } from './database/models/history.model';
 import { HistoryController } from './history.controller';
 import { HistoryService } from './history.service';
 import { HistoryDaoModule } from './database/daos/history/history.dao.module';
+import { AttemptDaoModule } from './database/daos/attempt/attempt.dao.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { HistoryDaoModule } from './database/daos/history/history.dao.module';
     // Database and DAOs
     SqlDatabaseModule.factory([HistoryModel, AttemptModel]),
     HistoryDaoModule,
+    AttemptDaoModule,
   ],
   controllers: [HistoryController],
   providers: [HistoryService],

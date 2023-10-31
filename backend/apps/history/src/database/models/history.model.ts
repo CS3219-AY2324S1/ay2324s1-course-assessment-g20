@@ -6,10 +6,15 @@ export class HistoryModel extends BaseModelUUID {
   static tableName = 'history';
 
   readonly userId: string;
-  readonly attemptIds: { attemptId: string }[];
+  readonly attempts: {
+    attemptId: string;
+    questionId: string;
+    questionAttempt: string;
+    dateTimeAttempted: Date;
+  }[];
 
   static relationMappings = () => ({
-    attemptIds: {
+    attempts: {
       relation: Model.HasManyRelation,
       modelClass: AttemptModel,
       filter: (query) => query.select('attemptId'),

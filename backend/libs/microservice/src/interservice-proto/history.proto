@@ -3,17 +3,31 @@ syntax = "proto3";
 package HistoryPackage;
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 service HistoryService {
-  rpc CreateHistoryAttempt (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc CreateHistoryAttempt (CreateHistoryAttemptRequest) returns (CreateHistoryAttemptResponse);
 }
 
-message UserId {
-  string userId = 1;
+message CreateHistoryAttemptRequest {
+  string sessionId = 1;
+  string questionAttempt = 2;
 }
 
-message SessionTicket {
-  string ticketId = 1;
+message CreateHistoryAttemptResponse {
+  repeated History histories = 1;
+}
+
+message History {
+  string id = 1;
+  string userId = 2;
+  repeated Attempt attempts = 3;
+}
+
+message Attempt {
+  string questionId = 1;
+  string questionAttempt = 2;
+  google.protobuf.Timestamp dateTimeAttempted = 3;
 }
 
  

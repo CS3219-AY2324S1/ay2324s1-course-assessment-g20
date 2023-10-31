@@ -50,10 +50,9 @@ export class HistoryService implements OnModuleInit {
     const questionId = await this.validateSessionIdAndGetQuestionId(sessionId);
 
     // Get userIds
-    const userIds = [
-      '46d8f468-abcb-4b8f-908c-2e68d344cc4c',
-      '3bf8c004-0ecf-494f-9aff-2b7afb618881',
-    ];
+    const userIds = await firstValueFrom(
+      this.collabService.getUserIdsFromSessionId({ id: sessionId }),
+    ).then(({ userIds }) => userIds.map(({ userId }) => userId));
 
     // Create history for each user
     return await Promise.all(
@@ -61,7 +60,6 @@ export class HistoryService implements OnModuleInit {
         this.createHistoryForUser(userId, questionId, questionAttempt),
       ),
     ).then((historiesCreated) => {
-      console.log(historiesCreated);
       return { histories: historiesCreated };
     });
   }

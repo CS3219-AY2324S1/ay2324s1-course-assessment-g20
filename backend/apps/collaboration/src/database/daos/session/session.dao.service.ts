@@ -4,6 +4,7 @@ import { SessionModel } from '../../models/session.model';
 import { BaseModel } from '@app/sql-database';
 import { SessionTicketModel } from '../../models/sessionTicket.model';
 import { SetSessionLanguageIdRequest } from '@app/microservice/interfaces/collaboration';
+import { UserSessionModel } from '../../models/userSession.model';
 
 @Injectable()
 export class SessionDaoService {
@@ -12,6 +13,8 @@ export class SessionDaoService {
     private sessionModel: ModelClass<SessionModel>,
     @Inject('SessionTicketModel')
     private sessionTicketModel: ModelClass<SessionTicketModel>,
+    @Inject('UserSessionModel')
+    private userSessionModel: ModelClass<UserSessionModel>,
   ) {}
 
   create(
@@ -61,5 +64,12 @@ export class SessionDaoService {
       .select('questionId')
       .where('id', sessionId)
       .first();
+  }
+
+  getUserIdsFromSession(sessionId: string) {
+    return this.userSessionModel
+      .query()
+      .select('userId')
+      .where('sessionId', sessionId);
   }
 }

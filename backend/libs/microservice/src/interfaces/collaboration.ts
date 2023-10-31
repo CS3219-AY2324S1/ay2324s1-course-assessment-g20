@@ -40,6 +40,10 @@ export interface GetSessionIdFromTicketResponse {
   sessionId: string;
 }
 
+export interface GetUserIdsFromSessionIdResponse {
+  userIds: UserId[];
+}
+
 export interface Session {
   id: string;
   questionId: string;
@@ -77,6 +81,10 @@ export interface CollaborationServiceClient {
   getLanguageIdFromSessionId(request: ID): Observable<Language>;
 
   setSessionLanguageId(request: SetSessionLanguageIdRequest): Observable<Empty>;
+
+  getUserIdsFromSessionId(
+    request: ID,
+  ): Observable<GetUserIdsFromSessionIdResponse>;
 }
 
 export interface CollaborationServiceController {
@@ -117,6 +125,13 @@ export interface CollaborationServiceController {
   ): Promise<Language> | Observable<Language> | Language;
 
   setSessionLanguageId(request: SetSessionLanguageIdRequest): void;
+
+  getUserIdsFromSessionId(
+    request: ID,
+  ):
+    | Promise<GetUserIdsFromSessionIdResponse>
+    | Observable<GetUserIdsFromSessionIdResponse>
+    | GetUserIdsFromSessionIdResponse;
 }
 
 export function CollaborationServiceControllerMethods() {
@@ -129,6 +144,7 @@ export function CollaborationServiceControllerMethods() {
       'getQuestionIdFromSessionId',
       'getLanguageIdFromSessionId',
       'setSessionLanguageId',
+      'getUserIdsFromSessionId',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

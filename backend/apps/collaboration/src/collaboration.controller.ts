@@ -9,6 +9,7 @@ import {
   GetSessionOrTicketRequest,
   GetSessionResponse,
   GetSessionTicketResponse,
+  GetUserIdsFromSessionIdResponse,
   SetSessionLanguageIdRequest,
 } from '@app/microservice/interfaces/collaboration';
 import { ID } from '@app/microservice/interfaces/common';
@@ -58,7 +59,9 @@ export class CollaborationController implements CollaborationServiceController {
     return this.collaborationService.getSessionIdFromTicket(id);
   }
 
-  // getUserIdsFromSessionId({ id }: ID) {
-  //   return this.collaborationService.getUserIdsFromSessionId(id);
-  // }
+  getUserIdsFromSessionId(
+    request: ID,
+  ): Promise<GetUserIdsFromSessionIdResponse> {
+    return this.collaborationService.getUserIdsFromSessionId(request);
+  }
 }

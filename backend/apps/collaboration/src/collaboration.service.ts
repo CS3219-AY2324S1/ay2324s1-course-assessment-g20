@@ -7,6 +7,7 @@ import {
   CreateCollabSessionRequest,
   GetQuestionIdFromSessionIdResponse,
   GetSessionOrTicketRequest,
+  GetUserIdsFromSessionIdResponse,
   SetSessionLanguageIdRequest,
 } from '@app/microservice/interfaces/collaboration';
 import {
@@ -245,5 +246,21 @@ export class CollaborationService implements OnModuleInit {
         PEERPREP_EXCEPTION_TYPES.FORBIDDEN,
       );
     }
+  }
+
+  getUserIdsFromSessionId(
+    request: ID,
+  ): Promise<GetUserIdsFromSessionIdResponse> {
+    return this.sessionDaoService
+      .getUserIdsFromSession(request.id)
+      .then((userIds: { userId: string }[] | void) => {
+        if (!userIds)
+          throw new PeerprepException(
+            'Invalid sessionId provided!',
+            PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+          );
+
+        return { userIds: userIds.map((u) => ({ userId: u.userId })) };
+      });
   }
 }

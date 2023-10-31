@@ -25,6 +25,14 @@ export async function deleteQuestionWithId(questionId: string) {
   });
 }
 
+export async function updateQuestionWithId(question: IQuestion) {
+  return requestBackend<IQuestion>({
+    url: `${backendServicesPaths.question.questions}/${question._id}`,
+    method: HttpRequestMethod.PATCH,
+    data: { question },
+  });
+}
+
 export async function getQuestionWithId(questionId: string) {
   return requestBackend<IQuestion>({
     url: `${backendServicesPaths.question.questions}/${questionId}`,

@@ -53,6 +53,12 @@
       ],
       "@app/utils/*": [
         "libs/utils/src/*"
+      ],
+      "@app/mocks": [
+        "libs/mocks/src"
+      ],
+      "@app/mocks/*": [
+        "libs/mocks/src/*"
       ]
     }
   }

@@ -144,6 +144,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/utils/tsconfig.lib.json"
       }
+    },
+    "mocks": {
+      "type": "library",
+      "root": "libs/mocks",
+      "entryFile": "index",
+      "sourceRoot": "libs/mocks/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mocks/tsconfig.lib.json"
+      }
     }
   }
 }

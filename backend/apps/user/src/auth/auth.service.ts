@@ -7,8 +7,8 @@ import { UserDaoService } from '../database/daos/users/user.dao.service';
 import { UserModel } from '../database/models/user.model';
 import { WebsocketTicketDaoService } from '../database/daos/websocketTickets/websocketTicket.dao.service';
 import { CreateWebsocketTicketInfoRequest } from '@app/microservice/interfaces/user';
-import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
-import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
+import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
 
 @Injectable()
 export class AuthService {

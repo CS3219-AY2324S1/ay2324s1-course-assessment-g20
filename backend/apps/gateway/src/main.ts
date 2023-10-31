@@ -4,7 +4,7 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { MicroserviceOptions } from '@nestjs/microservices';
-import { GatewayExceptionFilter } from 'libs/exception-filter/gateway-exception.filter';
+import { GatewayExceptionFilter } from '@app/utils/exceptionFilter/gateway-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

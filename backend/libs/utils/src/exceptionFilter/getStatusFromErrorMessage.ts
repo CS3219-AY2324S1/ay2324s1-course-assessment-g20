@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { PEERPREP_EXCEPTION_TYPES } from './constants';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 
 export const getStatusFromErrorMessage = (message: string): number => {
   if (message.includes(PEERPREP_EXCEPTION_TYPES.BAD_REQUEST)) {

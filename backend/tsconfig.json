@@ -18,12 +18,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/utils-lib": [
-        "libs/utils-lib/src"
-      ],
-      "@app/utils-lib/*": [
-        "libs/utils-lib/src/*"
-      ],
       "@app/sql-database": [
         "libs/sql-database/src"
       ],
@@ -53,6 +47,12 @@
       ],
       "@app/websocket/*": [
         "libs/websocket/src/*"
+      ],
+      "@app/utils": [
+        "libs/utils/src"
+      ],
+      "@app/utils/*": [
+        "libs/utils/src/*"
       ]
     }
   }

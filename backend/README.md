@@ -13,7 +13,7 @@
 1. Run `yarn stop:docker` to stop the microservice containers.
 
 ## Testing (local)
-1. In the `backend` directory, run `yarn test` to run the E2E tests
+1. In the `backend` directory, run `yarn test:dev` to run the E2E tests
 
 ## Testing (CI pipeline with Docker)
 1. Install Docker Desktop if you have not already done so.

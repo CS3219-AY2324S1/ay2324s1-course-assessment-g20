@@ -35,10 +35,6 @@ function HistoryBox({ username }: { username: string }) {
                 (response) => response.data,
               );
 
-              console.log('TESTIN', {
-                attempt: attempt,
-                question: question,
-              });
               return {
                 attempt: attempt,
                 question: question,
@@ -93,7 +89,7 @@ function HistoryBox({ username }: { username: string }) {
 
                   <Popup
                     title={row.question.title}
-                    children={row.attempt.questionAttempt.toString()}
+                    children={'Your solution:\n\n' + row.attempt.questionAttempt.toString()}
                     openPopup={rowIndex == index && popupVisibility}
                     closePopup={handlePopupOnClose}
                   ></Popup>

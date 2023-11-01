@@ -15,13 +15,13 @@ export async function seed(knex: Knex): Promise<void> {
   await knex.raw('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
 
   // Inserts seed entries
-  await knex('users').insert([MOCK_ADMIN_USER, MOCK_USER_1]
-    .map((user) => ({
+  await knex('users').insert(
+    [MOCK_ADMIN_USER, MOCK_USER_1].map((user) => ({
       id: user.id,
       auth_provider: user.authProvider,
       auth_provider_id: user.authProviderId,
       oauth_name: user.oauthName,
       email: user.email,
-    }))
+    })),
   );
 }

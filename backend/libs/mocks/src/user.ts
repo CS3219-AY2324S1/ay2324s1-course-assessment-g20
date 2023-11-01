@@ -22,7 +22,12 @@ export const MOCK_ADMIN_USER_PROFILE: UserProfile = {
   name: MOCK_ADMIN_NAME,
   username: MOCK_ADMIN_USERNAME,
   preferredLanguageId: Language.JAVASCRIPT,
+  preferredLanguage: {
+    id: Language.JAVASCRIPT,
+    name: Language[Language.JAVASCRIPT],
+  },
   roleId: Role.MAINTAINER,
+  role: { id: Role.MAINTAINER, name: Role[Role.MAINTAINER] },
 };
 
 export const MOCK_USER_1_PROFILE: UserProfile = {
@@ -30,7 +35,12 @@ export const MOCK_USER_1_PROFILE: UserProfile = {
   name: MOCK_USER_1_NAME,
   username: MOCK_USER_1_USERNAME,
   preferredLanguageId: Language.TYPESCRIPT,
+  preferredLanguage: {
+    id: Language.TYPESCRIPT,
+    name: Language[Language.TYPESCRIPT],
+  },
   roleId: Role.REGULAR,
+  role: { id: Role.REGULAR, name: Role[Role.REGULAR] },
 };
 
 export const MOCK_ADMIN_USER: User = {

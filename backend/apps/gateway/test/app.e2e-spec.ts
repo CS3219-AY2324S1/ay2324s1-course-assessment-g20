@@ -12,6 +12,9 @@ import {
   MOCK_DIFFICULTY_2,
   MOCK_CATEGORY_2,
   MOCK_QUESTION_2,
+  MOCK_ADMIN_USER_PROFILE,
+  MOCK_USER_1_PROFILE,
+  MOCK_USER_1_UUID,
 } from '@app/mocks';
 import { Service } from '@app/microservice/services';
 import { ClientGrpc } from '@nestjs/microservices';
@@ -20,6 +23,7 @@ import {
   UserAuthServiceClient,
 } from '@app/microservice/interfaces/user';
 import { firstValueFrom } from 'rxjs';
+import { Language } from '@app/types/languages';
 
 describe('Gateway (e2e)', () => {
   let app: INestApplication;
@@ -419,6 +423,82 @@ describe('Gateway (e2e)', () => {
 
     it(`(GET) should return 401 unauthorized with unauthenticated user`, () => {
       request(app.getHttpServer()).get(endpoint).expect(401);
+    });
+  });
+
+  describe('/user', () => {
+    const endpoint = '/user';
+    it(`(GET) should return 200 OK with authenticated user`, async () => {
+      const { body } = await request(app.getHttpServer())
+        .get(endpoint)
+        .set('Authorization', `Bearer ${MOCK_USER_1_TOKEN}`)
+        .expect(200);
+      expect(body).toEqual(
+        expect.objectContaining({
+          name: MOCK_USER_1_PROFILE.name,
+          username: MOCK_USER_1_PROFILE.username,
+          preferredLanguageId: MOCK_USER_1_PROFILE.preferredLanguageId,
+          preferredLanguage: MOCK_USER_1_PROFILE.preferredLanguage,
+          roleId: MOCK_USER_1_PROFILE.roleId,
+          role: MOCK_USER_1_PROFILE.role,
+        }),
+      );
+    });
+
+    it(`(GET) should return 401 unauthorized with unauthenticated user`, () => {
+      request(app.getHttpServer()).get(endpoint).expect(401);
+    });
+
+    it(`(GET) specific user should return 200 OK with authenticated user`, async () => {
+      const { body } = await request(app.getHttpServer())
+        .get(`${endpoint}/${MOCK_ADMIN_USER_PROFILE.username}`)
+        .set('Authorization', `Bearer ${MOCK_USER_1_TOKEN}`)
+        .expect(200);
+      expect(body).toEqual(
+        expect.objectContaining({
+          name: MOCK_ADMIN_USER_PROFILE.name,
+          username: MOCK_ADMIN_USER_PROFILE.username,
+          preferredLanguageId: MOCK_ADMIN_USER_PROFILE.preferredLanguageId,
+          preferredLanguage: MOCK_ADMIN_USER_PROFILE.preferredLanguage,
+          roleId: MOCK_ADMIN_USER_PROFILE.roleId,
+          role: MOCK_ADMIN_USER_PROFILE.role,
+        }),
+      );
+    });
+
+    it(`(GET) specific user should return 401 unauthorized with unauthenticated user`, () => {
+      request(app.getHttpServer())
+        .get(`${endpoint}/${MOCK_ADMIN_USER_PROFILE.username}`)
+        .expect(401);
+    });
+
+    it(`(PATCH) should return 200 OK with authenticated user`, async () => {
+      const { body } = await request(app.getHttpServer())
+        .patch(endpoint)
+        .send({
+          preferredLanguageId: Language.JAVASCRIPT,
+        })
+        .set('Authorization', `Bearer ${MOCK_USER_1_TOKEN}`)
+        .expect(200);
+      expect(body).toEqual(
+        expect.objectContaining({
+          ...MOCK_USER_1_PROFILE,
+          preferredLanguageId: Language.JAVASCRIPT,
+          preferredLanguage: {
+            id: Language.JAVASCRIPT,
+            name: Language[Language.JAVASCRIPT],
+          },
+          userId: MOCK_USER_1_UUID,
+        }),
+      );
+    });
+
+    it(`(DELETE) should return 200 OK with authenticated user`, async () => {
+      const { body } = await request(app.getHttpServer())
+        .delete(endpoint)
+        .set('Authorization', `Bearer ${MOCK_USER_1_TOKEN}`)
+        .expect(200);
+      expect(body).toEqual(expect.objectContaining({ deletedCount: 1 }));
     });
   });
 });

@@ -30,7 +30,12 @@ export default function Popup({ title, children, openPopup, closePopup }: PopupP
           X
         </Button>
       </div>
-      <DialogContent sx={{ pb: 5 }}>
+      <DialogContent
+        sx={{ pb: 5 }}
+        style={{
+          whiteSpace: 'pre-line', // This property preserves newline characters
+        }}
+      >
         <TextContent content={children} />
       </DialogContent>
     </Dialog>

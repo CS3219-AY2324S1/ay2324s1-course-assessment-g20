@@ -23,6 +23,7 @@ export class AttemptDaoService {
     return await this.attemptModel
       .query()
       .select('questionId', 'questionAttempt', 'dateTimeAttempted')
-      .where('historyId', historyId);
+      .where('historyId', historyId)
+      .orderBy('dateTimeAttempted', 'desc');
   }
 }

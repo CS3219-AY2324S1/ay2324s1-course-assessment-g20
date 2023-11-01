@@ -3,9 +3,18 @@ import {
   HistoryServiceClient,
 } from '@app/microservice/interfaces/history';
 import { Service } from '@app/microservice/services';
-import { Controller, Get, Inject, OnModuleInit } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  OnModuleInit,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { map } from 'rxjs';
+import HistoryAttemptDto from '../dtos/history/historyAttempt.dto';
 
 @Controller('history')
 export class HistoryController implements OnModuleInit {
@@ -23,19 +32,16 @@ export class HistoryController implements OnModuleInit {
       );
   }
 
-  @Get('create')
-  createHistoryAttempt() {
-    return this.historyService.createHistoryAttempt({
-      sessionId: 'fb72fb0b-4131-4f52-87d5-180f5d6a21df',
-      questionAttempt: 'test',
-    });
+  @Post('attempts')
+  createHistoryAttempt(@Body('attempt') attempt: HistoryAttemptDto) {
+    return this.historyService.createHistoryAttempt(attempt);
   }
 
-  @Get('attempts')
-  GetAttemptsByUsername() {
+  @Get('attempts/:username')
+  GetAttemptsByUsername(@Param('username') username: string) {
     return this.historyService
       .getAttemptsByUsername({
-        username: 'bryann',
+        username: username,
       })
       .pipe(map(({ attempts }) => attempts || []));
   }

@@ -1,33 +1,23 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { useProfile } from '../hooks/useProfile';
-import { useEffect, useState } from 'react';
-import { UserProfile } from '../@types/userProfile';
-import { getUserProfileByUsername } from '../api/userApi';
 import { frontendPaths } from '../routes/paths';
 import { Box, Button, Divider, Paper, Typography } from '@mui/material';
 import { formatLanguage } from '../utils/stringUtils';
+import { useNavigate } from 'react-router-dom';
+import { UserProfile } from '../@types/userProfile';
 
-function ProfileBox() {
-  const { username } = useParams();
-  const { username: ownUsername, preferredLanguage, name } = useProfile();
-  const [isOwnProfile, setIsOwnProfile] = useState(true);
-  const [profile, setProfile] = useState<UserProfile>();
+function ProfileBox({
+  isOwnProfile,
+  name,
+  ownUsername,
+  preferredLanguage,
+  profile,
+}: {
+  isOwnProfile: boolean;
+  name: string;
+  ownUsername: string;
+  preferredLanguage: string;
+  profile: UserProfile | undefined;
+}) {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setIsOwnProfile(username === ownUsername);
-    if (!isOwnProfile) {
-      const fetchAndSetProfile = async () => {
-        try {
-          const { data } = await getUserProfileByUsername(username ?? '');
-          setProfile(data);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchAndSetProfile();
-    }
-  }, [isOwnProfile, username]);
 
   const handleEditProfile = () => {
     navigate(frontendPaths.editProfile);

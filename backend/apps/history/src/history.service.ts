@@ -114,7 +114,7 @@ export class HistoryService implements OnModuleInit {
     return history;
   }
 
-  async GetAttemptsByUsername(request: GetAttemptsByUsernameRequest) {
+  async getAttemptsByUsername(request: GetAttemptsByUsernameRequest) {
     const history = await this.historyDaoService.findByUsername(
       request.username,
     );

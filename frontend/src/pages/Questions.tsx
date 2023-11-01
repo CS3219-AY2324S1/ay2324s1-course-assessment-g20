@@ -4,11 +4,8 @@ import {
   Grid,
   Paper,
   Stack,
-  styled,
   Table,
   TableBody,
-  TableCell,
-  tableCellClasses,
   TableContainer,
   TableHead,
   TableRow,
@@ -21,27 +18,11 @@ import { useEffect, useState } from 'react';
 import { deleteQuestionWithId, getQuestions } from '../api/questionBankApi';
 import { EMPTY_QUESTION, IQuestion } from '../@types/question';
 import { useProfile } from '../hooks/useProfile';
+import { StyledTableCell, StyledTableRow, getDifficultyColor } from '../utils/styleUtils';
 
 export default function Dashboard() {
   const { isMaintainer } = useProfile();
   const { palette } = useTheme();
-
-  // Styling for dashboard table
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.white,
-      color: theme.palette.common.black,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
-
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
-    },
-  }));
 
   const [rows, setRows] = useState<IQuestion[]>([]);
   const fetchAndSetQuestions = () => {
@@ -103,19 +84,6 @@ export default function Dashboard() {
     setOpenForm(true);
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Easy':
-        return palette.easy.main;
-      case 'Medium':
-        return palette.medium.main;
-      case 'Hard':
-        return palette.hard.main;
-      default:
-        return 'black';
-    }
-  };
-
   return (
     <Box>
       <Grid container spacing={2} pb={3}>
@@ -169,19 +137,21 @@ export default function Dashboard() {
                   >
                     {row.title}
                   </Typography>
-                  {popupVisibility && rowIndex == index && (
-                    <Popup
-                      questionId={row._id}
-                      title={row.title}
-                      children={row.description}
-                      openPopup={rowIndex == index && popupVisibility}
-                      closePopup={handlePopupOnClose}
-                    ></Popup>
-                  )}
+
+                  <Popup
+                    questionId={row._id}
+                    title={row.title}
+                    children={row.description}
+                    openPopup={rowIndex == index && popupVisibility}
+                    closePopup={handlePopupOnClose}
+                  ></Popup>
                 </StyledTableCell>
                 <StyledTableCell align="left">{row.categories.join(', ')}</StyledTableCell>
                 <StyledTableCell align="left">
-                  <Typography variant="subtitle2" color={getDifficultyColor(row.difficulty)}>
+                  <Typography
+                    variant="subtitle2"
+                    color={getDifficultyColor(palette, row.difficulty)}
+                  >
                     {row.difficulty}
                   </Typography>
                 </StyledTableCell>

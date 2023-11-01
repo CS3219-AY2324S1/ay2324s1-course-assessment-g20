@@ -25,6 +25,6 @@ export class HistoryController implements HistoryServiceController {
   async getAttemptsByUsername(
     request: GetAttemptsByUsernameRequest,
   ): Promise<GetAttemptsByUsernameResponse> {
-    return await this.historyService.GetAttemptsByUsername(request);
+    return await this.historyService.getAttemptsByUsername(request);
   }
 }

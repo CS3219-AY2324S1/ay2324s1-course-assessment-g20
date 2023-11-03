@@ -1,9 +1,10 @@
 import { MONGO_SERVER_ERROR_CODES } from '../constants';
 
-export const isMongoServerError = (error) => error.name === 'MongoServerError';
+export const isMongoServerError = (error): boolean =>
+  error.name === 'MongoServerError';
 
-export const mapMongoServerErrorToCustomMessage = (error) => {
-  if (error.name === 'MongoServerError') {
+export const mapMongoServerErrorToCustomMessage = (error): string => {
+  if (isMongoServerError(error)) {
     switch (error.code) {
       case MONGO_SERVER_ERROR_CODES.DUPLICATE_KEY:
         const dupKeyInfo = error.message.match(/dup key: { (.+?) }/);
@@ -17,4 +18,6 @@ export const mapMongoServerErrorToCustomMessage = (error) => {
         return 'A MongoDB error occurred.';
     }
   }
+
+  return 'Internal Server Error.';
 };

@@ -1,7 +1,9 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { getStatusFromErrorMessage } from './getStatusFromErrorMessage';
-import { GRPC_UNKNOWN_ERROR } from '@app/types/exceptions';
+import {
+  getErrorTypeAndMessageFromException,
+  getStatusFromErrorType,
+} from './utils/peerPrepExceptionUtils';
 
 @Catch()
 export class GatewayExceptionFilter implements ExceptionFilter {
@@ -10,12 +12,13 @@ export class GatewayExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const message: string = (exception as any)?.message;
-    const status: number = getStatusFromErrorMessage(message);
+    const [errorType, message] = getErrorTypeAndMessageFromException(exception);
+    const status: number = getStatusFromErrorType(errorType);
 
     response.status(status).json({
       statusCode: status,
-      message: message.replace(GRPC_UNKNOWN_ERROR, ''),
+      error: errorType,
+      message: message,
       timestamp: new Date().toISOString(),
       path: request.url,
       method: request.method,

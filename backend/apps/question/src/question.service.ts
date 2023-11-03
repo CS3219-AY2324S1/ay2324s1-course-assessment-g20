@@ -110,60 +110,93 @@ export class QuestionService {
   }
 
   public async getQuestionWithId(questionId: string) {
-    const questionObject = await this.questionModel
-      .findById(questionId)
-      .populate('categories')
-      .populate('difficulty');
+    try {
+      const questionObject = await this.questionModel
+        .findById(questionId)
+        .populate('categories')
+        .populate('difficulty');
 
-    if (questionObject == null) {
+      if (questionObject == null) {
+        throw new PeerprepException(
+          'Question not found',
+          PEERPREP_EXCEPTION_TYPES.NOT_FOUND,
+        );
+      }
+
+      return {
+        ...questionObject.toObject(),
+        categories: questionObject.categories.map((c) => c.name),
+        difficulty: questionObject.difficulty.name,
+      };
+    } catch (error) {
+      if (error instanceof PeerprepException) {
+        throw error;
+      }
+
       throw new PeerprepException(
-        'Question not found',
-        PEERPREP_EXCEPTION_TYPES.NOT_FOUND,
+        error.message,
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
       );
     }
-
-    return {
-      ...questionObject.toObject(),
-      categories: questionObject.categories.map((c) => c.name),
-      difficulty: questionObject.difficulty.name,
-    };
   }
 
   async deleteQuestionWithId(questionId: string): Promise<string> {
-    await this.questionModel.findByIdAndDelete(questionId);
-    return questionId;
+    try {
+      await this.questionModel.findByIdAndDelete(questionId);
+      return questionId;
+    } catch (error) {
+      if (error instanceof PeerprepException) {
+        throw error;
+      }
+
+      throw new PeerprepException(
+        error.message,
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
   }
 
   async updateQuestionWithId(
     questionWithCategoriesAndDifficulty: QuestionWithCategoryAndDifficulty,
   ): Promise<QuestionWithCategoryAndDifficulty> {
-    // Check if difficulty and categories exist
-    const difficultyObject = await this.getDifficultyIfExists(
-      questionWithCategoriesAndDifficulty.difficulty,
-    );
-    const categoryObjects = await Promise.all(
-      questionWithCategoriesAndDifficulty.categories.map((category) =>
-        this.getCategoryIfExists(category),
-      ),
-    );
+    try {
+      // Check if difficulty and categories exist
+      const difficultyObject = await this.getDifficultyIfExists(
+        questionWithCategoriesAndDifficulty.difficulty,
+      );
+      const categoryObjects = await Promise.all(
+        questionWithCategoriesAndDifficulty.categories.map((category) =>
+          this.getCategoryIfExists(category),
+        ),
+      );
 
-    // Find and update question
-    const newQuestion = await this.questionModel.findByIdAndUpdate(
-      questionWithCategoriesAndDifficulty._id ?? '',
-      {
-        title: questionWithCategoriesAndDifficulty.title,
-        description: questionWithCategoriesAndDifficulty.description,
-        difficulty: difficultyObject,
-        categories: categoryObjects,
-      },
-      { new: true },
-    );
+      // Find and update question
+      const newQuestion = await this.questionModel.findByIdAndUpdate(
+        questionWithCategoriesAndDifficulty._id ?? '',
+        {
+          title: questionWithCategoriesAndDifficulty.title,
+          description: questionWithCategoriesAndDifficulty.description,
+          difficulty: difficultyObject,
+          categories: categoryObjects,
+        },
+        { new: true },
+      );
 
-    return {
-      ...newQuestion.toObject(),
-      difficulty: questionWithCategoriesAndDifficulty.difficulty,
-      categories: categoryObjects.map((category) => category.name),
-    };
+      return {
+        ...newQuestion.toObject(),
+        difficulty: questionWithCategoriesAndDifficulty.difficulty,
+        categories: categoryObjects.map((category) => category.name),
+      };
+    } catch (error) {
+      if (error instanceof PeerprepException) {
+        throw error;
+      }
+
+      throw new PeerprepException(
+        error.message,
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
   }
 
   // CATEGORIES
@@ -178,9 +211,16 @@ export class QuestionService {
   }
 
   async deleteCategoryWithId(categoryId: string): Promise<string> {
-    return await this.categoryModel.findByIdAndDelete(categoryId).then(() => {
-      return categoryId;
-    });
+    try {
+      return await this.categoryModel.findByIdAndDelete(categoryId).then(() => {
+        return categoryId;
+      });
+    } catch (error) {
+      throw new PeerprepException(
+        error.message,
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
   }
 
   // DIFFICULTIES
@@ -195,10 +235,17 @@ export class QuestionService {
   }
 
   async deleteDifficultyWithId(difficultyId: string): Promise<string> {
-    return await this.diffcultyModel
-      .findByIdAndDelete(difficultyId)
-      .then(() => {
-        return difficultyId;
-      });
+    try {
+      return await this.diffcultyModel
+        .findByIdAndDelete(difficultyId)
+        .then(() => {
+          return difficultyId;
+        });
+    } catch (error) {
+      throw new PeerprepException(
+        error.message,
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
   }
 }

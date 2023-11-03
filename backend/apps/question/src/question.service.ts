@@ -7,6 +7,10 @@ import { Difficulty } from './schemas/difficulty.schema';
 import { Question as QuestionWithCategoryAndDifficulty } from '@app/microservice/interfaces/question';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
+import {
+  isMongoServerError,
+  mapMongoServerErrorToCustomMessage,
+} from '@app/utils/exceptionFilter/utils/mongoServerErrorUtils';
 
 @Injectable()
 export class QuestionService {
@@ -50,30 +54,53 @@ export class QuestionService {
   async addQuestion(
     questionWithCategoriesAndDifficulty: QuestionWithCategoryAndDifficulty,
   ): Promise<QuestionWithCategoryAndDifficulty> {
-    // Check if difficulty and categories exist
-    const difficultyObject = await this.getDifficultyIfExists(
-      questionWithCategoriesAndDifficulty.difficulty,
-    );
-    const categoryObjects = await Promise.all(
-      questionWithCategoriesAndDifficulty.categories.map((category) =>
-        this.getCategoryIfExists(category),
-      ),
-    );
+    try {
+      // Check if difficulty and categories exist
+      const difficultyObject = await this.getDifficultyIfExists(
+        questionWithCategoriesAndDifficulty.difficulty,
+      );
+      const categoryObjects = await Promise.all(
+        questionWithCategoriesAndDifficulty.categories.map((category) =>
+          this.getCategoryIfExists(category),
+        ),
+      );
 
-    // Create new question
-    const newQuestionObject = new this.questionModel({
-      title: questionWithCategoriesAndDifficulty.title,
-      description: questionWithCategoriesAndDifficulty.description,
-      difficulty: difficultyObject,
-      categories: categoryObjects,
-    });
-    const newQuestion = (await newQuestionObject.save()).toObject();
+      // Create new question
+      const newQuestionObject = new this.questionModel({
+        title: questionWithCategoriesAndDifficulty.title,
+        description: questionWithCategoriesAndDifficulty.description,
+        difficulty: difficultyObject,
+        categories: categoryObjects,
+      });
+      const newQuestion = await newQuestionObject
+        .save()
+        .then((newQuestion) => newQuestion.toObject())
+        .catch((error) => {
+          if (isMongoServerError(error)) {
+            throw new PeerprepException(
+              mapMongoServerErrorToCustomMessage(error),
+              PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+            );
+          }
 
-    return {
-      ...newQuestion,
-      difficulty: questionWithCategoriesAndDifficulty.difficulty,
-      categories: categoryObjects.map((category) => category.name),
-    };
+          throw error;
+        });
+
+      return {
+        ...newQuestion,
+        difficulty: questionWithCategoriesAndDifficulty.difficulty,
+        categories: categoryObjects.map((category) => category.name),
+      };
+    } catch (error) {
+      if (error instanceof PeerprepException) {
+        throw error;
+      }
+
+      throw new PeerprepException(
+        error.message,
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
   }
 
   private async getDifficultyIfExists(difficulty: string | Difficulty) {

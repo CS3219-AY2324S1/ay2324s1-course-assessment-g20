@@ -1,9 +1,11 @@
+import { MONGO_SERVER_ERROR_CODES } from '../constants';
+
 export const isMongoServerError = (error) => error.name === 'MongoServerError';
 
 export const mapMongoServerErrorToCustomMessage = (error) => {
   if (error.name === 'MongoServerError') {
     switch (error.code) {
-      case 11000: // Duplicate Key Error
+      case MONGO_SERVER_ERROR_CODES.DUPLICATE_KEY:
         const dupKeyInfo = error.message.match(/dup key: { (.+?) }/);
 
         if (dupKeyInfo) {

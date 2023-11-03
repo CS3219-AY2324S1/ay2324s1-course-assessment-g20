@@ -12,10 +12,10 @@ import {
 } from '@app/microservice/interfaces/history';
 import { firstValueFrom } from 'rxjs';
 import { AttemptDaoService } from './database/daos/attempt/attempt.dao.service';
-import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
-import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
 import { UserProfileServiceClient } from '@app/microservice/interfaces/user';
 import { USER_PROFILE_SERVICE_NAME } from '../../../libs/microservice/src/interfaces/user';
+import { PeerprepException } from '@app/utils';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 
 @Injectable()
 export class HistoryService implements OnModuleInit {

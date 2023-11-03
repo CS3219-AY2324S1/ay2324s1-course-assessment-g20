@@ -41,10 +41,10 @@ export default function Matching() {
       </Typography>
       <br />
       <Box display="flex" justifyContent="center">
-        {searchingVisibility && difficultyLevel && (
+        {difficultyLevel && (
           <SearchingScreen
             difficulty={difficultyLevel}
-            openScreen={true}
+            openScreen={searchingVisibility}
             setCloseScreen={handlePopupOnClose}
           ></SearchingScreen>
         )}

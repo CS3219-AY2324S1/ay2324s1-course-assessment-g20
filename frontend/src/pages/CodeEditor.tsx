@@ -209,7 +209,7 @@ const CodeEditor = () => {
 
         <ChatbotPopup
           sessionId={sessionId}
-          language={selectedLanguage?.name!}
+          language={selectedLanguage.name}
           userSolution={code}
         />
       </Grid>

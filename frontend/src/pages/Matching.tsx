@@ -51,6 +51,7 @@ export default function Matching() {
         <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
           {difficulties.map((difficulty) => (
             <Button
+              key={difficulty.name}
               variant="contained"
               onClick={() => handleSearchingOnClick(difficulty)}
               style={{ fontSize: '40px' }}

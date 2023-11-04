@@ -7,10 +7,15 @@ import {
   CreateCollabSessionRequest,
   GetQuestionIdFromSessionIdResponse,
   GetSessionAndWsTicketRequest,
+  SetSessionLanguageIdRequest,
 } from '@app/microservice/interfaces/collaboration';
 import {
   USER_AUTH_SERVICE_NAME,
   UserAuthServiceClient,
+  USER_PROFILE_SERVICE_NAME,
+  UserProfileServiceClient,
+  UserLanguageServiceClient,
+  USER_LANGUAGE_SERVICE_NAME,
 } from '@app/microservice/interfaces/user';
 import {
   QUESTION_SERVICE_NAME,
@@ -25,6 +30,8 @@ import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
 export class CollaborationService implements OnModuleInit {
   private userAuthService: UserAuthServiceClient;
   private questionService: QuestionServiceClient;
+  private userProfileService: UserProfileServiceClient;
+  private languageService: UserLanguageServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE)
@@ -39,9 +46,17 @@ export class CollaborationService implements OnModuleInit {
       this.userServiceClient.getService<UserAuthServiceClient>(
         USER_AUTH_SERVICE_NAME,
       );
+    this.userProfileService =
+      this.userServiceClient.getService<UserProfileServiceClient>(
+        USER_PROFILE_SERVICE_NAME,
+      );
     this.questionService =
       this.questionServiceClient.getService<QuestionServiceClient>(
         QUESTION_SERVICE_NAME,
+      );
+    this.languageService =
+      this.userServiceClient.getService<UserLanguageServiceClient>(
+        USER_LANGUAGE_SERVICE_NAME,
       );
   }
 
@@ -49,12 +64,63 @@ export class CollaborationService implements OnModuleInit {
     this.validateNumUsers(createSessionInfo.userIds, 2);
     await this.validateUsersExist(createSessionInfo.userIds);
 
+    const userOneLanguage = (
+      await firstValueFrom(
+        this.userProfileService.getUserProfileById({
+          id: createSessionInfo.userIds[0],
+        }),
+      )
+    ).preferredLanguageId;
+    const userTwoLanguage = (
+      await firstValueFrom(
+        this.userProfileService.getUserProfileById({
+          id: createSessionInfo.userIds[1],
+        }),
+      )
+    ).preferredLanguageId;
+
+    let languageId: number;
+    // if not same language, randomly pick one
+    if (userOneLanguage !== userTwoLanguage) {
+      const random = Math.random();
+      if (random < 0.5) {
+        languageId = userTwoLanguage;
+      } else {
+        languageId = userOneLanguage;
+      }
+    } else {
+      languageId = userOneLanguage;
+    }
+
     const graphInfo = {
       ...createSessionInfo,
       userIds: createSessionInfo.userIds.map((userId) => ({ userId })),
+      languageId,
     };
 
     return this.sessionDaoService.create(graphInfo);
+  }
+
+  async setSessionLanguageId(request: SetSessionLanguageIdRequest) {
+    await this.sessionDaoService.setSessionLanguageId(request);
+  }
+
+  async getLanguageIdFromSessionId(sessionId: string) {
+    const session = await this.sessionDaoService.findById({
+      sessionId,
+      withGraphFetched: false,
+    });
+
+    if (!session) {
+      throw new PeerprepException(
+        'Invalid session!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
+
+    return firstValueFrom(
+      this.languageService.getLanguageById({ id: session.languageId }),
+    );
   }
 
   async getQuestionIdFromSessionId(

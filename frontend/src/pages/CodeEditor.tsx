@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { CodeEvaluator } from '../utils/codeEvaluator';
@@ -10,8 +10,12 @@ import { useParams } from 'react-router-dom';
 import { IQuestion } from '../@types/question';
 import { ICodeEvalOutput } from '../@types/codeEditor';
 import { editor as MonacoEditor } from 'monaco-editor';
-import { bindYjsToMonacoEditor, tsCompile } from '../utils/editorUtils';
-import { getSessionAndWsTicket } from '../api/collaborationServiceApi';
+import { bindYjsToMonacoEditor, tsCompile, YjsWebsocketServerMessage } from '../utils/editorUtils';
+import {
+  getSessionAndWsTicket,
+  getSessionLanguage,
+  updateSessionLanguageId,
+} from '../api/collaborationServiceApi';
 import { useThrowAsyncError } from '../hooks/useThrowAsyncError';
 import TextContent from '../components/TextContent';
 import { WebsocketProvider } from 'y-websocket';
@@ -33,9 +37,13 @@ const CodeEditor = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const [question, setQuestion] = useState<IQuestion | undefined>(undefined);
 
-  const [selectedLanguage, setSelectedLanguage] = useState('javascript');
-  const [languages, setLanguages] = useState<string[]>([]);
-  const [code, setCode] = useState('// some comment');
+  const placeholderLanguage: Language = {
+    id: 0,
+    name: '',
+  };
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(placeholderLanguage);
+  const [languages, setLanguages] = useState<Language[]>([]);
+  const [code, setCode] = useState('');
   const [codeEvalOutput, setCodeEvalOutput] = useState<ICodeEvalOutput>({
     error: '',
     logs: '',
@@ -48,15 +56,22 @@ const CodeEditor = () => {
    * trigger the binding of Yjs to the Editor instance.
    */
   const [editor, setEditor] = useState<MonacoEditor.IStandaloneCodeEditor | null>(null);
-  const [wsTicket, setWsTicket] = useState<string | null>(null);
 
   const throwAsyncError = useThrowAsyncError();
 
+  const onLanguageChangeWebsocketHandler = (event: MessageEvent) => {
+    if (event.data === YjsWebsocketServerMessage.LANGUAGE_CHANGE) {
+      getSessionLanguage(sessionId!).then((resp) => {
+        setSelectedLanguage(resp.data);
+        setEditor(null);
+      });
+    }
+  };
   // Fetch question information and get single-use websocket ticket to this session
-  useEffect(() => {
+  useLayoutEffect(() => {
     getAllLanguages()
       .then((resp) => {
-        setLanguages(resp.data.map((language: Language) => language.name.toLowerCase()));
+        setLanguages(resp.data);
       })
       .catch(() => {
         throwAsyncError('Error getting supported languages');
@@ -65,23 +80,40 @@ const CodeEditor = () => {
     if (sessionId) {
       getSessionAndWsTicket(sessionId)
         .then((resp) => {
-          const { question, ticket } = resp.data;
+          const { question } = resp.data;
           setQuestion(question);
-          setWsTicket(ticket);
         })
         .catch(() => {
           throwAsyncError('Invalid session');
         });
+
+      getSessionLanguage(sessionId).then((resp) => {
+        setSelectedLanguage(resp.data);
+      });
     }
+
+    return () => {
+      setEditor(null);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Initialize websocket connection to Yjs service
   useEffect(() => {
+    if (selectedLanguage === placeholderLanguage) return;
+
     let provider: WebsocketProvider | null = null;
-    if (editor && wsTicket) {
-      // Handles websocket disconnection when unauthorized (e.g. invalid ws ticket)
-      provider = bindYjsToMonacoEditor(wsTicket, editor, throwAsyncError);
+
+    if (editor && sessionId) {
+      getSessionAndWsTicket(sessionId)
+        .then((resp) => {
+          const { ticket } = resp.data;
+          provider = bindYjsToMonacoEditor(ticket, selectedLanguage.id, editor, throwAsyncError);
+          provider.ws?.addEventListener('message', onLanguageChangeWebsocketHandler);
+        })
+        .catch(() => {
+          throwAsyncError('Invalid session');
+        });
     }
 
     return () => {
@@ -89,16 +121,20 @@ const CodeEditor = () => {
         provider.disconnect();
       }
     };
-  }, [editor, wsTicket, throwAsyncError]);
+  }, [editor, throwAsyncError]);
 
-  const handleLanguageChange = (event: SelectChangeEvent) => {
-    setSelectedLanguage(event.target.value as string);
+  const handleLanguageChange = async (event: SelectChangeEvent<number>) => {
+    await updateSessionLanguageId(sessionId!, event.target.value as number);
+
+    getSessionLanguage(sessionId!).then((resp) => {
+      setSelectedLanguage(resp.data);
+    });
   };
 
   const handleCompile = () => {
     const codeEvaluator = new CodeEvaluator();
 
-    const transpiledCode = selectedLanguage === 'typescript' ? tsCompile(code) : code;
+    const transpiledCode = selectedLanguage?.name === 'typescript' ? tsCompile(code) : code;
 
     codeEvaluator
       .evalAsync(transpiledCode)
@@ -135,17 +171,18 @@ const CodeEditor = () => {
           <FormControl sx={{ m: 1, minWidth: 200 }}>
             <InputLabel id="demo-simple-select-autowidth-label">Language</InputLabel>
             <Select
+              disabled={selectedLanguage === placeholderLanguage}
               labelId="demo-simple-select-autowidth-label"
               id="demo-simple-select-autowidth"
-              value={selectedLanguage}
+              value={selectedLanguage === placeholderLanguage ? '' : selectedLanguage?.id}
               onChange={handleLanguageChange}
               autoWidth
               label="Language"
             >
               {Object.values(languages).map((language) => {
                 return (
-                  <MenuItem key={language} value={language}>
-                    {formatLanguage(language)}
+                  <MenuItem key={language.name} value={language.id}>
+                    {formatLanguage(language.name!)}
                   </MenuItem>
                 );
               })}
@@ -153,11 +190,12 @@ const CodeEditor = () => {
           </FormControl>
 
           <Editor
+            key={selectedLanguage.name} // Force re-render of Editor component when wsTicket changes
             height="40vh"
             width={'100%'}
-            value={code}
+            defaultValue={''}
             onChange={handleCodeChange}
-            language={selectedLanguage}
+            language={selectedLanguage?.name.toLowerCase()}
             onMount={handleEditorDidMount}
           />
           <Button onClick={handleCompile} variant="contained" sx={{ textTransform: 'none' }}>
@@ -169,7 +207,11 @@ const CodeEditor = () => {
           <OutputBlock label="Error" output={codeEvalOutput.error} />
         </Box>
 
-        <ChatbotPopup sessionId={sessionId} language={selectedLanguage} userSolution={code} />
+        <ChatbotPopup
+          sessionId={sessionId}
+          language={selectedLanguage?.name!}
+          userSolution={code}
+        />
       </Grid>
     </Grid>
   );

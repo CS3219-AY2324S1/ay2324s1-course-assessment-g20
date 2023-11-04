@@ -1,3 +1,4 @@
+import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 import {
   COLLABORATION_SERVICE_NAME,
   CollaborationServiceClient,
@@ -9,9 +10,11 @@ import {
   Inject,
   OnModuleInit,
   Param,
+  Patch,
   Req,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
+import { Redis } from 'ioredis';
 
 @Controller('collaboration')
 export class CollaborationController implements OnModuleInit {
@@ -34,6 +37,23 @@ export class CollaborationController implements OnModuleInit {
     return this.collaborationService.getSessionAndWsTicket({
       sessionId,
       userId: req.user.id,
+    });
+  }
+
+  @Get('language/:sessionId')
+  getLanguageIdFromSessionId(@Param('sessionId') sessionId) {
+    return this.collaborationService.getLanguageIdFromSessionId({
+      id: sessionId,
+    });
+  }
+
+  @Patch('language/:sessionId')
+  setLanguageIdForSession(@Param('sessionId') sessionId, @Req() req) {
+    const languageId = req.body.languageId;
+    Redis.createClient().publish(CollaborationEvent.LANGUAGE_CHANGE, sessionId);
+    return this.collaborationService.setSessionLanguageId({
+      sessionId,
+      languageId,
     });
   }
 }

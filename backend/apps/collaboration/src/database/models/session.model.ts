@@ -7,6 +7,7 @@ export class SessionModel extends BaseModelUUID {
   static tableName = 'sessions';
 
   readonly questionId: string;
+  readonly languageId: number;
 
   readonly userIds: { userId: string }[];
   readonly sessionTickets: { ticketId: string }[];

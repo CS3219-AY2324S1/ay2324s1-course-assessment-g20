@@ -54,6 +54,10 @@ export interface Language {
   name: string;
 }
 
+export interface LanguageId {
+  id: number;
+}
+
 export interface Role {
   id: number;
   name: string;
@@ -164,6 +168,8 @@ export const USER_AUTH_SERVICE_NAME = 'UserAuthService';
 
 export interface UserLanguageServiceClient {
   getAllLanguages(request: Empty): Observable<GetAllLanguagesResponse>;
+
+  getLanguageById(request: LanguageId): Observable<Language>;
 }
 
 export interface UserLanguageServiceController {
@@ -173,11 +179,15 @@ export interface UserLanguageServiceController {
     | Promise<GetAllLanguagesResponse>
     | Observable<GetAllLanguagesResponse>
     | GetAllLanguagesResponse;
+
+  getLanguageById(
+    request: LanguageId,
+  ): Promise<Language> | Observable<Language> | Language;
 }
 
 export function UserLanguageServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['getAllLanguages'];
+    const grpcMethods: string[] = ['getAllLanguages', 'getLanguageById'];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

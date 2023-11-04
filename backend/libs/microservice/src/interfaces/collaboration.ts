@@ -2,7 +2,9 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { ID } from './common';
+import { Empty } from './google/protobuf/empty';
 import { Question } from './question';
+import { Language } from './user';
 
 export interface CreateCollabSessionRequest {
   userIds: string[];
@@ -16,6 +18,11 @@ export interface GetQuestionIdFromSessionIdResponse {
 export interface GetSessionAndWsTicketRequest {
   sessionId: string;
   userId: string;
+}
+
+export interface SetSessionLanguageIdRequest {
+  sessionId: string;
+  languageId: number;
 }
 
 export interface GetSessionAndWsTicketResponse {
@@ -56,6 +63,10 @@ export interface CollaborationServiceClient {
   getQuestionIdFromSessionId(
     request: ID,
   ): Observable<GetQuestionIdFromSessionIdResponse>;
+
+  getLanguageIdFromSessionId(request: ID): Observable<Language>;
+
+  setSessionLanguageId(request: SetSessionLanguageIdRequest): Observable<Empty>;
 }
 
 export interface CollaborationServiceController {
@@ -83,6 +94,12 @@ export interface CollaborationServiceController {
     | Promise<GetQuestionIdFromSessionIdResponse>
     | Observable<GetQuestionIdFromSessionIdResponse>
     | GetQuestionIdFromSessionIdResponse;
+
+  getLanguageIdFromSessionId(
+    request: ID,
+  ): Promise<Language> | Observable<Language> | Language;
+
+  setSessionLanguageId(request: SetSessionLanguageIdRequest): void;
 }
 
 export function CollaborationServiceControllerMethods() {
@@ -92,6 +109,8 @@ export function CollaborationServiceControllerMethods() {
       'getSessionAndWsTicket',
       'getSessionIdFromTicket',
       'getQuestionIdFromSessionId',
+      'getLanguageIdFromSessionId',
+      'setSessionLanguageId',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

@@ -17,16 +17,3 @@ export function sendWsMessage<T>(ws: WebSocket, data: T, event: string) {
     }),
   );
 }
-
-export function setWebsocketEventCallback<T>(
-  ws: WebSocket,
-  eventName: string,
-  callback: (data: T) => void,
-) {
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    if (data.event === eventName) {
-      callback(data.data);
-    }
-  };
-}

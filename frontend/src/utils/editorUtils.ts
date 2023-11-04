@@ -13,6 +13,7 @@ export function tsCompile(source: string): string {
 
 export const bindYjsToMonacoEditor = (
   wsTicket: string,
+  languageId: number,
   editor: MonacoEditor.IStandaloneCodeEditor,
   onError?: (error: Error | string) => void,
 ) => {
@@ -24,16 +25,18 @@ export const bindYjsToMonacoEditor = (
     }
   };
 
-  return authenticatedYjsWebsocketProvider(wsTicket, bindEditorOnAuthenticate, onError);
+  return authenticatedYjsWebsocketProvider(wsTicket, languageId, bindEditorOnAuthenticate, onError);
 };
 
 const ROOM_NAME = 'yjs';
-enum YjsWebsocketServerMessage {
+export enum YjsWebsocketServerMessage {
   SESSION_INITIALIZED = 'session_initialized',
   WS_UNAUTHORIZED = 'unauthorized',
+  LANGUAGE_CHANGE = 'language-change',
 }
 const authenticatedYjsWebsocketProvider = (
   wsTicket: string,
+  languageId: number,
   onAuthenticateCallback: (ydoc: Y.Doc, provider: WebsocketProvider) => void,
   onError?: (error: Error | string) => void,
 ) => {
@@ -41,6 +44,7 @@ const authenticatedYjsWebsocketProvider = (
   const provider = new WebsocketProvider(BACKEND_WEBSOCKET_HOST, ROOM_NAME, ydocument, {
     params: {
       ticket: wsTicket,
+      language: String(languageId),
     },
   });
 
@@ -52,6 +56,7 @@ const authenticatedYjsWebsocketProvider = (
   const customOnMessage = (event: MessageEvent) => {
     // Waits for connection to be authenticated and Yjs session to be initialized before starting client Yjs sync
     const { data } = event;
+
     if (data === YjsWebsocketServerMessage.SESSION_INITIALIZED) {
       // @ts-expect-error: Yjs provider onOpen does not expect the event to be passed in
       yjsDefaultOnOpen();

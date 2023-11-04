@@ -207,11 +207,7 @@ const CodeEditor = () => {
           <OutputBlock label="Error" output={codeEvalOutput.error} />
         </Box>
 
-        <ChatbotPopup
-          sessionId={sessionId}
-          language={selectedLanguage.name}
-          userSolution={code}
-        />
+        <ChatbotPopup sessionId={sessionId} language={selectedLanguage.name} userSolution={code} />
       </Grid>
     </Grid>
   );

@@ -13,6 +13,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 import {
   addQuestion,
   getCategories,
@@ -35,6 +36,7 @@ export default function QuestionForm({
   updateQuestion,
 }: FormProps) {
   const { palette } = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
 
   const addQnsHeader = 'Add a new question';
   const updateQnsHeader = 'Update this question';
@@ -117,6 +119,7 @@ export default function QuestionForm({
         })
         .catch((error) => {
           console.error('Error:', error);
+          enqueueSnackbar(error.response.data.message, { variant: 'error' });
         });
     }
     closeForm();

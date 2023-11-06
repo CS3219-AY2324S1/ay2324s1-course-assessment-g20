@@ -38,19 +38,25 @@ export class YjsGateway extends BaseWebsocketGateway {
   }
 
   async handleConnection(connection: AuthenticatedWebsocket, request: Request) {
-    const authenticated = await super.handleConnection(connection, request);
 
-    if (!authenticated) {
-      return false;
+    try {
+      const authenticated = await super.handleConnection(connection, request);
+
+      if (!authenticated) {
+        return false;
+      }
+
+      const ticketId = YjsGateway.getTicketIdFromUrl(request);
+      const { sessionId } = await firstValueFrom(
+        this.collaborationService.getSessionIdFromTicket({ id: ticketId }),
+      );
+
+      YjsGateway.setupYjs(connection, sessionId, this.mongoUri);
+
+      return YjsGateway.sessionInitialized(connection);
+    } catch (e) {
+      BaseWebsocketGateway.closeConnection(connection);
     }
-
-    const ticketId = YjsGateway.getTicketIdFromUrl(request);
-    const { sessionId } = await firstValueFrom(
-      this.collaborationService.getSessionIdFromTicket({ id: ticketId }),
-    );
-
-    YjsGateway.setupYjs(connection, sessionId, this.mongoUri);
-    return YjsGateway.sessionInitialized(connection);
   }
 
   private static setupYjs(connection, docName, mongoUri) {

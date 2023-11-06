@@ -13,14 +13,13 @@ import { AuthenticatedWebsocket } from './types';
  * system on websocket connections.
  */
 export class BaseWebsocketGateway
-  implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit
-{
+  implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
   private static TICKET_KEY = 'ticket';
   private static UNAUTHORIZED_MESSAGE = 'unauthorized';
 
   private userAuthService: UserAuthServiceClient;
 
-  constructor(private readonly userServiceClient: ClientGrpc) {}
+  constructor(private readonly userServiceClient: ClientGrpc) { }
 
   static getTicketIdFromUrl(request: Request) {
     const url = new URL(request.url, 'http://placeholder.com');
@@ -44,28 +43,33 @@ export class BaseWebsocketGateway
     connection: AuthenticatedWebsocket,
     request: Request,
   ): Promise<boolean> {
-    const ticketId = BaseWebsocketGateway.getTicketIdFromUrl(request);
 
-    if (!ticketId) {
+    try {
+      const ticketId = BaseWebsocketGateway.getTicketIdFromUrl(request);
+
+      if (!ticketId) {
+        return BaseWebsocketGateway.closeConnection(connection);
+      }
+
+      const ticket = await firstValueFrom(
+        this.userAuthService.consumeWebsocketTicket({
+          id: ticketId,
+        }),
+      );
+
+      if (!ticket) {
+        return BaseWebsocketGateway.closeConnection(connection);
+      }
+
+      connection.ticket = ticket;
+      return true;
+    } catch (e) {
       return BaseWebsocketGateway.closeConnection(connection);
     }
-
-    const ticket = await firstValueFrom(
-      this.userAuthService.consumeWebsocketTicket({
-        id: ticketId,
-      }),
-    );
-
-    if (!ticket) {
-      return BaseWebsocketGateway.closeConnection(connection);
-    }
-
-    connection.ticket = ticket;
-    return true;
   }
 
   // Close connection and return `false` for authentication failure.
-  private static closeConnection(connection: AuthenticatedWebsocket) {
+  static closeConnection(connection: AuthenticatedWebsocket) {
     connection.send(BaseWebsocketGateway.UNAUTHORIZED_MESSAGE);
     connection.close();
     return false;

@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, UseFilters } from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -16,6 +16,7 @@ import {
 import { Service } from '@app/microservice/services';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { GatewayExceptionFilter } from 'libs/exception-filter/gateway-exception.filter';
 
 @WebSocketGateway({ path: '/matching' })
 export class MatchingGateway extends BaseWebsocketGateway {
@@ -63,29 +64,35 @@ export class MatchingGateway extends BaseWebsocketGateway {
   }
 
   @SubscribeMessage('get_match')
+  @UseFilters(GatewayExceptionFilter)
   async getMatch(
     @MessageBody() data: MatchingDto,
     @ConnectedSocket() connection: AuthenticatedWebsocket,
   ) {
     // wait for ticket to be set, or connection to close
-    while (
-      connection.ticket === undefined &&
-      connection.readyState !== connection.CLOSED
-    ) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
+    try {
+      while (
+        connection.ticket === undefined &&
+        connection.readyState !== connection.CLOSED
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
 
-    if (connection.readyState === connection.CLOSED) {
-      return;
-    }
+      if (connection.readyState === connection.CLOSED) {
+        return;
+      }
 
-    const { userId } = connection.ticket;
-    this.websocketMemoryService.addConnection(userId, connection);
-    await lastValueFrom(
-      this.matchingService.requestMatch({
-        userId,
-        questionDifficulty: data.questionDifficulty,
-      }),
-    );
+      const { userId } = connection.ticket;
+      this.websocketMemoryService.addConnection(userId, connection);
+      await lastValueFrom(
+        this.matchingService.requestMatch({
+          userId,
+          questionDifficulty: data.questionDifficulty,
+        }),
+      );
+    }
+    catch (e) {
+      BaseWebsocketGateway.closeConnection(connection);
+    }
   }
 }

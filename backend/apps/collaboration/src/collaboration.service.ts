@@ -136,6 +136,15 @@ export class CollaborationService implements OnModuleInit {
     userIds: string[],
   ) {
     const sessionUsers = session.userIds.map((u) => u.userId);
-    return userIds.every((userId) => sessionUsers.includes(userId));
+    const validateUsersBelongInSession = userIds.every((userId) =>
+      sessionUsers.includes(userId),
+    );
+
+    if (!validateUsersBelongInSession) {
+      throw new PeerprepException(
+        'User does not belong to this session!',
+        PEERPREP_EXCEPTION_TYPES.FORBIDDEN,
+      );
+    }
   }
 }

@@ -40,14 +40,14 @@ export class CollaborationController implements OnModuleInit {
     });
   }
 
-  @Get('language/:sessionId')
+  @Get('session/:sessionId/language')
   getLanguageIdFromSessionId(@Param('sessionId') sessionId) {
     return this.collaborationService.getLanguageIdFromSessionId({
       id: sessionId,
     });
   }
 
-  @Patch('language/:sessionId')
+  @Patch('session/:sessionId/language')
   setLanguageIdForSession(@Param('sessionId') sessionId, @Req() req) {
     const languageId = req.body.languageId;
     Redis.createClient().publish(CollaborationEvent.LANGUAGE_CHANGE, sessionId);

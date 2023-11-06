@@ -12,7 +12,7 @@ export async function getSessionAndWsTicket(sessionId: string) {
 
 export async function updateSessionLanguageId(sessionId: string, languageId: number) {
   return requestBackend<void>({
-    url: `${backendServicesPaths.collaboration.sessionLanguage}/${sessionId}`,
+    url: backendServicesPaths.collaboration.sessionLanguage(sessionId),
     method: HttpRequestMethod.PATCH,
     data: {
       languageId,
@@ -22,7 +22,7 @@ export async function updateSessionLanguageId(sessionId: string, languageId: num
 
 export async function getSessionLanguage(sessionId: string) {
   return requestBackend<Language>({
-    url: `${backendServicesPaths.collaboration.sessionLanguage}/${sessionId}`,
+    url: backendServicesPaths.collaboration.sessionLanguage(sessionId),
     method: HttpRequestMethod.GET,
   });
 }

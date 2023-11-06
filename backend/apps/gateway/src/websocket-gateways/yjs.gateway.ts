@@ -38,7 +38,6 @@ export class YjsGateway extends BaseWebsocketGateway {
   }
 
   async handleConnection(connection: AuthenticatedWebsocket, request: Request) {
-
     try {
       const authenticated = await super.handleConnection(connection, request);
 

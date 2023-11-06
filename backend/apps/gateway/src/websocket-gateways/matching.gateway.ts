@@ -90,8 +90,7 @@ export class MatchingGateway extends BaseWebsocketGateway {
           questionDifficulty: data.questionDifficulty,
         }),
       );
-    }
-    catch (e) {
+    } catch (e) {
       BaseWebsocketGateway.closeConnection(connection);
     }
   }

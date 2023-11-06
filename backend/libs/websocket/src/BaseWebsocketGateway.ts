@@ -13,13 +13,14 @@ import { AuthenticatedWebsocket } from './types';
  * system on websocket connections.
  */
 export class BaseWebsocketGateway
-  implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
+  implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit
+{
   private static TICKET_KEY = 'ticket';
   private static UNAUTHORIZED_MESSAGE = 'unauthorized';
 
   private userAuthService: UserAuthServiceClient;
 
-  constructor(private readonly userServiceClient: ClientGrpc) { }
+  constructor(private readonly userServiceClient: ClientGrpc) {}
 
   static getTicketIdFromUrl(request: Request) {
     const url = new URL(request.url, 'http://placeholder.com');
@@ -43,7 +44,6 @@ export class BaseWebsocketGateway
     connection: AuthenticatedWebsocket,
     request: Request,
   ): Promise<boolean> {
-
     try {
       const ticketId = BaseWebsocketGateway.getTicketIdFromUrl(request);
 

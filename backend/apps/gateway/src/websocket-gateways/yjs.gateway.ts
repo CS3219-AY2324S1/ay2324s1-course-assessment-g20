@@ -5,7 +5,11 @@ import { Redis } from 'ioredis';
 import { ClientGrpc } from '@nestjs/microservices';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
-import { AuthenticatedWebsocket, BaseWebsocketGateway } from '@app/websocket';
+import {
+  AuthenticatedWebsocket,
+  BaseWebsocketGateway,
+  RedisAwareWebsocket,
+} from '@app/websocket';
 import { Service } from '@app/microservice/services';
 import {
   COLLABORATION_SERVICE_NAME,
@@ -14,6 +18,8 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
+
+type YjsWebsocket = AuthenticatedWebsocket & RedisAwareWebsocket;
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
@@ -43,14 +49,14 @@ export class YjsGateway extends BaseWebsocketGateway {
         COLLABORATION_SERVICE_NAME,
       );
   }
-  async handleDisconnect(connection: AuthenticatedWebsocket): Promise<void> {
+  async handleDisconnect(connection: YjsWebsocket): Promise<void> {
     if (connection.redisClient) {
       // unsubscribe from redis pub sub when connection is closed, to prevent memory leak
       connection.redisClient.quit();
     }
   }
 
-  async handleConnection(connection: AuthenticatedWebsocket, request: Request) {
+  async handleConnection(connection: YjsWebsocket, request: Request) {
     const authenticated = await super.handleConnection(connection, request);
     if (!authenticated) {
       return false;

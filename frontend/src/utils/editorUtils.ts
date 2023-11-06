@@ -46,6 +46,7 @@ const authenticatedYjsWebsocketProvider = (
       ticket: wsTicket,
       language: String(languageId),
     },
+    disableBc: true,
   });
 
   const ws = provider.ws!;

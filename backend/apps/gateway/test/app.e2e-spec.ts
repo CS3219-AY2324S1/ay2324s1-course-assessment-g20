@@ -3,6 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { WsAdapter } from '@nestjs/platform-ws';
+import * as dotenv from 'dotenv';
+import * as WebSocket from 'ws';
 import {
   MOCK_ADMIN_USER,
   MOCK_USER_1,
@@ -24,6 +26,9 @@ import {
 } from '@app/microservice/interfaces/user';
 import { firstValueFrom } from 'rxjs';
 import { Language } from '@app/types/languages';
+
+const NODE_ENV = process.env.NODE_ENV;
+dotenv.config({ path: `../../../.env${NODE_ENV ? `.${NODE_ENV}` : ''}` });
 
 describe('Gateway (e2e)', () => {
   let app: INestApplication;
@@ -443,6 +448,144 @@ describe('Gateway (e2e)', () => {
 
     it(`(GET) should return 401 unauthorized with unauthenticated user`, () => {
       request(app.getHttpServer()).get(endpoint).expect(401);
+    });
+  });
+
+  describe('/matching', () => {
+    let ws1: WebSocket;
+    let ws2: WebSocket;
+    const mockCategoryIds: string[] = [];
+    let mockDifficultyId: string;
+    let mockQuestionId: string;
+    const websocketUrl = `ws://localhost:${process.env.API_GATEWAY_PORT}/matching`;
+
+    beforeAll(async () => {
+      await Promise.all(
+        MOCK_QUESTION_1.categories.map(async (category) => {
+          const categoryData = {
+            category: {
+              name: category,
+            },
+          };
+          const { body: createCategoryBody } = await request(
+            app.getHttpServer(),
+          )
+            .post(`/question/categories`)
+            .send(categoryData)
+            .set('Authorization', `Bearer ${MOCK_ADMIN_TOKEN}`);
+          mockCategoryIds.push(createCategoryBody._id);
+        }),
+      );
+
+      const difficultyData = {
+        difficulty: {
+          name: MOCK_QUESTION_1.difficulty,
+        },
+      };
+      const { body: createDifficultyBody } = await request(app.getHttpServer())
+        .post(`/question/difficulties`)
+        .send(difficultyData)
+        .set('Authorization', `Bearer ${MOCK_ADMIN_TOKEN}`);
+      mockDifficultyId = createDifficultyBody._id;
+
+      const questionData = {
+        question: MOCK_QUESTION_1,
+      };
+      const { body: createQuestionBody } = await request(app.getHttpServer())
+        .post(`/question/questions`)
+        .send(questionData)
+        .set('Authorization', `Bearer ${MOCK_ADMIN_TOKEN}`);
+      mockQuestionId = createQuestionBody._id;
+
+      console.log('websocketUrl', websocketUrl);
+      const { body: ticket1 } = await request(app.getHttpServer())
+        .get(`/auth/ticket`)
+        .set('Authorization', `Bearer ${MOCK_USER_1_TOKEN}`);
+      const { body: ticket2 } = await request(app.getHttpServer())
+        .get(`/auth/ticket`)
+        .set('Authorization', `Bearer ${MOCK_ADMIN_TOKEN}`);
+      console.log('ticket1', ticket1);
+      console.log('ticket2', ticket2);
+      ws1 = new WebSocket(`${websocketUrl}?ticket=${ticket1.id}`);
+      ws2 = new WebSocket(`${websocketUrl}?ticket=${ticket2.id}`);
+      console.log('websockets created');
+      ws1.onopen = () => {
+        console.log('ws1 open');
+      };
+      ws1.onerror = (error) => {
+        console.log('ws1 error::::::', error);
+      };
+      ws1.onclose = () => {
+        console.log('ws1 closed');
+      };
+      ws2.onopen = () => {
+        console.log('ws2 open');
+      };
+      ws2.onerror = (error) => {
+        console.log('ws2 error::::::', error);
+      };
+      ws2.onclose = () => {
+        console.log('ws2 closed');
+      };
+    });
+
+    it(`should be unauthorized when trying to access matching websocket without a ticket`, () => {
+      const unauthorizedWs = new WebSocket(websocketUrl);
+      unauthorizedWs.onmessage = (event) => {
+        expect(event.data === 'unauthorized');
+        unauthorizedWs.close();
+      };
+    });
+
+    it(`should be unauthorized when trying to access matching websocket with an invalid ticket`, () => {
+      const unauthorizedWs = new WebSocket(
+        `${websocketUrl}?ticket=invalidTicket`,
+      );
+      unauthorizedWs.onmessage = (event) => {
+        expect(event.data === 'unauthorized');
+        unauthorizedWs.close();
+      };
+    });
+
+    it(`should return a new session ID when 2 users with valid tickets are matching on same difficulty`, async () => {
+      ws1.send(
+        JSON.stringify({
+          event: 'get_match',
+          data: {
+            questionDifficulty: mockDifficultyId,
+          },
+        }),
+      );
+
+      ws2.send(
+        JSON.stringify({
+          event: 'get_match',
+          data: {
+            questionDifficulty: mockDifficultyId,
+          },
+        }),
+      );
+
+      const onMatchCallback = (event) => {
+        const data = JSON.parse(event.data);
+        expect(data.event === 'match');
+        expect(data.data).toEqual(
+          expect.objectContaining({
+            sessionId: expect.any(String),
+          }),
+        );
+      };
+      ws1.onmessage = onMatchCallback;
+      ws2.onmessage = onMatchCallback;
+    });
+
+    afterAll(() => {
+      if (ws1 !== undefined && ws1.readyState !== ws1.OPEN) {
+        ws1.close();
+      }
+      if (ws2 !== undefined && ws2.readyState !== ws2.OPEN) {
+        ws2.close();
+      }
     });
   });
 

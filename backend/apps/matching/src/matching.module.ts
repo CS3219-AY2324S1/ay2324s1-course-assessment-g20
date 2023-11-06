@@ -4,11 +4,11 @@ import { registerGrpcClients } from '@app/microservice/utils';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ClientProxyFactory } from '@nestjs/microservices';
 import matchingConfiguration from './config/configuration';
 import { MatchingController } from './matching.controller';
 import { MatchingService } from './matching.service';
 import { RedisStoreService } from '../store/redisStore.service';
+import { createMicroserviceClientProxyProvider } from '@app/microservice/utils';
 
 @Module({
   imports: [
@@ -29,12 +29,10 @@ import { RedisStoreService } from '../store/redisStore.service';
   providers: [
     MatchingService,
     RedisStoreService,
-    {
-      provide: Service.WEBSOCKET_GATEWAY,
-      useFactory: async (configService: ConfigService) =>
-        ClientProxyFactory.create(configService.get('websocketGatewayOptions')),
-      inject: [ConfigService],
-    },
+    createMicroserviceClientProxyProvider(
+      Service.WEBSOCKET_GATEWAY,
+      'websocketGatewayOptions',
+    ),
   ],
 })
 export class MatchingModule {}

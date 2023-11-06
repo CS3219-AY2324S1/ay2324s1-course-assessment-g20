@@ -14,5 +14,8 @@
     "^@app/mocks(|/.*)$": "<rootDir>/../../../libs/mocks/src/$1",
     "^@app/websocket(|/.*)$": "<rootDir>/../../../libs/websocket/src/$1",
     "^@app/utils(|/.*)$": "<rootDir>/../../../libs/utils/src/$1"
-  }
+  },
+  "setupFiles": [
+    "dotenv/config"
+  ]
 }

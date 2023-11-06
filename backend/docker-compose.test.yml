@@ -34,8 +34,6 @@ services:
       - ${QUESTION_SERVICE_PORT}:${QUESTION_SERVICE_PORT}
     env_file:
       .env.test
-    environment:
-      - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question
 
   user:
     build: 
@@ -48,18 +46,6 @@ services:
       - backend
     ports:
       - ${USER_SERVICE_PORT}:${USER_SERVICE_PORT}
-    env_file:
-      .env.test
-
-  matching:
-    build: 
-      context: .
-      dockerfile: ./apps/matching/Dockerfile
-    depends_on:
-      sql-migrations:
-        condition: service_completed_successfully
-    networks:
-      - backend
     env_file:
       .env.test
 
@@ -76,6 +62,44 @@ services:
       - ${COLLABORATION_SERVICE_PORT}:${COLLABORATION_SERVICE_PORT}
     env_file:
       .env.test
+    environment:
+      - QUESTION_SERVICE_HOST=question
+      - USER_SERVICE_HOST=user
+
+  matching:
+    build: 
+      context: .
+      dockerfile: ./apps/matching/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+    networks:
+      - backend
+    ports:
+      - ${MATCHING_SERVICE_PORT}:${MATCHING_SERVICE_PORT}
+    env_file:
+      .env.test
+    environment:
+      - REDIS_HOST=redis
+      - QUESTION_SERVICE_HOST=question
+      - COLLABORATION_SERVICE_HOST=collaboration
+
+  chatbot:
+    build: 
+      context: .
+      dockerfile: ./apps/chatbot/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+    networks:
+      - backend
+    ports:
+      - ${CHATBOT_SERVICE_PORT}:${CHATBOT_SERVICE_PORT}
+    env_file:
+      .env.test
+    environment:
+      - QUESTION_SERVICE_HOST=question
+      - COLLABORATION_SERVICE_HOST=collaboration
 
   postgres:
     image: postgres:14.1-alpine
@@ -122,6 +146,23 @@ services:
     environment:
       - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question?authMechanism=DEFAULT
       - COLLABORATION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-collaboration?authMechanism=DEFAULT
+
+  redis:
+    image: redis:7.2-alpine
+    restart: always
+    networks:
+      - backend
+    environment:
+      - REDIS_PASSWORD=aifbpbp1itbb1p
+      - REDIS_PORT=6379
+    ports:
+      - '${REDIS_PORT}:${REDIS_PORT}'
+    command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   backend:

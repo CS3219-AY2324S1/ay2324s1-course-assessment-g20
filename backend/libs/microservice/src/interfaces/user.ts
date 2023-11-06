@@ -2,7 +2,7 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { wrappers } from 'protobufjs';
 import { Observable } from 'rxjs';
-import { Deleted, ID, IDs } from './common';
+import { Deleted, ID, IDs, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
 import { BoolValue } from './google/protobuf/wrappers';
 
@@ -52,10 +52,6 @@ export interface Username {
 export interface Language {
   id: number;
   name: string;
-}
-
-export interface LanguageId {
-  id: number;
 }
 
 export interface Role {
@@ -169,7 +165,7 @@ export const USER_AUTH_SERVICE_NAME = 'UserAuthService';
 export interface UserLanguageServiceClient {
   getAllLanguages(request: Empty): Observable<GetAllLanguagesResponse>;
 
-  getLanguageById(request: LanguageId): Observable<Language>;
+  getLanguageById(request: NumericID): Observable<Language>;
 }
 
 export interface UserLanguageServiceController {
@@ -181,7 +177,7 @@ export interface UserLanguageServiceController {
     | GetAllLanguagesResponse;
 
   getLanguageById(
-    request: LanguageId,
+    request: NumericID,
   ): Promise<Language> | Observable<Language> | Language;
 }
 

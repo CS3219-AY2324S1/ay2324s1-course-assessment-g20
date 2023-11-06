@@ -8,6 +8,10 @@ export interface IDs {
   ids: string[];
 }
 
+export interface NumericID {
+  id: number;
+}
+
 export interface Deleted {
   deletedCount: number;
 }

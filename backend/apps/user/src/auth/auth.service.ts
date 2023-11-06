@@ -107,16 +107,24 @@ export class AuthService {
   }
 
   async consumeWebsocketTicket(ticketId: string) {
-    const ticket = await this.websocketTicketDaoService.get(ticketId);
+    try {
+      const ticket = await this.websocketTicketDaoService.get(ticketId);
 
-    if (!ticket || ticket.isUsed) {
+      if (!ticket || ticket.isUsed) {
+        throw new PeerprepException(
+          'Invalid ticket!',
+          PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+        );
+      }
+
+      return this.websocketTicketDaoService.updateUsed(ticketId);
+    } catch (e) {
+      console.log('here');
       throw new PeerprepException(
         'Invalid ticket!',
         PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
       );
     }
-
-    return this.websocketTicketDaoService.updateUsed(ticketId);
   }
 
   validateUsersExist(userIds: string[]) {

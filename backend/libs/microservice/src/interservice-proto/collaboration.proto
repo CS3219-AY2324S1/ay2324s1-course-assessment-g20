@@ -33,7 +33,8 @@ message GetSessionOrTicketRequest {
 
 message SetSessionLanguageIdRequest {
   string sessionId = 1;
-  int32 languageId = 2;
+  string userId = 2;
+  int32 languageId = 3;
 }
 
 message GetSessionResponse {

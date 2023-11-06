@@ -50,11 +50,13 @@ export class CollaborationController implements OnModuleInit {
 
   @Patch('session/:sessionId/language')
   setLanguageIdForSession(
+    @Req() req,
     @Param('sessionId') sessionId,
     @Body() { languageId }: SetLanguageForSessionDto,
   ) {
     return this.collaborationService.setSessionLanguageId({
       sessionId,
+      userId: req.user.id,
       languageId,
     });
   }

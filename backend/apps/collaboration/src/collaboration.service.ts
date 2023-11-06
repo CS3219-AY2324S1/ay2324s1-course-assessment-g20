@@ -104,7 +104,10 @@ export class CollaborationService implements OnModuleInit {
   }
 
   async setSessionLanguageId(request: SetSessionLanguageIdRequest) {
+    await this.validatedUserInExistingSession(request);
+
     await this.sessionDaoService.setSessionLanguageId(request);
+
     // Initiate client reconnection, which reads updated session language
     Redis.createClient().publish(
       CollaborationEvent.LANGUAGE_CHANGE,
@@ -137,11 +140,9 @@ export class CollaborationService implements OnModuleInit {
   }
 
   async getSession(getSessionInfo: GetSessionOrTicketRequest) {
-    const session = await this.getAndValidateSessionExists(
-      getSessionInfo.sessionId,
+    const { session } = await this.validatedUserInExistingSession(
+      getSessionInfo,
     );
-    await this.validateUsersExist([getSessionInfo.userId]);
-    this.validateUsersBelongInSession(session, [getSessionInfo.userId]);
 
     const question = await firstValueFrom(
       this.questionService.getQuestionWithId({
@@ -155,11 +156,7 @@ export class CollaborationService implements OnModuleInit {
   }
 
   async createSessionTicket(getSessionTicketInfo: GetSessionOrTicketRequest) {
-    const session = await this.getAndValidateSessionExists(
-      getSessionTicketInfo.sessionId,
-    );
-    await this.validateUsersExist([getSessionTicketInfo.userId]);
-    this.validateUsersBelongInSession(session, [getSessionTicketInfo.userId]);
+    await this.validatedUserInExistingSession(getSessionTicketInfo);
 
     const ticket = await firstValueFrom(
       this.userAuthService.generateWebsocketTicket({
@@ -180,6 +177,19 @@ export class CollaborationService implements OnModuleInit {
 
   getSessionIdFromTicket(ticketId: string) {
     return this.sessionDaoService.getSessionIdFromTicket(ticketId);
+  }
+
+  private async validatedUserInExistingSession(userAndSession: {
+    userId: string;
+    sessionId: string;
+  }) {
+    const session = await this.getAndValidateSessionExists(
+      userAndSession.sessionId,
+    );
+    await this.validateUsersExist([userAndSession.userId]);
+    this.validateUsersBelongInSession(session, [userAndSession.userId]);
+
+    return { session };
   }
 
   private async getAndValidateSessionExists(sessionId: string) {

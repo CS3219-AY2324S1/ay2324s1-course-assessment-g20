@@ -49,7 +49,7 @@ export default function Matching() {
           ></SearchingScreen>
         )}
         <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
-          {difficulties.map((difficulty) => (
+          {difficulties.map((difficulty, idx) => (
             <Button
               key={difficulty.name}
               variant="contained"

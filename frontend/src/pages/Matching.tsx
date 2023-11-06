@@ -49,8 +49,9 @@ export default function Matching() {
           ></SearchingScreen>
         )}
         <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
-          {difficulties.map((difficulty) => (
+          {difficulties.map((difficulty, idx) => (
             <Button
+              key={idx}
               variant="contained"
               onClick={() => handleSearchingOnClick(difficulty)}
               style={{ fontSize: '40px' }}

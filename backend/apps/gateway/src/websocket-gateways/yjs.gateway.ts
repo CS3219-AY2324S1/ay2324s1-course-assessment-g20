@@ -18,19 +18,16 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
+import { Language } from '@app/microservice/interfaces/user';
 
 type YjsWebsocket = AuthenticatedWebsocket & RedisAwareWebsocket;
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
+  private static CURRENT_LANGUAGE = 'current_language';
   private mongoUri;
   private collaborationService: CollaborationServiceClient;
-
-  static getLanguageIdFromUrl(request: Request) {
-    const url = new URL(request.url, 'http://placeholder.com');
-    return url.searchParams.get('language');
-  }
 
   constructor(
     @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
@@ -63,13 +60,42 @@ export class YjsGateway extends BaseWebsocketGateway {
     }
 
     const ticketId = YjsGateway.getTicketIdFromUrl(request);
-    const languageId = YjsGateway.getLanguageIdFromUrl(request);
+    const { sessionId, language } = await this.getSessionIdAndLanguage(
+      ticketId,
+    );
+    const docName = sessionId + language.id;
 
+    YjsGateway.propagateLanguageToClient(connection, language);
+    YjsGateway.subscribeAndHandleLanguageChange(connection, sessionId);
+    YjsGateway.setupYjs(connection, docName, this.mongoUri);
+
+    return YjsGateway.sessionInitialized(connection);
+  }
+
+  private async getSessionIdAndLanguage(ticketId: string) {
     const { sessionId } = await firstValueFrom(
       this.collaborationService.getSessionIdFromTicket({ id: ticketId }),
     );
+    const language = await firstValueFrom(
+      this.collaborationService.getLanguageIdFromSessionId({ id: sessionId }),
+    );
+    return { sessionId, language };
+  }
 
-    // listen to redis pub sub message for any request to change the language
+  private static propagateLanguageToClient(
+    connection: YjsWebsocket,
+    language: Language,
+  ) {
+    return connection.send(
+      JSON.stringify({ event: YjsGateway.CURRENT_LANGUAGE, language }),
+    );
+  }
+
+  // listen to redis pub sub message for any request to change the language
+  private static subscribeAndHandleLanguageChange(
+    connection: YjsWebsocket,
+    sessionId: string,
+  ) {
     const redisClient = new Redis();
     connection.redisClient = redisClient;
     redisClient.subscribe(CollaborationEvent.LANGUAGE_CHANGE);
@@ -79,10 +105,6 @@ export class YjsGateway extends BaseWebsocketGateway {
         connection.send(CollaborationEvent.LANGUAGE_CHANGE);
       }
     });
-
-    const docName = sessionId + languageId;
-    YjsGateway.setupYjs(connection, docName, this.mongoUri);
-    return YjsGateway.sessionInitialized(connection);
   }
 
   private static setupYjs(connection, docName, mongoUri) {

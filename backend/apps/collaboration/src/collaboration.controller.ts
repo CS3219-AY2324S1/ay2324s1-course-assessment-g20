@@ -5,9 +5,10 @@ import {
   CollaborationServiceControllerMethods,
   CreateCollabSessionRequest,
   GetQuestionIdFromSessionIdResponse,
-  GetSessionAndWsTicketRequest,
-  GetSessionAndWsTicketResponse,
   GetSessionIdFromTicketResponse,
+  GetSessionOrTicketRequest,
+  GetSessionResponse,
+  GetSessionTicketResponse,
   SetSessionLanguageIdRequest,
 } from '@app/microservice/interfaces/collaboration';
 import { ID } from '@app/microservice/interfaces/common';
@@ -28,12 +29,16 @@ export class CollaborationController implements CollaborationServiceController {
     return this.collaborationService.getQuestionIdFromSessionId(request);
   }
 
-  getSessionAndWsTicket(
-    getSessionInfo: GetSessionAndWsTicketRequest,
-  ): Promise<GetSessionAndWsTicketResponse> {
-    return this.collaborationService.getSessionAndCreateWsTicket(
-      getSessionInfo,
-    );
+  getSession(
+    getSessionInfo: GetSessionOrTicketRequest,
+  ): Promise<GetSessionResponse> {
+    return this.collaborationService.getSession(getSessionInfo);
+  }
+
+  getSessionTicket(
+    getSessionTicketInfo: GetSessionOrTicketRequest,
+  ): Promise<GetSessionTicketResponse> {
+    return this.collaborationService.createSessionTicket(getSessionTicketInfo);
   }
 
   async setSessionLanguageId(

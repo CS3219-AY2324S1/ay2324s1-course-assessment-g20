@@ -13,7 +13,6 @@ export function tsCompile(source: string): string {
 
 export const bindYjsToMonacoEditor = (
   wsTicket: string,
-  languageId: number,
   editor: MonacoEditor.IStandaloneCodeEditor,
   onError?: (error: Error | string) => void,
 ) => {
@@ -25,7 +24,7 @@ export const bindYjsToMonacoEditor = (
     }
   };
 
-  return authenticatedYjsWebsocketProvider(wsTicket, languageId, bindEditorOnAuthenticate, onError);
+  return authenticatedYjsWebsocketProvider(wsTicket, bindEditorOnAuthenticate, onError);
 };
 
 const ROOM_NAME = 'yjs';
@@ -33,10 +32,10 @@ export enum YjsWebsocketServerMessage {
   SESSION_INITIALIZED = 'session_initialized',
   WS_UNAUTHORIZED = 'unauthorized',
   LANGUAGE_CHANGE = 'language-change',
+  CURRENT_LANGUAGE = 'current_language',
 }
 const authenticatedYjsWebsocketProvider = (
   wsTicket: string,
-  languageId: number,
   onAuthenticateCallback: (ydoc: Y.Doc, provider: WebsocketProvider) => void,
   onError?: (error: Error | string) => void,
 ) => {
@@ -44,7 +43,6 @@ const authenticatedYjsWebsocketProvider = (
   const provider = new WebsocketProvider(BACKEND_WEBSOCKET_HOST, ROOM_NAME, ydocument, {
     params: {
       ticket: wsTicket,
-      language: String(languageId),
     },
     disableBc: true,
   });
@@ -73,4 +71,13 @@ const authenticatedYjsWebsocketProvider = (
   ws.onmessage = customOnMessage;
 
   return provider;
+};
+
+export const bindMessageHandlersToProvider = (
+  provider: WebsocketProvider,
+  handlers: ((this: WebSocket, ev: MessageEvent) => any)[],
+) => {
+  handlers.forEach((handler) => {
+    provider.ws?.addEventListener('message', handler);
+  });
 };

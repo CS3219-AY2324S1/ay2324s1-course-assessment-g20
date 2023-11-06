@@ -6,7 +6,7 @@ import { SessionModel } from './database/models/session.model';
 import {
   CreateCollabSessionRequest,
   GetQuestionIdFromSessionIdResponse,
-  GetSessionAndWsTicketRequest,
+  GetSessionOrTicketRequest,
   SetSessionLanguageIdRequest,
 } from '@app/microservice/interfaces/collaboration';
 import {
@@ -136,11 +136,55 @@ export class CollaborationService implements OnModuleInit {
     return this.sessionDaoService.getQuestionIdFromSession(request.id);
   }
 
-  async getSessionAndCreateWsTicket(
-    getSessionInfo: GetSessionAndWsTicketRequest,
-  ) {
+  async getSession(getSessionInfo: GetSessionOrTicketRequest) {
+    const session = await this.getAndValidateSessionExists(
+      getSessionInfo.sessionId,
+    );
+    await this.validateUsersExist([getSessionInfo.userId]);
+    this.validateUsersBelongInSession(session, [getSessionInfo.userId]);
+
+    const question = await firstValueFrom(
+      this.questionService.getQuestionWithId({
+        id: session.questionId,
+      }),
+    );
+
+    return {
+      question,
+    };
+  }
+
+  async createSessionTicket(getSessionTicketInfo: GetSessionOrTicketRequest) {
+    const session = await this.getAndValidateSessionExists(
+      getSessionTicketInfo.sessionId,
+    );
+    await this.validateUsersExist([getSessionTicketInfo.userId]);
+    this.validateUsersBelongInSession(session, [getSessionTicketInfo.userId]);
+
+    const ticket = await firstValueFrom(
+      this.userAuthService.generateWebsocketTicket({
+        userId: getSessionTicketInfo.userId,
+      }),
+    );
+
+    // Link ticket to session
+    await this.sessionDaoService.insertTicketForSession(
+      getSessionTicketInfo.sessionId,
+      ticket.id,
+    );
+
+    return {
+      ticket: ticket.id,
+    };
+  }
+
+  getSessionIdFromTicket(ticketId: string) {
+    return this.sessionDaoService.getSessionIdFromTicket(ticketId);
+  }
+
+  private async getAndValidateSessionExists(sessionId: string) {
     const session = await this.sessionDaoService.findById({
-      sessionId: getSessionInfo.sessionId,
+      sessionId,
       withGraphFetched: true,
     });
 
@@ -151,35 +195,7 @@ export class CollaborationService implements OnModuleInit {
       );
     }
 
-    await this.validateUsersExist([getSessionInfo.userId]);
-    this.validateUsersBelongInSession(session, [getSessionInfo.userId]);
-
-    const question = await firstValueFrom(
-      this.questionService.getQuestionWithId({
-        id: session.questionId,
-      }),
-    );
-
-    const ticket = await firstValueFrom(
-      this.userAuthService.generateWebsocketTicket({
-        userId: getSessionInfo.userId,
-      }),
-    );
-
-    // Link ticket to session
-    await this.sessionDaoService.insertTicketForSession(
-      getSessionInfo.sessionId,
-      ticket.id,
-    );
-
-    return {
-      question,
-      ticket: ticket.id,
-    };
-  }
-
-  getSessionIdFromTicket(ticketId: string) {
-    return this.sessionDaoService.getSessionIdFromTicket(ticketId);
+    return session;
   }
 
   private validateNumUsers(userIds: string[], expectedNumber: number) {

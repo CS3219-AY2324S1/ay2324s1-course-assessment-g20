@@ -33,17 +33,18 @@ export class CollaborationController implements OnModuleInit {
   }
 
   @Get('session/:sessionId')
-  getSessionAndWsTicket(@Req() req, @Param('sessionId') sessionId) {
-    return this.collaborationService.getSessionAndWsTicket({
+  getSession(@Req() req, @Param('sessionId') sessionId) {
+    return this.collaborationService.getSession({
       sessionId,
       userId: req.user.id,
     });
   }
 
-  @Get('session/:sessionId/language')
-  getLanguageIdFromSessionId(@Param('sessionId') sessionId) {
-    return this.collaborationService.getLanguageIdFromSessionId({
-      id: sessionId,
+  @Get('session/:sessionId/ticket')
+  getSessionTicket(@Req() req, @Param('sessionId') sessionId) {
+    return this.collaborationService.getSessionTicket({
+      sessionId,
+      userId: req.user.id,
     });
   }
 

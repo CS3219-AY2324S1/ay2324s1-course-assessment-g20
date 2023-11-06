@@ -1,11 +1,17 @@
-import { Language } from '../@types/language';
 import { IQuestion } from '../@types/question';
 import { HttpRequestMethod, backendServicesPaths } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 
-export async function getSessionAndWsTicket(sessionId: string) {
-  return requestBackend<{ question: IQuestion; ticket: string }>({
-    url: `${backendServicesPaths.collaboration.getSessionAndWsTicket}/${sessionId}`,
+export async function getSession(sessionId: string) {
+  return requestBackend<{ question: IQuestion }>({
+    url: `${backendServicesPaths.collaboration.getSession}/${sessionId}`,
+    method: HttpRequestMethod.GET,
+  });
+}
+
+export function getSessionTicket(sessionId: string) {
+  return requestBackend<{ ticket: string }>({
+    url: backendServicesPaths.collaboration.getSessionTicket(sessionId),
     method: HttpRequestMethod.GET,
   });
 }
@@ -17,12 +23,5 @@ export async function updateSessionLanguageId(sessionId: string, languageId: num
     data: {
       languageId,
     },
-  });
-}
-
-export async function getSessionLanguage(sessionId: string) {
-  return requestBackend<Language>({
-    url: backendServicesPaths.collaboration.sessionLanguage(sessionId),
-    method: HttpRequestMethod.GET,
   });
 }

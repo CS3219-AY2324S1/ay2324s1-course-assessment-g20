@@ -25,6 +25,8 @@ import { firstValueFrom } from 'rxjs';
 import { ID } from '@app/microservice/interfaces/common';
 import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
 import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
+import { Redis } from 'ioredis';
+import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
@@ -103,6 +105,11 @@ export class CollaborationService implements OnModuleInit {
 
   async setSessionLanguageId(request: SetSessionLanguageIdRequest) {
     await this.sessionDaoService.setSessionLanguageId(request);
+    // Initiate client reconnection, which reads updated session language
+    Redis.createClient().publish(
+      CollaborationEvent.LANGUAGE_CHANGE,
+      request.sessionId,
+    );
   }
 
   async getLanguageIdFromSessionId(sessionId: string) {

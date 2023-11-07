@@ -11,6 +11,7 @@ export class AttemptDaoService {
 
   async createAttempt(attempt: {
     historyId: string;
+    languageId: number;
     questionId: string;
     questionAttempt: string;
   }) {
@@ -22,7 +23,12 @@ export class AttemptDaoService {
   async findByHistoryId(historyId: string) {
     return await this.attemptModel
       .query()
-      .select('questionId', 'questionAttempt', 'dateTimeAttempted')
+      .select(
+        'languageId',
+        'questionId',
+        'questionAttempt',
+        'dateTimeAttempted',
+      )
       .where('historyId', historyId)
       .orderBy('dateTimeAttempted', 'desc');
   }

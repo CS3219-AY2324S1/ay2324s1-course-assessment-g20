@@ -17,13 +17,20 @@ import { getAttemptsByUsername } from '../api/historyServiceApi';
 import { getQuestionWithId } from '../api/questionBankApi';
 import Popup from './Popup';
 import { parseISO, format } from 'date-fns';
+import { getAllLanguages } from '../api/userApi';
+import { Language } from '../@types/language';
+import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
 
 function HistoryBox({ username }: { username: string }) {
   const { palette } = useTheme();
 
   const [rows, setRows] = useState<IHistoryTableRow[]>([]);
+  const [languages, setLanguages] = useState<Language[]>([]);
 
   useEffect(() => {
+    // Fetch languages from API
+    getAllLanguages().then((response) => setLanguages(response.data));
+
     // Fetch history from API
     getAttemptsByUsername(username)
       .then((response) => response.data)
@@ -73,45 +80,56 @@ function HistoryBox({ username }: { username: string }) {
               <StyledTableCell align="left">Category</StyledTableCell>
               <StyledTableCell align="left">Difficulty</StyledTableCell>
               <StyledTableCell align="left">Date Attempted</StyledTableCell>
+              <StyledTableCell align="left">Language Attempted</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
-              <StyledTableRow key={index}>
-                <StyledTableCell component="th" scope="row">
-                  <Typography
-                    variant="subtitle2"
-                    onClick={() => handlePopupOnClick(index)}
-                    sx={{ '&:hover': { cursor: 'pointer', color: palette.secondary.main } }}
-                  >
-                    {row.question.title}
-                  </Typography>
+            {rows.map((row, index) => {
+              const language =
+                languages.filter((language) => language.id === row.attempt.languageId)[0]?.name ??
+                DEFAULT_LANGUAGE;
 
-                  <Popup
-                    title={row.question.title}
-                    children={'Your solution:\n\n' + row.attempt.questionAttempt.toString()}
-                    isCode={true}
-                    openPopup={rowIndex == index && popupVisibility}
-                    closePopup={handlePopupOnClose}
-                  ></Popup>
-                </StyledTableCell>
-                <StyledTableCell align="left">{row.question.categories.join(', ')}</StyledTableCell>
-                <StyledTableCell align="left">
-                  <Typography
-                    variant="subtitle2"
-                    color={getDifficultyColor(palette, row.question.difficulty)}
-                  >
-                    {row.question.difficulty}
-                  </Typography>
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  {format(
-                    parseISO(row.attempt.dateTimeAttempted.toString()),
-                    'MMMM d, yyyy HH:mm:ss',
-                  )}
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
+              return (
+                <StyledTableRow key={index}>
+                  <StyledTableCell component="th" scope="row">
+                    <Typography
+                      variant="subtitle2"
+                      onClick={() => handlePopupOnClick(index)}
+                      sx={{ '&:hover': { cursor: 'pointer', color: palette.secondary.main } }}
+                    >
+                      {row.question.title}
+                    </Typography>
+
+                    <Popup
+                      title={row.question.title}
+                      children={'Your solution:\n\n' + row.attempt.questionAttempt.toString()}
+                      isCode={true}
+                      language={language}
+                      openPopup={rowIndex == index && popupVisibility}
+                      closePopup={handlePopupOnClose}
+                    ></Popup>
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    {row.question.categories.join(', ')}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Typography
+                      variant="subtitle2"
+                      color={getDifficultyColor(palette, row.question.difficulty)}
+                    >
+                      {row.question.difficulty}
+                    </Typography>
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    {format(
+                      parseISO(row.attempt.dateTimeAttempted.toString()),
+                      'MMMM d, yyyy HH:mm:ss',
+                    )}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">{formatLanguage(language)}</StyledTableCell>
+                </StyledTableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

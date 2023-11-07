@@ -8,6 +8,7 @@ export class HistoryModel extends BaseModelUUID {
   readonly username: string;
   readonly attempts: {
     attemptId: string;
+    languageId: number;
     questionId: string;
     questionAttempt: string;
     dateTimeAttempted: Date;

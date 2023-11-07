@@ -1,6 +1,6 @@
 import { frontendPaths } from '../routes/paths';
 import { Box, Button, Divider, Paper, Typography } from '@mui/material';
-import { formatLanguage } from '../utils/stringUtils';
+import { formatLanguage } from '../utils/languageUtils';
 import { useNavigate } from 'react-router-dom';
 import { UserProfile } from '../@types/userProfile';
 

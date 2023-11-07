@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { Language } from '../@types/language';
 import { useProfile } from '../hooks/useProfile';
 import { frontendPaths } from '../routes/paths';
-import { formatLanguage } from '../utils/stringUtils';
+import { formatLanguage } from '../utils/languageUtils';
 
 const modalStyle = {
   position: 'absolute' as const,

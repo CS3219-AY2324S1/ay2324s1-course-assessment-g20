@@ -53,10 +53,22 @@ export class HistoryService implements OnModuleInit {
     // Get usernames
     const usernames = await this.getUsernamesFromSessionId(sessionId);
 
+    // Get language
+    const languageId = await firstValueFrom(
+      this.collabService.getLanguageIdFromSessionId({
+        id: sessionId,
+      }),
+    ).then(({ id }) => id);
+
     // Create history for each user
     return await Promise.all(
       usernames.map((username) =>
-        this.createHistoryForUser(username, questionId, questionAttempt),
+        this.createHistoryForUser(
+          username,
+          languageId,
+          questionId,
+          questionAttempt,
+        ),
       ),
     ).then((historiesCreated) => {
       return { histories: historiesCreated };
@@ -96,6 +108,7 @@ export class HistoryService implements OnModuleInit {
 
   private async createHistoryForUser(
     username: string,
+    languageId: number,
     questionId: string,
     questionAttempt: string,
   ) {
@@ -107,6 +120,7 @@ export class HistoryService implements OnModuleInit {
 
     await this.attemptDaoService.createAttempt({
       historyId: history.id,
+      languageId,
       questionId,
       questionAttempt,
     });

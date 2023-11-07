@@ -1,12 +1,14 @@
 import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import TextContent from './TextContent';
 import CodeContent from './CodeContent';
+import { DEFAULT_LANGUAGE } from '../utils/languageUtils';
 
 interface PopupProps {
   questionId?: string;
   title: string;
   children: string;
   isCode?: boolean;
+  language?: string;
   openPopup: boolean;
   closePopup: () => void;
 }
@@ -15,6 +17,7 @@ export default function Popup({
   title,
   children,
   isCode = false,
+  language = DEFAULT_LANGUAGE, // Default language is javascript
   openPopup,
   closePopup,
 }: PopupProps) {
@@ -45,7 +48,10 @@ export default function Popup({
         }}
       >
         {isCode ? (
-          <CodeContent content={children} language="typescript" /> // Currently only support typescript and its sublanguages (i.e. javascript)
+          <CodeContent
+            content={children}
+            language={language.toLowerCase() ?? DEFAULT_LANGUAGE.toLowerCase()}
+          />
         ) : (
           <TextContent content={children} />
         )}

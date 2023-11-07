@@ -28,6 +28,7 @@ export interface History {
 }
 
 export interface Attempt {
+  languageId: number;
   questionId: string;
   questionAttempt: string;
   dateTimeAttempted: Date;

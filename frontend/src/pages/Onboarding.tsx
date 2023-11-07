@@ -18,7 +18,7 @@ import { useProfile } from '../hooks/useProfile';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { frontendPaths } from '../routes/paths';
-import { formatLanguage } from '../utils/stringUtils';
+import { formatLanguage } from '../utils/languageUtils';
 
 export default function Onboarding() {
   const [languages, setLanguages] = useState<Language[]>([]);

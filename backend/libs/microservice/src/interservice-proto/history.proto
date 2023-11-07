@@ -24,7 +24,7 @@ message GetAttemptsByUsernameRequest {
 }
 
 message GetAttemptsByUsernameResponse {
-    repeated Attempt attempts = 1;
+  repeated Attempt attempts = 1;
 }
 
 message History {
@@ -34,9 +34,10 @@ message History {
 }
 
 message Attempt {
-  string questionId = 1;
-  string questionAttempt = 2;
-  google.protobuf.Timestamp dateTimeAttempted = 3;
+  int32 languageId = 1;
+  string questionId = 2;
+  string questionAttempt = 3;
+  google.protobuf.Timestamp dateTimeAttempted = 4;
 }
 
  

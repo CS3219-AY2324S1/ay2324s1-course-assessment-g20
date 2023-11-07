@@ -27,7 +27,7 @@ import { WebsocketProvider } from 'y-websocket';
 import ChatbotPopup from '../components/Chatbot/ChatbotPopup';
 import { Language } from '../@types/language';
 import { getAllLanguages } from '../api/userApi';
-import { formatLanguage } from '../utils/stringUtils';
+import { formatLanguage } from '../utils/languageUtils';
 import { HttpStatusCode, isAxiosError } from 'axios';
 
 /**

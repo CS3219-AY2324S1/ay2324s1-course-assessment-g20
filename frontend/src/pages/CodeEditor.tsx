@@ -19,6 +19,7 @@ import ChatbotPopup from '../components/Chatbot/ChatbotPopup';
 import { Language } from '../@types/language';
 import { getAllLanguages } from '../api/userApi';
 import { formatLanguage } from '../utils/stringUtils';
+import { HttpStatusCode, isAxiosError } from 'axios';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.
@@ -69,8 +70,11 @@ const CodeEditor = () => {
           setQuestion(question);
           setWsTicket(ticket);
         })
-        .catch(() => {
-          throwAsyncError('Invalid session');
+        .catch((e) => {
+          if (isAxiosError(e) && e.response?.status === HttpStatusCode.Forbidden) {
+            return throwAsyncError('User does not belong in this session!');
+          }
+          return throwAsyncError('Invalid session!');
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -50,18 +50,18 @@ export class BaseWebsocketGateway
       return BaseWebsocketGateway.closeConnection(connection);
     }
 
-    try {
-      const ticket = await firstValueFrom(
-        this.userAuthService.consumeWebsocketTicket({
-          id: ticketId,
-        }),
-      );
-      connection.ticket = ticket;
-      return true;
-    } catch (err) {
-      console.log(err);
+    const ticket = await firstValueFrom(
+      this.userAuthService.consumeWebsocketTicket({
+        id: ticketId,
+      }),
+    );
+
+    if (!ticket) {
       return BaseWebsocketGateway.closeConnection(connection);
     }
+
+    connection.ticket = ticket;
+    return true;
   }
 
   // Close connection and return `false` for authentication failure.

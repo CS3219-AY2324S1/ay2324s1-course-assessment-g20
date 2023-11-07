@@ -4,6 +4,7 @@ services:
     build: 
       context: .
       dockerfile: ./apps/gateway/Dockerfile
+      target: dev
     depends_on:
       sql-migrations:
         condition: service_completed_successfully

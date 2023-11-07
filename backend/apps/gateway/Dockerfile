@@ -1,4 +1,4 @@
-FROM node:18-slim
+FROM node:18-slim as base
 
 RUN mkdir -p /app/libs
 WORKDIR /app/libs
@@ -15,6 +15,13 @@ COPY *.json \
      ./
      
 RUN yarn install --frozen-lockfile
-RUN yarn build gateway
 
+FROM base as dev
+ENV NODE_ENV development
+RUN yarn build gateway
+CMD ["node", "dist/apps/gateway/main"]
+
+FROM base as test
+ENV NODE_ENV test
+RUN yarn build gateway
 CMD ["node", "dist/apps/gateway/main"]

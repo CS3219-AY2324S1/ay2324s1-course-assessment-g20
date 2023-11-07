@@ -10,6 +10,10 @@ message IDs {
   repeated string ids = 1;
 }
 
+message NumericID {
+  int32 id = 1;
+}
+
 message Deleted {
   int32 deletedCount = 1;
 }

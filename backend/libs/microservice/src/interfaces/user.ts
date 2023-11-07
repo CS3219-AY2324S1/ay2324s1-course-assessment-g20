@@ -2,7 +2,7 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { wrappers } from 'protobufjs';
 import { Observable } from 'rxjs';
-import { Deleted, ID, IDs } from './common';
+import { Deleted, ID, IDs, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
 import { BoolValue } from './google/protobuf/wrappers';
 
@@ -164,6 +164,8 @@ export const USER_AUTH_SERVICE_NAME = 'UserAuthService';
 
 export interface UserLanguageServiceClient {
   getAllLanguages(request: Empty): Observable<GetAllLanguagesResponse>;
+
+  getLanguageById(request: NumericID): Observable<Language>;
 }
 
 export interface UserLanguageServiceController {
@@ -173,11 +175,15 @@ export interface UserLanguageServiceController {
     | Promise<GetAllLanguagesResponse>
     | Observable<GetAllLanguagesResponse>
     | GetAllLanguagesResponse;
+
+  getLanguageById(
+    request: NumericID,
+  ): Promise<Language> | Observable<Language> | Language;
 }
 
 export function UserLanguageServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['getAllLanguages'];
+    const grpcMethods: string[] = ['getAllLanguages', 'getLanguageById'];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

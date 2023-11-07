@@ -19,6 +19,7 @@ service UserAuthService {
 
 service UserLanguageService {
   rpc GetAllLanguages (google.protobuf.Empty) returns (GetAllLanguagesResponse);
+  rpc GetLanguageById (common.NumericID) returns (Language);
 }
 
 service UserProfileService {

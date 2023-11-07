@@ -1,4 +1,3 @@
-import { Service } from '@app/microservice/services';
 import { RedisOptions, Transport } from '@nestjs/microservices';
 import { redisStore } from 'cache-manager-redis-yet';
 

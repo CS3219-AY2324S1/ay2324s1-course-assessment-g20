@@ -12,11 +12,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IDifficulty } from '../@types/question';
 import { useSnackbar } from 'notistack';
-import {
-  getMatchingWebSocket,
-  sendWsMessage,
-  setWebsocketEventCallback as setWebsocketMessageEventCallback,
-} from '../utils/websocketUtils';
+import { getMatchingWebSocket, sendWsMessage } from '../utils/websocketUtils';
 let ws: WebSocket;
 
 interface PopupProps {
@@ -70,9 +66,12 @@ export default function WaitingScreen({ difficulty, openScreen, setCloseScreen }
 
   const handleWebsocketOpen = () => {
     sendWsMessage(ws, { questionDifficulty: difficulty._id }, 'get_match');
-    setWebsocketMessageEventCallback(ws, 'match', (data: { sessionId: string }) =>
-      handleMatchFound(data.sessionId),
-    );
+    ws.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      if (data.event === 'match') {
+        handleMatchFound(data.data.sessionId);
+      }
+    };
   };
 
   // Functions to handle the searching and cancelling of searching for a partner

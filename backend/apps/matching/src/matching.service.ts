@@ -51,7 +51,7 @@ export class MatchingService implements OnModuleInit {
 
   async findMatch(matchingEntry: LookingToMatchModel) {
     const release = await mutex.acquire();
-    this.findMatchHelper(matchingEntry);
+    await this.findMatchHelper(matchingEntry);
     release();
   }
 

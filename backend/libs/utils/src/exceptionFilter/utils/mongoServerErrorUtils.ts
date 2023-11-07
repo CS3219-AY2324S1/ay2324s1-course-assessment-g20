@@ -1,4 +1,4 @@
-import { MONGO_SERVER_ERROR_CODES } from '../constants';
+import { MONGO_SERVER_ERROR_CODES } from '@app/types/exceptions';
 
 export const isMongoServerError = (error): boolean =>
   error.name === 'MongoServerError';

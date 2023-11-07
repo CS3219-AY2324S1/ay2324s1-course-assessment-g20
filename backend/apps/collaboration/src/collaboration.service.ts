@@ -23,8 +23,8 @@ import {
 } from '@app/microservice/interfaces/question';
 import { firstValueFrom } from 'rxjs';
 import { ID } from '@app/microservice/interfaces/common';
-import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
-import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
+import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
 import { Redis } from 'ioredis';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 

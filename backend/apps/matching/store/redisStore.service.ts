@@ -32,8 +32,8 @@ export class RedisStoreService {
   }
 
   async createOrUpdateMatchingEntry(matchEntry: LookingToMatchModel) {
-    this.deleteEntryByUserId(matchEntry.userId);
-    this.storeEntry(matchEntry);
+    await this.deleteEntryByUserId(matchEntry.userId);
+    await this.storeEntry(matchEntry);
   }
 
   async deleteMatchingEntryIfExists(matchEntry: LookingToMatchModel) {

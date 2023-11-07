@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { getStatusFromErrorMessage } from './utils';
-import { GRPC_UNKNOWN_ERROR } from './constants';
+import { getStatusFromErrorMessage } from './getStatusFromErrorMessage';
+import { GRPC_UNKNOWN_ERROR } from '@app/types/exceptions';
 
 @Catch()
 export class GatewayExceptionFilter implements ExceptionFilter {

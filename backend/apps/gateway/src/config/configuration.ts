@@ -1,4 +1,4 @@
-import { Transport } from '@nestjs/microservices';
+import { RedisOptions, Transport } from '@nestjs/microservices';
 import { _StrategyOptionsBase } from 'passport-google-oauth20';
 
 const gatewayConfiguration = () => {
@@ -8,11 +8,12 @@ const gatewayConfiguration = () => {
     callbackURL: process.env.OAUTH_GOOGLE_REDIRECT_URL,
   };
 
-  const websocketGatewayOptions = {
+  const websocketGatewayOptions: RedisOptions = {
     transport: Transport.REDIS,
     options: {
       host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
+      port: parseInt(process.env.REDIS_PORT, 10),
+      password: process.env.REDIS_PASSWORD,
     },
   };
 

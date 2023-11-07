@@ -7,7 +7,9 @@
   "compilerOptions": {
     "webpack": true,
     "tsConfigPath": "apps/gateway/tsconfig.app.json",
-    "assets": ["**/*.proto"],
+    "assets": [
+      "**/*.proto"
+    ],
     "watchAssets": true
   },
   "projects": {
@@ -18,7 +20,9 @@
       "sourceRoot": "apps/gateway/src",
       "compilerOptions": {
         "tsConfigPath": "apps/gateway/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
         "watchAssets": true
       }
     },
@@ -29,7 +33,9 @@
       "sourceRoot": "apps/question/src",
       "compilerOptions": {
         "tsConfigPath": "apps/question/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
         "watchAssets": true
       }
     },
@@ -40,7 +46,9 @@
       "sourceRoot": "apps/chatbot/src",
       "compilerOptions": {
         "tsConfigPath": "apps/chatbot/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
         "watchAssets": true
       }
     },
@@ -51,7 +59,9 @@
       "sourceRoot": "apps/user/src",
       "compilerOptions": {
         "tsConfigPath": "apps/user/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
         "watchAssets": true
       }
     },
@@ -62,7 +72,9 @@
       "sourceRoot": "apps/matching/src",
       "compilerOptions": {
         "tsConfigPath": "apps/matching/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
         "watchAssets": true
       }
     },
@@ -109,7 +121,9 @@
       "sourceRoot": "apps/collaboration/src",
       "compilerOptions": {
         "tsConfigPath": "apps/collaboration/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
         "watchAssets": true
       }
     },
@@ -120,6 +134,24 @@
       "sourceRoot": "libs/websocket/src",
       "compilerOptions": {
         "tsConfigPath": "libs/websocket/tsconfig.lib.json"
+      }
+    },
+    "utils": {
+      "type": "library",
+      "root": "libs/utils",
+      "entryFile": "index",
+      "sourceRoot": "libs/utils/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/utils/tsconfig.lib.json"
+      }
+    },
+    "mocks": {
+      "type": "library",
+      "root": "libs/mocks",
+      "entryFile": "index",
+      "sourceRoot": "libs/mocks/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mocks/tsconfig.lib.json"
       }
     }
   }

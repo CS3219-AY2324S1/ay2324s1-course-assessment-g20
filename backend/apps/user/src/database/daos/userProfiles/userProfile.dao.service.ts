@@ -1,8 +1,8 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { ModelClass } from 'objection';
 import { UserProfileModel } from '../../models/userProfile.model';
-import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
-import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
+import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
 
 @Injectable()
 export class UserProfileDaoService {

@@ -12,14 +12,14 @@
     "format:ci": "prettier --list-different \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:docker": "docker compose -f ./docker-compose.yml up --build -d",
-    "stop:docker": "docker compose -f ./docker-compose.yml down",
+    "start:docker": "docker compose -f ./docker-compose.yml --env-file .env.docker up --build -d",
+    "stop:docker": "docker compose -f ./docker-compose.yml --env-file .env.docker down",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/gateway/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "lint:ci": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest --config ./apps/gateway/test/jest-e2e.json --force-exit --verbose",
-    "test:ci": "docker compose -f ./docker-compose.test.yml --env-file=.env.test up --build -d && yarn test && docker compose -f ./docker-compose.test.yml --env-file=.env.test down",
+    "test:ci": "docker compose -f ./docker-compose.test.yml --env-file .env.test up --build -d && docker compose -f ./docker-compose.test.yml --env-file .env.test exec gateway yarn test && docker compose -f ./docker-compose.test.yml --env-file .env.test down",
     "prepare": "cd .. && husky install backend/.husky",
     "knex-script": "knex --knexfile",
     "knex": "./scripts/knex/knex.sh",
@@ -71,6 +71,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "ws": "^8.14.2",
     "y-mongodb-provider": "^0.1.7",
     "y-websocket": "^1.5.0",
     "yjs": "^13.6.8"
@@ -85,6 +86,7 @@
     "@types/passport-google-oauth20": "^2.0.11",
     "@types/passport-jwt": "^3.0.9",
     "@types/supertest": "^2.0.11",
+    "@types/ws": "^8.5.8",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^8.0.1",
@@ -126,7 +128,9 @@
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
       "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1",
       "^@app/microservice(|/.*)$": "<rootDir>/libs/microservice/src/$1",
-      "^@app/websocket(|/.*)$": "<rootDir>/libs/websocket/src/$1"
+      "^@app/websocket(|/.*)$": "<rootDir>/libs/websocket/src/$1",
+      "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1",
+      "^@app/mocks(|/.*)$": "<rootDir>/libs/mocks/src/$1"
     }
   }
 }

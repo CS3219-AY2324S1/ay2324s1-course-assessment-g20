@@ -40,12 +40,14 @@ export class MatchingGateway extends BaseWebsocketGateway {
   }
 
   async handleDisconnect(connection: AuthenticatedWebsocket): Promise<void> {
-    this.websocketMemoryService.removeConnection(connection.ticket.userId);
-    await firstValueFrom(
-      this.matchingService.deleteMatchEntryByUserId({
-        id: connection.ticket.userId,
-      }),
-    );
+    if (connection.ticket?.userId) {
+      this.websocketMemoryService.removeConnection(connection.ticket.userId);
+      await firstValueFrom(
+        this.matchingService.deleteMatchEntryByUserId({
+          id: connection.ticket.userId,
+        }),
+      );
+    }
   }
 
   async handleConnection(

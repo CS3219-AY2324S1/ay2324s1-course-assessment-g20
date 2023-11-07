@@ -5,8 +5,8 @@ import { Question } from './schemas/question.schema';
 import { Category } from './schemas/category.schema';
 import { Difficulty } from './schemas/difficulty.schema';
 import { Question as QuestionWithCategoryAndDifficulty } from '@app/microservice/interfaces/question';
-import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
-import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
+import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
 
 @Injectable()
 export class QuestionService {

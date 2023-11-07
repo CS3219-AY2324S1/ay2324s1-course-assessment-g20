@@ -54,7 +54,7 @@ export class BaseWebsocketGateway
       this.userAuthService.consumeWebsocketTicket({
         id: ticketId,
       }),
-    );
+    ).catch((e) => null);
 
     if (!ticket) {
       return BaseWebsocketGateway.closeConnection(connection);

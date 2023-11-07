@@ -9,6 +9,9 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Start minikube (e.g. `minikube start`).
 1. Run `eval $(minikube docker-env)` to set the environment .variables for the Docker daemon to run inside the Minikube cluster.
+    - If `eval $(minikube docker-env)` is not compatible with your terminal (i.e. for Windows):
+    - Run `minikube -p minikube docker-env` to ensure your environment variables have updated ports
+    - Then run `& minikube -p minikube docker-env --shell powershell | Invoke-Expression` to point your shell to minikube's docker-daemon
 1. In the same terminal, build the docker images locally (e.g. `docker compose build`).
 
 #### Install ingress-nginx

@@ -9,7 +9,7 @@
 
 ## Building locally
 1. Install Docker Desktop if you have not already done so.
-1. Populate the empty fields in the `.env.docker` file.
+1. Copy the `.env.docker.example` file as `.env.docker` (e.g. `cp .env.docker.example .env.docker`) and update the remaining secrets.
 1. In the `backend` directory, run `yarn start:docker` to build and run all Dockerized microservices in detached mode locally.
 1. Run `yarn stop:docker` to stop the microservice containers.
 
@@ -25,4 +25,4 @@
 1. Run `yarn lint` and `yarn format` in the `backend` directory to lint and format the backend codebase.
 
 ## Chatbot microservice
-- Populate CHATBOT_SERVICE_OPENAI_API_KEY={Your own API key from open AI}
+- Populate CHATBOT_SERVICE_OPENAI_API_KEY={Your own API key from OpenAI}

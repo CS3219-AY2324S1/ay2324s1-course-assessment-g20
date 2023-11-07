@@ -71,16 +71,16 @@ services:
       - backend
     env_file: .env.test
 
-    history:
-      build:
-        context: .
-        dockerfile: ./apps/history/Dockerfile
-      depends_on:
-        sql-migrations:
-          condition: service_completed_successfully
-      networks:
-        - backend
-      env_file: .env.test
+  history:
+    build:
+      context: .
+      dockerfile: ./apps/history/Dockerfile
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+    networks:
+      - backend
+    env_file: .env.test
 
   postgres:
     image: postgres:14.1-alpine

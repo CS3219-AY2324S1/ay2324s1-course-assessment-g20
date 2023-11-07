@@ -90,6 +90,7 @@ function HistoryBox({ username }: { username: string }) {
                   <Popup
                     title={row.question.title}
                     children={'Your solution:\n\n' + row.attempt.questionAttempt.toString()}
+                    isCode={true}
                     openPopup={rowIndex == index && popupVisibility}
                     closePopup={handlePopupOnClose}
                   ></Popup>

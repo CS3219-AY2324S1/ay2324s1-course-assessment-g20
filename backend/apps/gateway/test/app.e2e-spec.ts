@@ -510,23 +510,31 @@ describe('Gateway (e2e)', () => {
       wsTicket2 = ticket2.id;
     });
 
-    it(`should be unauthorized when trying to access matching websocket without a ticket`, () => {
+    it(`should be unauthorized when trying to access matching websocket without a ticket`, async () => {
       const unauthorizedWs = new WebSocket(websocketUrl);
-      unauthorizedWs.onmessage = (event) => {
-        expect(event.data === 'unauthorized');
-        unauthorizedWs.close();
-      };
+      await new Promise((resolve) => unauthorizedWs.on('open', resolve));
+      await new Promise<void>((resolve) =>
+        unauthorizedWs.on('message', (data: string) => {
+          expect(data === 'unauthorized');
+          unauthorizedWs.close();
+          resolve();
+        }),
+      );
     });
 
-    // it(`should be unauthorized when trying to access matching websocket with an invalid ticket`, () => {
-    //   const unauthorizedWs = new WebSocket(
-    //     `${websocketUrl}?ticket=invalidTicket`,
-    //   );
-    //   unauthorizedWs.onmessage = (event) => {
-    //     expect(event.data === 'unauthorized');
-    //     unauthorizedWs.close();
-    //   };
-    // });
+    it(`should be unauthorized when trying to access matching websocket with an invalid ticket`, async () => {
+      const unauthorizedWs = new WebSocket(
+        `${websocketUrl}?ticket=invalidTicket`,
+      );
+      await new Promise((resolve) => unauthorizedWs.on('open', resolve));
+      await new Promise<void>((resolve) =>
+        unauthorizedWs.on('message', (data: string) => {
+          expect(data === 'unauthorized');
+          unauthorizedWs.close();
+          resolve();
+        }),
+      );
+    });
 
     it(`should return a new session ID when 2 users with valid tickets are matching on same difficulty`, async () => {
       const userSessions = [];

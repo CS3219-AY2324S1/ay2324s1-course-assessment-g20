@@ -7,6 +7,7 @@ import {
   Username,
 } from '@app/microservice/interfaces/user';
 import { ID } from '@app/microservice/interfaces/common';
+import { firstValueFrom } from 'rxjs';
 
 @Controller()
 @UserProfileServiceControllerMethods()
@@ -25,7 +26,9 @@ export class ProfileController implements UserProfileServiceController {
     return this.profileService.updateUserProfile(data);
   }
 
-  getAttemptsByUsername({ username }: Username) {
-    return this.profileService.getAttemptsByUsername({ username });
+  async getAttemptsByUsername({ username }: Username) {
+    return await firstValueFrom(
+      await this.profileService.getAttemptsByUsername(username),
+    );
   }
 }

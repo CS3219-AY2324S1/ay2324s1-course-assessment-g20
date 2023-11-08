@@ -27,7 +27,7 @@ service UserProfileService {
     rpc GetUserProfileById (common.ID) returns (UserProfile);
     rpc GetUserProfileByUsername (Username) returns (UserProfile);
     rpc UpdateUserProfile (UserProfile) returns (UserProfile);
-    rpc GetAttemptsByUsername (Username) returns (HistoryPackage.GetAttemptsByUsernameResponse);
+    rpc GetAttemptsByUsername (Username) returns (HistoryPackage.GetAttemptsByUserIdResponse);
 }
 
 message User {

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { Deleted, ID, IDs, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
 import { BoolValue } from './google/protobuf/wrappers';
-import { GetAttemptsByUsernameResponse } from './history';
+import { GetAttemptsByUserIdResponse } from './history';
 
 export const USER_PROFILE_SERVICE_NAME = 'UserProfileService';
 
@@ -224,7 +224,7 @@ export interface UserProfileServiceClient {
 
   getAttemptsByUsername(
     request: Username,
-  ): Observable<GetAttemptsByUsernameResponse>;
+  ): Observable<GetAttemptsByUserIdResponse>;
 }
 
 export interface UserProfileServiceController {
@@ -243,9 +243,9 @@ export interface UserProfileServiceController {
   getAttemptsByUsername(
     request: Username,
   ):
-    | Promise<GetAttemptsByUsernameResponse>
-    | Observable<GetAttemptsByUsernameResponse>
-    | GetAttemptsByUsernameResponse;
+    | Promise<GetAttemptsByUserIdResponse>
+    | Observable<GetAttemptsByUserIdResponse>
+    | GetAttemptsByUserIdResponse;
 }
 
 export function UserProfileServiceControllerMethods() {

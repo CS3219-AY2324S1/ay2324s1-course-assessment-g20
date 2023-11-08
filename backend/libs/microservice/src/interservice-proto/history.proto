@@ -7,35 +7,29 @@ import "common.proto";
 
 service HistoryService {
   rpc CreateHistoryAttempt (CreateHistoryAttemptRequest) returns (CreateHistoryAttemptResponse);
-  rpc GetAttemptsByUsername (GetAttemptsByUsernameRequest) returns (GetAttemptsByUsernameResponse);
+  rpc GetAttemptsByUserId (common.ID) returns (GetAttemptsByUserIdResponse);
 }
 
 message CreateHistoryAttemptRequest {
   string sessionId = 1;
-  string questionAttempt = 2;
 }
 
 message CreateHistoryAttemptResponse {
   repeated History histories = 1;
 }
 
-message GetAttemptsByUsernameRequest {
-  string username = 1;
-}
-
-message GetAttemptsByUsernameResponse {
+message GetAttemptsByUserIdResponse {
   repeated Attempt attempts = 1;
 }
 
 message History {
   string id = 1;
-  string username = 2;
+  string userId = 2;
   repeated Attempt attempts = 3;
 }
 
 message Attempt {
-  int32 languageId = 1;
+  string sessionId = 1;
   string questionId = 2;
-  string questionAttempt = 3;
-  google.protobuf.Timestamp dateTimeAttempted = 4;
+  google.protobuf.Timestamp dateTimeAttempted = 3;
 }

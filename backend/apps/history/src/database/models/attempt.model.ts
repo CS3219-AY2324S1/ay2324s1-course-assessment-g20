@@ -4,9 +4,8 @@ export class AttemptModel extends BaseModelUUID {
   static tableName = 'attempts';
 
   readonly historyId: string;
-  readonly languageId: number;
+  readonly sessionId: string;
   readonly questionId: string;
-  readonly questionAttempt: string;
   dateTimeAttempted: Date;
 
   $beforeInsert() {

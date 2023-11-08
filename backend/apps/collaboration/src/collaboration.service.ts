@@ -5,6 +5,7 @@ import { Service } from '@app/microservice/services';
 import { SessionModel } from './database/models/session.model';
 import {
   CreateCollabSessionRequest,
+  GetAttemptTextFromSessionIdResponse,
   GetQuestionIdFromSessionIdResponse,
   GetSessionOrTicketRequest,
   GetUserIdsFromSessionIdResponse,
@@ -28,6 +29,8 @@ import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
 import { Redis } from 'ioredis';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
+import { ConfigService } from '@nestjs/config';
+import { MongodbPersistence } from 'y-mongodb-provider';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
@@ -35,6 +38,7 @@ export class CollaborationService implements OnModuleInit {
   private questionService: QuestionServiceClient;
   private userProfileService: UserProfileServiceClient;
   private languageService: UserLanguageServiceClient;
+  private mdb: MongodbPersistence;
 
   constructor(
     @Inject(Service.USER_SERVICE)
@@ -42,7 +46,14 @@ export class CollaborationService implements OnModuleInit {
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionServiceClient: ClientGrpc,
     private readonly sessionDaoService: SessionDaoService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const mongoUri = configService.getOrThrow('mongoUri');
+    this.mdb = new MongodbPersistence(mongoUri, {
+      flushSize: 100,
+      multipleCollections: true,
+    });
+  }
 
   onModuleInit() {
     this.userAuthService =
@@ -262,5 +273,13 @@ export class CollaborationService implements OnModuleInit {
 
         return { userIds: userIds.map((u) => ({ userId: u.userId })) };
       });
+  }
+
+  getAttemptTextFromSessionId(
+    request: ID,
+  ): Promise<GetAttemptTextFromSessionIdResponse> {
+    return this.mdb
+      .getYDoc(request.id)
+      .then((ydoc) => ({ attemptText: ydoc.getText('monaco').toString() }));
   }
 }

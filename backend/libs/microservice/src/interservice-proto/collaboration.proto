@@ -16,6 +16,7 @@ service CollaborationService {
   rpc GetLanguageIdFromSessionId (common.ID) returns (UserPackage.Language);
   rpc SetSessionLanguageId (SetSessionLanguageIdRequest) returns (google.protobuf.Empty) {}
   rpc GetUserIdsFromSessionId (common.ID) returns (GetUserIdsFromSessionIdResponse);
+  rpc GetAttemptTextFromSessionId (common.ID) returns (GetAttemptTextFromSessionIdResponse);
 }
 
 message CreateCollabSessionRequest {
@@ -52,6 +53,10 @@ message GetSessionIdFromTicketResponse {
 
 message GetUserIdsFromSessionIdResponse {
   repeated UserId userIds = 1;
+}
+
+message GetAttemptTextFromSessionIdResponse {
+  string attemptText = 1;
 }
 
 message Session {

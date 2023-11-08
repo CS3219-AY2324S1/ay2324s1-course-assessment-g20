@@ -1,36 +1,31 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
+import { ID } from './common';
 
 export const HISTORY_SERVICE_NAME = 'HistoryService';
 
 export interface CreateHistoryAttemptRequest {
   sessionId: string;
-  questionAttempt: string;
 }
 
 export interface CreateHistoryAttemptResponse {
   histories: History[];
 }
 
-export interface GetAttemptsByUsernameRequest {
-  username: string;
-}
-
-export interface GetAttemptsByUsernameResponse {
+export interface GetAttemptsByUserIdResponse {
   attempts: Attempt[];
 }
 
 export interface History {
   id: string;
-  username: string;
+  userId: string;
   attempts: Attempt[];
 }
 
 export interface Attempt {
-  languageId: number;
+  sessionId: string;
   questionId: string;
-  questionAttempt: string;
   dateTimeAttempted: Date;
 }
 
@@ -39,9 +34,7 @@ export interface HistoryServiceClient {
     request: CreateHistoryAttemptRequest,
   ): Observable<CreateHistoryAttemptResponse>;
 
-  getAttemptsByUsername(
-    request: GetAttemptsByUsernameRequest,
-  ): Observable<GetAttemptsByUsernameResponse>;
+  getAttemptsByUserId(request: ID): Observable<GetAttemptsByUserIdResponse>;
 }
 
 export interface HistoryServiceController {
@@ -52,19 +45,19 @@ export interface HistoryServiceController {
     | Observable<CreateHistoryAttemptResponse>
     | CreateHistoryAttemptResponse;
 
-  getAttemptsByUsername(
-    request: GetAttemptsByUsernameRequest,
+  getAttemptsByUserId(
+    request: ID,
   ):
-    | Promise<GetAttemptsByUsernameResponse>
-    | Observable<GetAttemptsByUsernameResponse>
-    | GetAttemptsByUsernameResponse;
+    | Promise<GetAttemptsByUserIdResponse>
+    | Observable<GetAttemptsByUserIdResponse>
+    | GetAttemptsByUserIdResponse;
 }
 
 export function HistoryServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
       'createHistoryAttempt',
-      'getAttemptsByUsername',
+      'getAttemptsByUserId',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

@@ -17,38 +17,54 @@ import { getQuestionWithId } from '../api/questionBankApi';
 import Popup from './Popup';
 import { parseISO, format } from 'date-fns';
 import { getAllLanguages, getAttemptsByUsername } from '../api/userApi';
-import { Language } from '../@types/language';
 import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
+import { getSessionAttemptText, getSessionLanguageId } from '../api/collaborationServiceApi';
 
 function HistoryBox({ username }: { username: string }) {
   const { palette } = useTheme();
 
   const [rows, setRows] = useState<IHistoryTableRow[]>([]);
-  const [languages, setLanguages] = useState<Language[]>([]);
 
   useEffect(() => {
     // Fetch languages from API
-    getAllLanguages().then((response) => setLanguages(response.data));
+    getAllLanguages().then((languageResponse) => {
+      const languages = languageResponse.data;
 
-    // Fetch history from API
-    getAttemptsByUsername(username)
-      .then((response) => response.data)
-      .then(
-        async (attempts) =>
-          await Promise.all(
-            attempts.map(async (attempt) => {
-              const question = await getQuestionWithId(attempt.questionId).then(
-                (response) => response.data,
-              );
+      // Fetch history from API
+      getAttemptsByUsername(username)
+        .then((response) => response.data)
+        .then((attempts) =>
+          attempts.map(async (attempt) => {
+            // Fetch languageId from API
+            const languageId = await getSessionLanguageId(attempt.sessionId).then(
+              (response) => response.data.id,
+            );
 
-              return {
-                attempt: attempt,
-                question: question,
-              };
-            }),
-          ),
-      )
-      .then((data) => setRows(data));
+            // Fetch attempt from API
+            const questionAttempt = await getSessionAttemptText(attempt.sessionId).then(
+              (response) => response.data.attemptText,
+            );
+
+            // Fetch question from API
+            const question = await getQuestionWithId(attempt.questionId).then(
+              (response) => response.data,
+            );
+
+            return {
+              attempt: {
+                ...attempt,
+                language:
+                  languages.filter((language) => language.id === languageId)[0]?.name ??
+                  DEFAULT_LANGUAGE,
+                questionAttempt,
+              },
+              question: question,
+            };
+          }),
+        )
+        .then((data) => Promise.all(data))
+        .then((rows) => setRows(rows));
+    });
   }, [username]);
 
   // Usestate for the current selected row
@@ -84,10 +100,6 @@ function HistoryBox({ username }: { username: string }) {
           </TableHead>
           <TableBody>
             {rows.map((row, index) => {
-              const language =
-                languages.filter((language) => language.id === row.attempt.languageId)[0]?.name ??
-                DEFAULT_LANGUAGE;
-
               return (
                 <StyledTableRow key={index}>
                   <StyledTableCell component="th" scope="row">
@@ -103,7 +115,7 @@ function HistoryBox({ username }: { username: string }) {
                       title={row.question.title}
                       children={'Your solution:\n\n' + row.attempt.questionAttempt.toString()}
                       isCode={true}
-                      language={language}
+                      language={row.attempt.language}
                       openPopup={rowIndex == index && popupVisibility}
                       closePopup={handlePopupOnClose}
                     ></Popup>
@@ -125,7 +137,9 @@ function HistoryBox({ username }: { username: string }) {
                       'MMMM d, yyyy HH:mm:ss',
                     )}
                   </StyledTableCell>
-                  <StyledTableCell align="left">{formatLanguage(language)}</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {formatLanguage(row.attempt.language)}
+                  </StyledTableCell>
                 </StyledTableRow>
               );
             })}

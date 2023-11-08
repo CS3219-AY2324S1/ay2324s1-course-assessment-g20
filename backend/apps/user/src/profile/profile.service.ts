@@ -8,7 +8,6 @@ import {
   Language,
   UserProfile,
   Role as RoleObj,
-  Username,
 } from '@app/microservice/interfaces/user';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
@@ -18,6 +17,7 @@ import {
 } from '@app/microservice/interfaces/history';
 import { Service } from '@app/microservice/services';
 import { ClientGrpc } from '@nestjs/microservices';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Injectable()
 export class ProfileService {
@@ -110,7 +110,12 @@ export class ProfileService {
     return this.userProfileDaoService.updateByUserId(userId, userProfile);
   }
 
-  getAttemptsByUsername(request: Username) {
-    return this.historyService.getAttemptsByUsername(request);
+  async getAttemptsByUsername(username: string) {
+    const userId = await this.userProfileDaoService
+      .findByUsername({
+        username,
+      })
+      .then((profile) => profile.userId);
+    return this.historyService.getAttemptsByUserId({ id: userId });
   }
 }

@@ -6,16 +6,14 @@ import { Service } from '@app/microservice/services';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { HistoryDaoService } from './database/daos/history/history.dao.service';
-import {
-  CreateHistoryAttemptRequest,
-  GetAttemptsByUsernameRequest,
-} from '@app/microservice/interfaces/history';
+import { CreateHistoryAttemptRequest } from '@app/microservice/interfaces/history';
 import { firstValueFrom } from 'rxjs';
 import { AttemptDaoService } from './database/daos/attempt/attempt.dao.service';
 import { UserProfileServiceClient } from '@app/microservice/interfaces/user';
 import { USER_PROFILE_SERVICE_NAME } from '../../../libs/microservice/src/interfaces/user';
 import { PeerprepException } from '@app/utils';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
+import { ID } from '@app/microservice/interfaces/common';
 
 @Injectable()
 export class HistoryService implements OnModuleInit {
@@ -45,30 +43,18 @@ export class HistoryService implements OnModuleInit {
   async createHistoryAttempt(
     createHistoryAttemptInfo: CreateHistoryAttemptRequest,
   ) {
-    const { sessionId, questionAttempt } = createHistoryAttemptInfo;
+    const { sessionId } = createHistoryAttemptInfo;
 
     // Get questionId
     const questionId = await this.validateSessionIdAndGetQuestionId(sessionId);
 
-    // Get usernames
-    const usernames = await this.getUsernamesFromSessionId(sessionId);
-
-    // Get language
-    const languageId = await firstValueFrom(
-      this.collabService.getLanguageIdFromSessionId({
-        id: sessionId,
-      }),
-    ).then(({ id }) => id);
+    // Get userIds
+    const userIds = await this.getUserIdsFromSessionId(sessionId);
 
     // Create history for each user
     return await Promise.all(
-      usernames.map((username) =>
-        this.createHistoryForUser(
-          username,
-          languageId,
-          questionId,
-          questionAttempt,
-        ),
+      userIds.map((userId) =>
+        this.createHistoryForUser(userId, sessionId, questionId),
       ),
     ).then((historiesCreated) => {
       return { histories: historiesCreated };
@@ -92,51 +78,45 @@ export class HistoryService implements OnModuleInit {
     return questionId;
   }
 
-  private async getUsernamesFromSessionId(sessionId: string) {
-    const userIds = await firstValueFrom(
+  private async getUserIdsFromSessionId(sessionId: string) {
+    return firstValueFrom(
       this.collabService.getUserIdsFromSessionId({ id: sessionId }),
     ).then(({ userIds }) => userIds.map(({ userId }) => userId));
-
-    return await Promise.all(
-      userIds.map(async (userId) => {
-        return firstValueFrom(
-          this.userProfileService.getUserProfileById({ id: userId }),
-        ).then(({ username }) => username);
-      }),
-    );
   }
 
   private async createHistoryForUser(
-    username: string,
-    languageId: number,
+    userId: string,
+    sessionId: string,
     questionId: string,
-    questionAttempt: string,
   ) {
-    let history = await this.historyDaoService.findByUsername(username);
+    let history = await this.historyDaoService.findByUserId(userId);
 
     if (!history) {
-      history = await this.historyDaoService.create(username);
+      history = await this.historyDaoService.create(userId);
     }
 
-    await this.attemptDaoService.createAttempt({
-      historyId: history.id,
-      languageId,
-      questionId,
-      questionAttempt,
-    });
+    if (
+      !(await this.attemptDaoService.existsByHistoryIdAndSessionId(
+        history.id,
+        sessionId,
+      ))
+    ) {
+      await this.attemptDaoService.createAttempt({
+        historyId: history.id,
+        sessionId,
+        questionId,
+      });
+    }
 
     return history;
   }
 
-  async getAttemptsByUsername(request: GetAttemptsByUsernameRequest) {
-    console.log('getAttemptsByUsername');
-    const history = await this.historyDaoService.findByUsername(
-      request.username,
-    );
+  async getAttemptsByUserId(request: ID) {
+    const history = await this.historyDaoService.findByUserId(request.id);
 
     if (!history) {
       throw new PeerprepException(
-        'Invalid username provided!',
+        'Invalid userId provided!',
         PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
       );
     }

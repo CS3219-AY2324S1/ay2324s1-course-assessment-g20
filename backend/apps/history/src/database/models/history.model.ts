@@ -5,12 +5,11 @@ import { AttemptModel } from './attempt.model';
 export class HistoryModel extends BaseModelUUID {
   static tableName = 'history';
 
-  readonly username: string;
+  readonly userId: string;
   readonly attempts: {
     attemptId: string;
-    languageId: number;
+    sessionId: string;
     questionId: string;
-    questionAttempt: string;
     dateTimeAttempted: Date;
   }[];
 

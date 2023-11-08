@@ -60,4 +60,18 @@ export class CollaborationController implements OnModuleInit {
       languageId,
     });
   }
+
+  @Get('session/:sessionId/language')
+  async getLanguageIdFromSessionId(@Param('sessionId') sessionId) {
+    return this.collaborationService.getLanguageIdFromSessionId({
+      id: sessionId,
+    });
+  }
+
+  @Get('session/:sessionId/attemptText')
+  getAttemptTextFromSessionId(@Param('sessionId') sessionId) {
+    return this.collaborationService.getAttemptTextFromSessionId({
+      id: sessionId,
+    });
+  }
 }

@@ -23,9 +23,10 @@ import {
   HISTORY_SERVICE_NAME,
   HistoryServiceClient,
 } from '@app/microservice/interfaces/history';
+import { Mutex } from 'async-mutex';
 
 type YjsWebsocket = AuthenticatedWebsocket & RedisAwareWebsocket;
-
+const mutex = new Mutex();
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
@@ -74,16 +75,19 @@ export class YjsGateway extends BaseWebsocketGateway {
     const { sessionId, language } = await this.getSessionIdAndLanguage(
       ticketId,
     );
-    const docName = sessionId + language.id;
 
     YjsGateway.propagateLanguageToClient(connection, language);
     YjsGateway.subscribeAndHandleLanguageChange(connection, sessionId);
-    YjsGateway.setupYjs(
-      connection,
-      sessionId,
-      this.mongoUri,
-      this.historyService,
-    );
+    YjsGateway.setupYjs(connection, sessionId, this.mongoUri);
+
+    mutex.acquire().then(async (release) => {
+      await this.historyService
+        .createHistoryAttempt({
+          sessionId,
+        })
+        .forEach(({ histories }) => histories);
+      release();
+    });
 
     return YjsGateway.sessionInitialized(connection);
   }
@@ -127,7 +131,6 @@ export class YjsGateway extends BaseWebsocketGateway {
     connection: AuthenticatedWebsocket,
     docName: string,
     mongoUri,
-    historyService: HistoryServiceClient,
   ) {
     /**
      * Yjs `setupWSConnection` expects a Request object for auto room detection.
@@ -171,18 +174,8 @@ export class YjsGateway extends BaseWebsocketGateway {
 
         persistedYdoc.destroy();
       },
-      writeState: async (docName, ydoc) => {
+      writeState: async (docName) => {
         // This is called when all connections to the document are closed.
-
-        // Save attempt to history service
-        const yText = ydoc.getText('monaco').toString();
-
-        await historyService
-          .createHistoryAttempt({
-            sessionId: docName,
-            questionAttempt: yText,
-          })
-          .forEach(({ histories }) => histories);
 
         // flush document on close to have the smallest possible database
         await mdb.flushDocument(docName);

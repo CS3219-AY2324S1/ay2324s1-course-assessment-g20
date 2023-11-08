@@ -42,7 +42,7 @@ export async function getAllLanguages() {
 
 export async function getAttemptsByUsername(username: string) {
   return requestBackend<IAttempt[]>({
-    url: `${backendServicesPaths.user.root}/${username}/${backendServicesPaths.user.attempts.root}`,
+    url: backendServicesPaths.user.getUserAttempts(username),
     method: HttpRequestMethod.GET,
   });
 }

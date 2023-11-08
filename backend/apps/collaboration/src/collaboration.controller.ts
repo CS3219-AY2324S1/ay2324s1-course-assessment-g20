@@ -4,6 +4,7 @@ import {
   CollaborationServiceController,
   CollaborationServiceControllerMethods,
   CreateCollabSessionRequest,
+  GetAttemptTextFromSessionIdResponse,
   GetQuestionIdFromSessionIdResponse,
   GetSessionIdFromTicketResponse,
   GetSessionOrTicketRequest,
@@ -63,5 +64,11 @@ export class CollaborationController implements CollaborationServiceController {
     request: ID,
   ): Promise<GetUserIdsFromSessionIdResponse> {
     return this.collaborationService.getUserIdsFromSessionId(request);
+  }
+
+  getAttemptTextFromSessionId(
+    request: ID,
+  ): Promise<GetAttemptTextFromSessionIdResponse> {
+    return this.collaborationService.getAttemptTextFromSessionId(request);
   }
 }

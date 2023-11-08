@@ -11,9 +11,8 @@ export class AttemptDaoService {
 
   async createAttempt(attempt: {
     historyId: string;
-    languageId: number;
+    sessionId: string;
     questionId: string;
-    questionAttempt: string;
   }) {
     return await this.attemptModel
       .query()
@@ -23,13 +22,20 @@ export class AttemptDaoService {
   async findByHistoryId(historyId: string) {
     return await this.attemptModel
       .query()
-      .select(
-        'languageId',
-        'questionId',
-        'questionAttempt',
-        'dateTimeAttempted',
-      )
+      .select('sessionId', 'questionId', 'dateTimeAttempted')
       .where('historyId', historyId)
       .orderBy('dateTimeAttempted', 'desc');
+  }
+
+  async existsByHistoryIdAndSessionId(historyId: string, sessionId: string) {
+    const [countResult] = await this.attemptModel
+      .query()
+      .where('sessionId', sessionId)
+      .where('historyId', historyId)
+      .count();
+
+    const count = Number(countResult['count']);
+
+    return count > 0;
   }
 }

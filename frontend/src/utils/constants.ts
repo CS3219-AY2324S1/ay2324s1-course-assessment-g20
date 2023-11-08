@@ -11,7 +11,6 @@ export const COLLABORATION = '/collaboration';
 export const MATCHING = '/matching';
 export const VERSION_PREFIX = '/v1';
 export const CHATBOT = '/chatbot';
-export const HISTORY = '/history';
 
 export const backendServicesPaths = {
   auth: {
@@ -28,6 +27,9 @@ export const backendServicesPaths = {
   },
   user: {
     root: USER,
+    attempts: {
+      root: 'attempts',
+    },
   },
   languages: {
     root: LANGUAGES,
@@ -45,10 +47,6 @@ export const backendServicesPaths = {
     root: CHATBOT,
     query: `${CHATBOT}/query`,
     history: `${CHATBOT}/history`,
-  },
-  history: {
-    root: HISTORY,
-    attempts: `${HISTORY}/attempts`,
   },
 };
 

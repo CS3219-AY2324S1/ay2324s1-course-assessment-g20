@@ -24,4 +24,8 @@ export class ProfileController implements UserProfileServiceController {
   updateUserProfile(data: UserProfile) {
     return this.profileService.updateUserProfile(data);
   }
+
+  getAttemptsByUsername({ username }: Username) {
+    return this.profileService.getAttemptsByUsername({ username });
+  }
 }

@@ -39,5 +39,3 @@ message Attempt {
   string questionAttempt = 3;
   google.protobuf.Timestamp dateTimeAttempted = 4;
 }
-
- 

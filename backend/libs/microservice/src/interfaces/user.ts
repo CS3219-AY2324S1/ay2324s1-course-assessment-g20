@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { Deleted, ID, IDs, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
 import { BoolValue } from './google/protobuf/wrappers';
+import { GetAttemptsByUsernameResponse } from './history';
 
 export const USER_PROFILE_SERVICE_NAME = 'UserProfileService';
 
@@ -220,6 +221,10 @@ export interface UserProfileServiceClient {
   getUserProfileByUsername(request: Username): Observable<UserProfile>;
 
   updateUserProfile(request: UserProfile): Observable<UserProfile>;
+
+  getAttemptsByUsername(
+    request: Username,
+  ): Observable<GetAttemptsByUsernameResponse>;
 }
 
 export interface UserProfileServiceController {
@@ -234,6 +239,13 @@ export interface UserProfileServiceController {
   updateUserProfile(
     request: UserProfile,
   ): Promise<UserProfile> | Observable<UserProfile> | UserProfile;
+
+  getAttemptsByUsername(
+    request: Username,
+  ):
+    | Promise<GetAttemptsByUsernameResponse>
+    | Observable<GetAttemptsByUsernameResponse>
+    | GetAttemptsByUsernameResponse;
 }
 
 export function UserProfileServiceControllerMethods() {
@@ -242,6 +254,7 @@ export function UserProfileServiceControllerMethods() {
       'getUserProfileById',
       'getUserProfileByUsername',
       'updateUserProfile',
+      'getAttemptsByUsername',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

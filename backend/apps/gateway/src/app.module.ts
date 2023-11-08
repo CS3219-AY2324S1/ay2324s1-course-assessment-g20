@@ -16,7 +16,6 @@ import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strate
 import { MatchingWebsocketService } from './services/matchingWebsocketService';
 import { MatchingGateway } from './websocket-gateways/matching.gateway';
 import { YjsGateway } from './websocket-gateways/yjs.gateway';
-import { HistoryController } from './controllers/history.controller';
 
 @Module({
   imports: [
@@ -40,7 +39,6 @@ import { HistoryController } from './controllers/history.controller';
     CollaborationController,
     MatchingWebsocketController,
     ChatbotController,
-    HistoryController,
   ],
   providers: [
     GoogleOauthStrategy,

@@ -18,6 +18,7 @@ import {
   UserAuthServiceClient,
   UserProfileServiceClient,
 } from '@app/microservice/interfaces/user';
+import { map } from 'rxjs';
 
 @Controller('user')
 export class UserController implements OnModuleInit {
@@ -62,5 +63,14 @@ export class UserController implements OnModuleInit {
   @Delete()
   deleteUser(@Req() req) {
     return this.userAuthService.deleteOAuthUser({ id: req.user.id });
+  }
+
+  @Get(':username/attempts')
+  getAttemptsByUsername(@Param('username') username: string) {
+    return this.userProfileService
+      .getAttemptsByUsername({
+        username: username,
+      })
+      .pipe(map(({ attempts }) => attempts || []));
   }
 }

@@ -8,9 +8,12 @@ import { RoleModel } from '../database/models/role.model';
 import { LanguageDaoModule } from '../database/daos/languages/language.dao.module';
 import { RoleDaoModule } from '../database/daos/roles/role.dao.module';
 import { UserProfileDaoModule } from '../database/daos/userProfiles/userProfile.dao.module';
+import { Service } from '@app/microservice/services';
+import { registerGrpcClients } from '@app/microservice/utils';
 
 @Module({
   imports: [
+    registerGrpcClients([Service.HISTORY_SERVICE]),
     // Database and DAOs
     SqlDatabaseModule.factory([LanguageModel, RoleModel, UserProfileModel]),
     LanguageDaoModule,

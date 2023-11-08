@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserProfileDaoService } from '../database/daos/userProfiles/userProfile.dao.service';
 import { UserProfileModel } from '../database/models/userProfile.model';
 import { LanguageDaoService } from '../database/daos/languages/language.dao.service';
@@ -8,17 +8,35 @@ import {
   Language,
   UserProfile,
   Role as RoleObj,
+  Username,
 } from '@app/microservice/interfaces/user';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
+import {
+  HISTORY_SERVICE_NAME,
+  HistoryServiceClient,
+} from '@app/microservice/interfaces/history';
+import { Service } from '@app/microservice/services';
+import { ClientGrpc } from '@nestjs/microservices';
 
 @Injectable()
 export class ProfileService {
+  private historyService: HistoryServiceClient;
+
   constructor(
     private readonly userProfileDaoService: UserProfileDaoService,
     private readonly languageDaoService: LanguageDaoService,
     private readonly roleDaoService: RoleDaoService,
+    @Inject(Service.HISTORY_SERVICE)
+    private readonly historyServiceClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.historyService =
+      this.historyServiceClient.getService<HistoryServiceClient>(
+        HISTORY_SERVICE_NAME,
+      );
+  }
 
   getUserProfileById(userId: string): Promise<UserProfile | undefined> {
     return this.userProfileDaoService
@@ -90,5 +108,9 @@ export class ProfileService {
       );
     }
     return this.userProfileDaoService.updateByUserId(userId, userProfile);
+  }
+
+  getAttemptsByUsername(request: Username) {
+    return this.historyService.getAttemptsByUsername(request);
   }
 }

@@ -13,11 +13,10 @@ import {
 import { StyledTableCell, StyledTableRow, getDifficultyColor } from '../utils/styleUtils';
 import { IHistoryTableRow } from '../@types/history';
 import { useEffect, useState } from 'react';
-import { getAttemptsByUsername } from '../api/historyServiceApi';
 import { getQuestionWithId } from '../api/questionBankApi';
 import Popup from './Popup';
 import { parseISO, format } from 'date-fns';
-import { getAllLanguages } from '../api/userApi';
+import { getAllLanguages, getAttemptsByUsername } from '../api/userApi';
 import { Language } from '../@types/language';
 import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
 

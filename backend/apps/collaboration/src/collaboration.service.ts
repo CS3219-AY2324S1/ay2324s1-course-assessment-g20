@@ -25,8 +25,6 @@ import { firstValueFrom } from 'rxjs';
 import { ID } from '@app/microservice/interfaces/common';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
-import { Redis } from 'ioredis';
-import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
@@ -98,6 +96,7 @@ export class CollaborationService implements OnModuleInit {
       ...createSessionInfo,
       userIds: createSessionInfo.userIds.map((userId) => ({ userId })),
       languageId,
+      isClosed: false,
     };
 
     return this.sessionDaoService.create(graphInfo);
@@ -179,8 +178,14 @@ export class CollaborationService implements OnModuleInit {
     };
   }
 
-  getSessionIdFromTicket(ticketId: string) {
-    return this.sessionDaoService.getSessionIdFromTicket(ticketId);
+  getSessionFromTicket(ticketId: string) {
+    return this.sessionDaoService
+      .getSessionFromTicket(ticketId)
+      .then((r) => r.session);
+  }
+
+  closeSession(sessionId: string) {
+    return this.sessionDaoService.closeSession(sessionId);
   }
 
   private async validatedUserInExistingSession(userAndSession: {

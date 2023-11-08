@@ -11,10 +11,11 @@ service CollaborationService {
   rpc CreateCollabSession (CreateCollabSessionRequest) returns (Session);
   rpc GetSession (GetSessionOrTicketRequest) returns (GetSessionResponse);
   rpc GetSessionTicket (GetSessionOrTicketRequest) returns (GetSessionTicketResponse);
-  rpc GetSessionIdFromTicket (common.ID) returns (GetSessionIdFromTicketResponse);
+  rpc GetSessionFromTicket (common.ID) returns (GetSessionFromTicketResponse);
   rpc GetQuestionIdFromSessionId (common.ID) returns (GetQuestionIdFromSessionIdResponse);
   rpc GetLanguageIdFromSessionId (common.ID) returns (UserPackage.Language);
   rpc SetSessionLanguageId (SetSessionLanguageIdRequest) returns (google.protobuf.Empty) {}
+  rpc CloseSession (common.ID) returns (google.protobuf.Empty);
 }
 
 message CreateCollabSessionRequest {
@@ -44,8 +45,11 @@ message GetSessionTicketResponse {
   string ticket = 1;
 }
 
-message GetSessionIdFromTicketResponse {
-  string sessionId = 1;
+message GetSessionFromTicketResponse {
+  string id = 1;
+  string questionId = 2;
+  int32 languageId = 3;
+  bool isClosed = 4;
 }
 
 message Session {

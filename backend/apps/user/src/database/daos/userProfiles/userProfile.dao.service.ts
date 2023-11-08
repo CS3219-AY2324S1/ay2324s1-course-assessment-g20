@@ -1,5 +1,5 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { ModelClass, UniqueViolationError, ValidationError } from 'objection';
+import { Inject, Injectable } from '@nestjs/common';
+import { ModelClass, UniqueViolationError } from 'objection';
 import { UserProfileModel } from '../../models/userProfile.model';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
@@ -71,7 +71,10 @@ export class UserProfileDaoService {
 
     return query.first().then((profile) => {
       if (!profile) {
-        throw new PeerprepException('User does not exist!', PEERPREP_EXCEPTION_TYPES.NOT_FOUND);
+        throw new PeerprepException(
+          'User does not exist!',
+          PEERPREP_EXCEPTION_TYPES.NOT_FOUND,
+        );
       }
       /**
        * Favouring this method of removing id instead of selecting columns

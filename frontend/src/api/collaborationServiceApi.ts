@@ -15,13 +15,3 @@ export function getSessionTicket(sessionId: string) {
     method: HttpRequestMethod.GET,
   });
 }
-
-export async function updateSessionLanguageId(sessionId: string, languageId: number) {
-  return requestBackend<void>({
-    url: backendServicesPaths.collaboration.sessionLanguage(sessionId),
-    method: HttpRequestMethod.PATCH,
-    data: {
-      languageId,
-    },
-  });
-}

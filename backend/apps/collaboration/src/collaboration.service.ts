@@ -103,16 +103,20 @@ export class CollaborationService implements OnModuleInit {
     return this.sessionDaoService.create(graphInfo);
   }
 
+  /**
+   * This method is called from an authenticated Websocket, and user is already
+   * validated to be in this session.
+   */
   async setSessionLanguageId(request: SetSessionLanguageIdRequest) {
-    await this.validatedUserInExistingSession(request);
-
-    await this.sessionDaoService.setSessionLanguageId(request);
-
-    // Initiate client reconnection, which reads updated session language
-    Redis.createClient().publish(
-      CollaborationEvent.LANGUAGE_CHANGE,
-      request.sessionId,
-    );
+    await firstValueFrom(
+      this.languageService.getLanguageById({ id: request.languageId }),
+    ).catch(() => {
+      throw new PeerprepException(
+        'Language ID does not exist',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    });
+    return this.sessionDaoService.setSessionLanguageId(request);
   }
 
   async getLanguageIdFromSessionId(sessionId: string) {

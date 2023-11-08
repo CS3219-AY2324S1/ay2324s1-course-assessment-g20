@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { CodeEvaluator } from '../utils/codeEvaluator';
@@ -14,13 +14,10 @@ import {
   bindMessageHandlersToProvider,
   bindYjsToMonacoEditor,
   tsCompile,
+  YjsWebsocketEvent,
   YjsWebsocketServerMessage,
 } from '../utils/editorUtils';
-import {
-  getSession,
-  getSessionTicket,
-  updateSessionLanguageId,
-} from '../api/collaborationServiceApi';
+import { getSession, getSessionTicket } from '../api/collaborationServiceApi';
 import { useThrowAsyncError } from '../hooks/useThrowAsyncError';
 import TextContent from '../components/TextContent';
 import { WebsocketProvider } from 'y-websocket';
@@ -55,7 +52,7 @@ const CodeEditor = () => {
   const [code, setCode] = useState('');
   const [codeEvalOutput, setCodeEvalOutput] = useState<ICodeEvalOutput>(placeholderCodeEvalOutput);
   const [languages, setLanguages] = useState<Language[]>([]);
-  const [languageChangedToggle, setLanguageChangedToggle] = useState(false);
+  const provider = useRef<WebsocketProvider>();
 
   const throwAsyncError = useThrowAsyncError();
 
@@ -87,17 +84,21 @@ const CodeEditor = () => {
 
   // Initialize websocket connection to Yjs service
   useEffect(() => {
-    let provider: WebsocketProvider | null = null;
-
     if (editor && sessionId) {
       getSessionTicket(sessionId)
         .then((resp) => {
           const { ticket } = resp.data;
-          provider = bindYjsToMonacoEditor(ticket, editor, throwAsyncError);
-          bindMessageHandlersToProvider(provider, [
-            onLanguageChangeWebsocketHandler,
-            onGetSessionLanguageWebsocketHandler,
+
+          const { provider: yjsProvider, bindEditor } = bindYjsToMonacoEditor(
+            ticket,
+            editor,
+            throwAsyncError,
+          );
+          bindMessageHandlersToProvider(yjsProvider, [
+            onGetSessionLanguageWebsocketHandler(bindEditor),
           ]);
+
+          provider.current = yjsProvider;
         })
         .catch(() => {
           throwAsyncError('Invalid session');
@@ -105,31 +106,32 @@ const CodeEditor = () => {
     }
 
     return () => {
-      if (provider) {
-        provider.destroy();
+      if (provider.current) {
+        provider.current.destroy();
       }
     };
-  }, [editor, languageChangedToggle, throwAsyncError]);
+  }, [editor, throwAsyncError]);
 
-  const onLanguageChangeWebsocketHandler = (event: MessageEvent) => {
-    if (event.data === YjsWebsocketServerMessage.LANGUAGE_CHANGE) {
-      setLanguageChangedToggle(!languageChangedToggle);
-    }
-  };
-
-  const onGetSessionLanguageWebsocketHandler = (event: MessageEvent) => {
-    try {
-      const deserialized = JSON.parse(event.data);
-      if (deserialized.event === YjsWebsocketServerMessage.CURRENT_LANGUAGE) {
-        setSelectedLanguage(deserialized.language);
+  const onGetSessionLanguageWebsocketHandler =
+    (bindEditor: (languageId: number) => void) => (event: MessageEvent) => {
+      try {
+        const deserialized = JSON.parse(event.data);
+        if (deserialized.event === YjsWebsocketServerMessage.CURRENT_LANGUAGE) {
+          bindEditor(deserialized.language.id);
+          setSelectedLanguage(deserialized.language);
+        }
+      } catch (e) {
+        // No implementation: ignore
       }
-    } catch (e) {
-      // No implementation: ignore
-    }
-  };
+    };
 
   const handleLanguageChange = async (event: SelectChangeEvent<number>) => {
-    await updateSessionLanguageId(sessionId!, event.target.value as number);
+    return provider.current?.ws?.send(
+      JSON.stringify({
+        event: YjsWebsocketEvent.LANGUAGE_CHANGE,
+        data: event.target.value,
+      }),
+    );
   };
 
   const handleCompile = () => {

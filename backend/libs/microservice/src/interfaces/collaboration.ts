@@ -22,7 +22,6 @@ export interface GetSessionOrTicketRequest {
 
 export interface SetSessionLanguageIdRequest {
   sessionId: string;
-  userId: string;
   languageId: number;
 }
 

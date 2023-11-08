@@ -1,15 +1,11 @@
 import { Inject } from '@nestjs/common';
-import { WebSocketGateway } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { setupWSConnection, setPersistence } from 'y-websocket/bin/utils';
 import { Redis } from 'ioredis';
 import { ClientGrpc } from '@nestjs/microservices';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
-import {
-  AuthenticatedWebsocket,
-  BaseWebsocketGateway,
-  RedisAwareWebsocket,
-} from '@app/websocket';
+import { AuthenticatedWebsocket, BaseWebsocketGateway } from '@app/websocket';
 import { Service } from '@app/microservice/services';
 import {
   COLLABORATION_SERVICE_NAME,
@@ -20,12 +16,17 @@ import { ConfigService } from '@nestjs/config';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 import { Language } from '@app/microservice/interfaces/user';
 
-type YjsWebsocket = AuthenticatedWebsocket & RedisAwareWebsocket;
+type YjsWebsocket = AuthenticatedWebsocket & {
+  redisPubClient: Redis;
+  redisSubClient: Redis;
+  sessionId: string;
+};
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
   private static CURRENT_LANGUAGE = 'current_language';
+  private static LANGUAGE_CHANGE = 'language_change';
   private mongoUri;
   private collaborationService: CollaborationServiceClient;
 
@@ -47,10 +48,7 @@ export class YjsGateway extends BaseWebsocketGateway {
       );
   }
   async handleDisconnect(connection: YjsWebsocket): Promise<void> {
-    if (connection.redisClient) {
-      // unsubscribe from redis pub sub when connection is closed, to prevent memory leak
-      connection.redisClient.quit();
-    }
+    return YjsGateway.destroyRedisPubSubClients(connection);
   }
 
   async handleConnection(connection: YjsWebsocket, request: Request) {
@@ -63,13 +61,51 @@ export class YjsGateway extends BaseWebsocketGateway {
     const { sessionId, language } = await this.getSessionIdAndLanguage(
       ticketId,
     );
-    const docName = sessionId + language.id;
+    const docName = sessionId;
 
+    connection.sessionId = sessionId;
+    YjsGateway.initializeRedisPubSubClients(connection);
+
+    this.subscribeAndHandleLanguageChange(connection, sessionId);
     YjsGateway.propagateLanguageToClient(connection, language);
-    YjsGateway.subscribeAndHandleLanguageChange(connection, sessionId);
     YjsGateway.setupYjs(connection, docName, this.mongoUri);
 
     return YjsGateway.sessionInitialized(connection);
+  }
+
+  @SubscribeMessage(YjsGateway.LANGUAGE_CHANGE)
+  async handleLanguageChange(connection: YjsWebsocket, data: string) {
+    try {
+      const decoded: number = JSON.parse(data);
+
+      await firstValueFrom(
+        this.collaborationService.setSessionLanguageId({
+          sessionId: connection.sessionId,
+          languageId: decoded,
+        }),
+      );
+
+      connection.redisPubClient.publish(
+        CollaborationEvent.LANGUAGE_CHANGE,
+        connection.sessionId,
+      );
+    } catch (e) {
+      console.log('error handling language change', e);
+    }
+  }
+
+  private static initializeRedisPubSubClients(connection: YjsWebsocket) {
+    connection.redisPubClient = Redis.createClient();
+    connection.redisSubClient = Redis.createClient();
+  }
+
+  private static destroyRedisPubSubClients(connection: YjsWebsocket) {
+    const clients = [connection.redisPubClient, connection.redisSubClient];
+    clients.forEach((client) => {
+      if (client) {
+        client.quit();
+      }
+    });
   }
 
   private async getSessionIdAndLanguage(ticketId: string) {
@@ -92,17 +128,20 @@ export class YjsGateway extends BaseWebsocketGateway {
   }
 
   // listen to redis pub sub message for any request to change the language
-  private static subscribeAndHandleLanguageChange(
+  private subscribeAndHandleLanguageChange(
     connection: YjsWebsocket,
     sessionId: string,
   ) {
-    const redisClient = new Redis();
-    connection.redisClient = redisClient;
-    redisClient.subscribe(CollaborationEvent.LANGUAGE_CHANGE);
-    redisClient.on('message', (_, reqSessionId) => {
+    connection.redisSubClient.subscribe(CollaborationEvent.LANGUAGE_CHANGE);
+    connection.redisSubClient.on('message', async (_, reqSessionId) => {
       if (reqSessionId == sessionId) {
-        // Lets client know to reload session language and rebind monaco to a new ws connection
-        connection.send(CollaborationEvent.LANGUAGE_CHANGE);
+        const language = await firstValueFrom(
+          this.collaborationService.getLanguageIdFromSessionId({
+            id: connection.sessionId,
+          }),
+        );
+
+        YjsGateway.propagateLanguageToClient(connection, language);
       }
     });
   }

@@ -7,8 +7,23 @@ import { Difficulty } from './schemas/difficulty.schema';
 import { Question as QuestionWithCategoryAndDifficulty } from '@app/microservice/interfaces/question';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
+import {
+  isMongoServerError,
+  mapMongoServerErrorToCustomMessage,
+} from '@app/utils/exceptionFilter/utils/mongoServerErrorUtils';
+import { Catch } from '@app/utils/exceptionFilter/catch.decorator';
 
 @Injectable()
+@Catch(Error, (err) => {
+  if (err instanceof PeerprepException) {
+    throw err;
+  }
+
+  throw new PeerprepException(
+    err.message,
+    PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+  );
+})
 export class QuestionService {
   constructor(
     @InjectModel(Question.name) private questionModel: Model<Question>,
@@ -67,7 +82,19 @@ export class QuestionService {
       difficulty: difficultyObject,
       categories: categoryObjects,
     });
-    const newQuestion = (await newQuestionObject.save()).toObject();
+    const newQuestion = await newQuestionObject
+      .save()
+      .then((newQuestion) => newQuestion.toObject())
+      .catch((error) => {
+        if (isMongoServerError(error)) {
+          throw new PeerprepException(
+            mapMongoServerErrorToCustomMessage(error),
+            PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+          );
+        }
+
+        throw error;
+      });
 
     return {
       ...newQuestion,

@@ -24,4 +24,8 @@ export enum PEERPREP_EXCEPTION_TYPES {
   HTTP_VERSION_NOT_SUPPORTED = 'HTTP Version Not Supported',
 }
 
+export enum MONGO_SERVER_ERROR_CODES {
+  DUPLICATE_KEY = 11000,
+}
+
 export const GRPC_UNKNOWN_ERROR = '2 UNKNOWN: ';

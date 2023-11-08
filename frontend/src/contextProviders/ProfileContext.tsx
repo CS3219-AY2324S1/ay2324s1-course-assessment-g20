@@ -36,7 +36,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     try {
       const response = await updateUserProfile(newProfile);
       if (response.status === 200) {
-        fetchAndSetProfile();
+        await fetchAndSetProfile();
         return response.data;
       } else {
         throw new Error('Error occurred when updating profile');

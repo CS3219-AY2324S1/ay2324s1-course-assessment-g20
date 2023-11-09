@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { setupWSConnection, setPersistence } from 'y-websocket/bin/utils';
-import { Redis } from 'ioredis';
+import { Redis, RedisOptions } from 'ioredis';
 import { ClientGrpc } from '@nestjs/microservices';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
@@ -67,7 +67,10 @@ export class YjsGateway extends BaseWebsocketGateway {
     }
 
     connection.sessionId = sessionId;
-    YjsGateway.initializeRedisPubSubClients(connection);
+    YjsGateway.initializeRedisPubSubClients(
+      connection,
+      this.configService.get('websocketGatewayOptions')?.options,
+    );
 
     this.subscribeAndHandleLanguageChange(connection, sessionId);
     this.setupYjs(connection, sessionId, this.mongoUri);
@@ -97,9 +100,12 @@ export class YjsGateway extends BaseWebsocketGateway {
     }
   }
 
-  private static initializeRedisPubSubClients(connection: YjsWebsocket) {
-    connection.redisPubClient = Redis.createClient();
-    connection.redisSubClient = Redis.createClient();
+  private static initializeRedisPubSubClients(
+    connection: YjsWebsocket,
+    redisOptions: RedisOptions,
+  ) {
+    connection.redisPubClient = new Redis(redisOptions);
+    connection.redisSubClient = new Redis(redisOptions);
   }
 
   private static destroyRedisPubSubClients(connection: YjsWebsocket) {

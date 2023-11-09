@@ -4,9 +4,9 @@ RUN mkdir -p /app/libs
 WORKDIR /app/libs
 COPY ./libs .
 
-RUN mkdir -p /app/apps/gateway
-WORKDIR /app/apps/gateway
-COPY ./apps/gateway .
+RUN mkdir -p /app/apps/http-gateway
+WORKDIR /app/apps/http-gateway
+COPY ./apps/http-gateway .
 
 # package.json, nest-cli.json, tsconfig.build.json, tsconfig.json
 WORKDIR /app
@@ -18,10 +18,10 @@ RUN yarn install --frozen-lockfile
 
 FROM base as dev
 ENV NODE_ENV development
-RUN yarn build gateway
-CMD ["node", "dist/apps/gateway/main"]
+RUN yarn build http-gateway
+CMD ["node", "dist/apps/http-gateway/main"]
 
 FROM base as test
 ENV NODE_ENV test
-RUN yarn build gateway
-CMD ["node", "dist/apps/gateway/main"]
+RUN yarn build http-gateway
+CMD ["node", "dist/apps/http-gateway/main"]

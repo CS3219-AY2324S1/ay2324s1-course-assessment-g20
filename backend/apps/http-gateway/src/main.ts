@@ -44,6 +44,6 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   await app.listen(port);
-  console.log(`Gateway running on port ${port}`);
+  console.log(`HTTP Gateway running on port ${port}`);
 }
 bootstrap();

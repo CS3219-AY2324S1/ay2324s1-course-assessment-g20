@@ -1,5 +1,5 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { ModelClass } from 'objection';
+import { Inject, Injectable } from '@nestjs/common';
+import { ModelClass, UniqueViolationError } from 'objection';
 import { UserProfileModel } from '../../models/userProfile.model';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
@@ -71,7 +71,10 @@ export class UserProfileDaoService {
 
     return query.first().then((profile) => {
       if (!profile) {
-        throw new HttpException('User does not exist!', 400);
+        throw new PeerprepException(
+          'User does not exist!',
+          PEERPREP_EXCEPTION_TYPES.NOT_FOUND,
+        );
       }
       /**
        * Favouring this method of removing id instead of selecting columns
@@ -91,6 +94,18 @@ export class UserProfileDaoService {
       .where({ userId })
       .returning('*')
       .withGraphFetched(UserProfileDaoService.allGraphs)
-      .first();
+      .first()
+      .catch((err) => {
+        if (err instanceof UniqueViolationError) {
+          throw new PeerprepException(
+            'Username already exists! Please choose another username.',
+            PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+          );
+        }
+        throw new PeerprepException(
+          'Error updating user profile!',
+          PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+        );
+      });
   }
 }

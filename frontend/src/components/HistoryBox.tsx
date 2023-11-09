@@ -18,8 +18,11 @@ import Popup from './Popup';
 import { parseISO, format } from 'date-fns';
 import { getAllLanguages, getAttemptsByUsername } from '../api/userApi';
 import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
+import { frontendPaths } from '../routes/paths';
+import { useNavigate } from 'react-router-dom';
 
 function HistoryBox({ username }: { username: string }) {
+  const navigate = useNavigate();
   const { palette } = useTheme();
 
   const [rows, setRows] = useState<IHistoryTableRow[]>([]);
@@ -65,6 +68,19 @@ function HistoryBox({ username }: { username: string }) {
   };
   const handlePopupOnClose = () => setPopupVisibility(false);
 
+  // Logic for continue attempt button
+  const handleContinueAttempt = () => {
+    handlePopupOnClose();
+    navigate(
+      `${frontendPaths.codeEditor}/${rows[rowIndex].question._id}$${rows[rowIndex].attempt.languageId}`,
+      {
+        state: {
+          attemptText: rows[rowIndex].attempt.attemptText,
+        },
+      },
+    );
+  };
+
   return (
     <Box>
       <Grid container spacing={2} pb={3}>
@@ -83,7 +99,7 @@ function HistoryBox({ username }: { username: string }) {
               <StyledTableCell align="left">Category</StyledTableCell>
               <StyledTableCell align="left">Difficulty</StyledTableCell>
               <StyledTableCell align="left">Date Attempted</StyledTableCell>
-              <StyledTableCell align="left">Language Attempted</StyledTableCell>
+              <StyledTableCell align="left">Language</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -106,6 +122,9 @@ function HistoryBox({ username }: { username: string }) {
                       language={row.language}
                       openPopup={rowIndex == index && popupVisibility}
                       closePopup={handlePopupOnClose}
+                      showButton={true}
+                      buttonText={'Continue Attempt'}
+                      buttonOnClick={handleContinueAttempt}
                     ></Popup>
                   </StyledTableCell>
                   <StyledTableCell align="left">

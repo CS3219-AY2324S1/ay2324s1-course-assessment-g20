@@ -2,6 +2,7 @@ import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import TextContent from './TextContent';
 import CodeContent from './CodeContent';
 import { DEFAULT_LANGUAGE } from '../utils/languageUtils';
+import palette from '../theme/palette';
 
 interface PopupProps {
   questionId?: string;
@@ -11,6 +12,13 @@ interface PopupProps {
   language?: string;
   openPopup: boolean;
   closePopup: () => void;
+  // Button props
+  showButton?: boolean;
+  buttonBackgroundColor?: string;
+  buttonHoverColor?: string;
+  buttonFontColor?: string;
+  buttonText?: string;
+  buttonOnClick?: () => void;
 }
 
 export default function Popup({
@@ -20,6 +28,12 @@ export default function Popup({
   language = DEFAULT_LANGUAGE, // Default language is javascript
   openPopup,
   closePopup,
+  showButton = false,
+  buttonBackgroundColor = palette.primary.main,
+  buttonHoverColor = palette.primary.main,
+  buttonFontColor = 'white',
+  buttonText = 'Submit',
+  buttonOnClick = () => {},
 }: PopupProps) {
   return (
     <Dialog open={openPopup} onClose={closePopup}>
@@ -53,6 +67,22 @@ export default function Popup({
           <TextContent content={children} />
         )}
       </DialogContent>
+      {showButton && (
+        <Button
+          variant={'contained'}
+          onClick={buttonOnClick}
+          style={{ fontSize: '15px', textAlign: 'center', margin: '-24px 24px 24px 24px' }}
+          sx={{
+            backgroundColor: buttonBackgroundColor,
+            '&:hover': {
+              backgroundColor: buttonHoverColor,
+            },
+            color: buttonFontColor,
+          }}
+        >
+          {buttonText}
+        </Button>
+      )}
     </Dialog>
   );
 }

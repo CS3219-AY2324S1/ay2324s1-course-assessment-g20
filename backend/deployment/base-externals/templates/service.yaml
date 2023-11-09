@@ -1,5 +1,6 @@
 {{- $mongodbHost := .Values.mongodbHost | required ".Values.mongodbHost is required." -}}
 {{- $postgresHost := .Values.postgresHost | required ".Values.postgresHost is required." -}}
+{{- $redisHost := .Values.redisHost | required ".Values.redisHost is required." -}}
 
 ---
 apiVersion: v1
@@ -19,4 +20,14 @@ metadata:
 spec:
   type: ExternalName
   externalName: {{ $mongodbHost }}
+  selector: {} 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer-prep-external-redis-service
+spec:
+  type: ExternalName
+  externalName: {{ $redisHost }}
   selector: {} 

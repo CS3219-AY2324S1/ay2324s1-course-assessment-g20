@@ -18,8 +18,8 @@ import Popup from './Popup';
 import { parseISO, format } from 'date-fns';
 import { getAllLanguages, getAttemptsByUsername } from '../api/userApi';
 import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
-import { frontendPaths } from '../routes/paths';
 import { useNavigate } from 'react-router-dom';
+import { getNavigateToCodeEditorUrl } from '../utils/editorUtils';
 
 function HistoryBox({ username }: { username: string }) {
   const navigate = useNavigate();
@@ -72,7 +72,10 @@ function HistoryBox({ username }: { username: string }) {
   const handleContinueAttempt = () => {
     handlePopupOnClose();
     navigate(
-      `${frontendPaths.codeEditor}/${rows[rowIndex].question._id}$${rows[rowIndex].attempt.languageId}`,
+      getNavigateToCodeEditorUrl(
+        rows[rowIndex].question._id ?? '',
+        rows[rowIndex].attempt.languageId.toString(),
+      ),
       {
         state: {
           attemptText: rows[rowIndex].attempt.attemptText,

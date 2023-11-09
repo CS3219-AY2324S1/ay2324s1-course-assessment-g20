@@ -7,6 +7,7 @@ import { getAllLanguages } from '../api/userApi';
 import { useLocation, useParams } from 'react-router-dom';
 import { IQuestion } from '../@types/question';
 import { getQuestionWithId } from '../api/questionBankApi';
+import { getQuestionIdAndLanguageIdFromIdentifier } from '../utils/editorUtils';
 
 // Get language and question from params
 
@@ -31,15 +32,13 @@ function SoloCodeEditor() {
       })
       .then(() => {
         if (identifier && selectedLanguage == undefined) {
-          const questionAndLanguageIdArray = identifier.split('$');
+          const { questionId, languageId } = getQuestionIdAndLanguageIdFromIdentifier(identifier);
 
-          const questionId = questionAndLanguageIdArray[0];
           getQuestionWithId(questionId)
             .then((response) => response.data)
             .then((question) => setQuestion(question));
 
-          const languageId = parseInt(questionAndLanguageIdArray[1]);
-          setSelectedLanguage(getLanguageFromId(languageId));
+          setSelectedLanguage(getLanguageFromId(parseInt(languageId)));
         }
       });
 

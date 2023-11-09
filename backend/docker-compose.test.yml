@@ -1,9 +1,22 @@
 version: "3"
 services:
-  gateway:
+  http-gateway:
     build: 
       context: .
-      dockerfile: ./apps/gateway/Dockerfile
+      dockerfile: ./apps/http-gateway/Dockerfile
+      target: test
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+    networks:
+      - backend
+    env_file:
+      .env.test
+
+  ws-gateway:
+    build: 
+      context: .
+      dockerfile: ./apps/ws-gateway/Dockerfile
       target: test
     depends_on:
       sql-migrations:

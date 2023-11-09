@@ -2,9 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { WsAdapter } from '@nestjs/platform-ws';
 import * as dotenv from 'dotenv';
-import * as WebSocket from 'ws';
 import {
   MOCK_ADMIN_USER,
   MOCK_USER_1,
@@ -17,6 +15,7 @@ import {
   MOCK_ADMIN_USER_PROFILE,
   MOCK_USER_1_PROFILE,
   MOCK_USER_1_UUID,
+  MOCK_USER_2,
 } from '@app/mocks';
 import { Service } from '@app/microservice/services';
 import { ClientGrpc } from '@nestjs/microservices';
@@ -24,9 +23,8 @@ import {
   USER_AUTH_SERVICE_NAME,
   UserAuthServiceClient,
 } from '@app/microservice/interfaces/user';
-import { firstValueFrom, timeout } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { Language } from '@app/types/languages';
-import { setTimeout } from 'timers/promises';
 
 const NODE_ENV = process.env.NODE_ENV;
 dotenv.config({ path: `../../../.env${NODE_ENV ? `.${NODE_ENV}` : ''}` });
@@ -40,7 +38,6 @@ describe('Gateway (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useWebSocketAdapter(new WsAdapter(app));
     await app.init();
   });
 
@@ -48,18 +45,24 @@ describe('Gateway (e2e)', () => {
   let MOCK_ADMIN_TOKEN: string;
   let MOCK_USER_1_TOKEN: string;
   let MOCK_USER_1_REFRESH_TOKEN: string;
+  let MOCK_USER_2_TOKEN: string;
   beforeEach(async () => {
     const userServiceClient: ClientGrpc = app.get(Service.USER_SERVICE);
     const userAuthService = userServiceClient.getService<UserAuthServiceClient>(
       USER_AUTH_SERVICE_NAME,
     );
-    const { accessToken: adminAccessToken, refreshToken: adminRefreshToken } =
-      await firstValueFrom(userAuthService.generateJwts(MOCK_ADMIN_USER));
+    const { accessToken: adminAccessToken } = await firstValueFrom(
+      userAuthService.generateJwts(MOCK_ADMIN_USER),
+    );
     const { accessToken: user1Token, refreshToken: user1RefreshToken } =
       await firstValueFrom(userAuthService.generateJwts(MOCK_USER_1));
+    const { accessToken: user2Token } = await firstValueFrom(
+      userAuthService.generateJwts(MOCK_USER_2),
+    );
     MOCK_ADMIN_TOKEN = adminAccessToken;
     MOCK_USER_1_TOKEN = user1Token;
     MOCK_USER_1_REFRESH_TOKEN = user1RefreshToken;
+    MOCK_USER_2_TOKEN = user2Token;
   });
 
   describe('/auth endpoints', () => {
@@ -452,138 +455,6 @@ describe('Gateway (e2e)', () => {
     });
   });
 
-  describe('/matching', () => {
-    let ws1: WebSocket;
-    let ws2: WebSocket;
-    let wsTicket1: string;
-    let wsTicket2: string;
-    const mockCategoryIds: string[] = [];
-    let mockDifficultyId: string;
-    let mockQuestionId: string;
-    const websocketUrl = `ws://localhost:${process.env.HTTP_GATEWAY_PORT}/matching`;
-
-    beforeAll(async () => {
-      await Promise.all(
-        MOCK_QUESTION_1.categories.map(async (category) => {
-          const categoryData = {
-            category: {
-              name: category,
-            },
-          };
-          const { body: createCategoryBody } = await request(
-            app.getHttpServer(),
-          )
-            .post(`/question/categories`)
-            .send(categoryData)
-            .set('Authorization', `Bearer ${MOCK_ADMIN_TOKEN}`);
-          mockCategoryIds.push(createCategoryBody._id);
-        }),
-      );
-
-      const difficultyData = {
-        difficulty: {
-          name: MOCK_QUESTION_1.difficulty,
-        },
-      };
-      const { body: createDifficultyBody } = await request(app.getHttpServer())
-        .post(`/question/difficulties`)
-        .send(difficultyData)
-        .set('Authorization', `Bearer ${MOCK_ADMIN_TOKEN}`);
-      mockDifficultyId = createDifficultyBody._id;
-
-      const questionData = {
-        question: MOCK_QUESTION_1,
-      };
-      const { body: createQuestionBody } = await request(app.getHttpServer())
-        .post(`/question/questions`)
-        .send(questionData)
-        .set('Authorization', `Bearer ${MOCK_ADMIN_TOKEN}`);
-      mockQuestionId = createQuestionBody._id;
-
-      const { body: ticket1 } = await request(app.getHttpServer())
-        .get(`/auth/ticket`)
-        .set('Authorization', `Bearer ${MOCK_USER_1_TOKEN}`);
-      const { body: ticket2 } = await request(app.getHttpServer())
-        .get(`/auth/ticket`)
-        .set('Authorization', `Bearer ${MOCK_ADMIN_TOKEN}`);
-      wsTicket1 = ticket1.id;
-      wsTicket2 = ticket2.id;
-    });
-
-    it(`should be unauthorized when trying to access matching websocket without a ticket`, async () => {
-      const unauthorizedWs = new WebSocket(websocketUrl);
-      await new Promise((resolve) => unauthorizedWs.on('open', resolve));
-      await new Promise<void>((resolve) =>
-        unauthorizedWs.on('message', (data: string) => {
-          expect(data === 'unauthorized');
-          unauthorizedWs.close();
-          resolve();
-        }),
-      );
-    });
-
-    it(`should be unauthorized when trying to access matching websocket with an invalid ticket`, async () => {
-      const unauthorizedWs = new WebSocket(
-        `${websocketUrl}?ticket=invalidTicket`,
-      );
-      await new Promise((resolve) => unauthorizedWs.on('open', resolve));
-      await new Promise<void>((resolve) =>
-        unauthorizedWs.on('message', (data: string) => {
-          expect(data === 'unauthorized');
-          unauthorizedWs.close();
-          resolve();
-        }),
-      );
-    });
-
-    it(`should return a new session ID when 2 users with valid tickets are matching on same difficulty`, async () => {
-      const userSessions = [];
-      ws1 = new WebSocket(`${websocketUrl}?ticket=${wsTicket1}`);
-      ws2 = new WebSocket(`${websocketUrl}?ticket=${wsTicket2}`);
-      await new Promise((resolve) => ws1.on('open', resolve));
-      await new Promise((resolve) => ws2.on('open', resolve));
-
-      ws1.send(
-        JSON.stringify({
-          event: 'get_match',
-          data: {
-            questionDifficulty: mockDifficultyId,
-          },
-        }),
-      );
-
-      ws2.send(
-        JSON.stringify({
-          event: 'get_match',
-          data: {
-            questionDifficulty: mockDifficultyId,
-          },
-        }),
-      );
-
-      const onSuccessfulMatch = (websocket: WebSocket) => (resolve) => {
-        websocket.on('message', (data: string) => {
-          const message = JSON.parse(data);
-          expect(message).toHaveProperty('event');
-          expect(message.event === 'match');
-          expect(message).toHaveProperty('data');
-          expect(message.data).toEqual(
-            expect.objectContaining({
-              sessionId: expect.any(String),
-            }),
-          );
-
-          websocket.close();
-          resolve(message.data.sessionId);
-        });
-      };
-
-      const sessionId1 = await new Promise<string>(onSuccessfulMatch(ws1));
-      const sessionId2 = await new Promise<string>(onSuccessfulMatch(ws2));
-      expect(sessionId1).toEqual(sessionId2);
-    });
-  });
-
   describe('/user', () => {
     const endpoint = '/user';
     it(`(GET) should return 200 OK with authenticated user`, async () => {
@@ -654,7 +525,7 @@ describe('Gateway (e2e)', () => {
     it(`(DELETE) should return 200 OK with authenticated user`, async () => {
       const { body } = await request(app.getHttpServer())
         .delete(endpoint)
-        .set('Authorization', `Bearer ${MOCK_USER_1_TOKEN}`)
+        .set('Authorization', `Bearer ${MOCK_USER_2_TOKEN}`)
         .expect(200);
       expect(body).toEqual(expect.objectContaining({ deletedCount: 1 }));
     });

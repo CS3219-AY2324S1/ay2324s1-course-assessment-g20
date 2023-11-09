@@ -15,6 +15,12 @@ export const MOCK_USER_1_USERNAME = 'boblim';
 export const MOCK_USER_1_EMAIL = 'boblim@gmail.com';
 export const MOCK_USER_1_OAUTH_ID = 'random-oauth-id-2';
 
+export const MOCK_USER_2_UUID = '05e92f24-6a09-4105-be51-c668cfe9ed38';
+export const MOCK_USER_2_NAME = 'Charles Lee';
+export const MOCK_USER_2_USERNAME = 'charlie';
+export const MOCK_USER_2_EMAIL = 'charlie@gmail.com';
+export const MOCK_USER_2_OAUTH_ID = 'random-oauth-id-3';
+
 export const MOCK_AUTH_PROVIDER = 'test_provider';
 
 export const MOCK_ADMIN_USER_PROFILE: UserProfile = {
@@ -43,6 +49,19 @@ export const MOCK_USER_1_PROFILE: UserProfile = {
   role: { id: Role.REGULAR, name: Role[Role.REGULAR] },
 };
 
+export const MOCK_USER_2_PROFILE: UserProfile = {
+  userId: MOCK_USER_2_UUID,
+  name: MOCK_USER_2_NAME,
+  username: MOCK_USER_2_USERNAME,
+  preferredLanguageId: Language.JAVASCRIPT,
+  preferredLanguage: {
+    id: Language.JAVASCRIPT,
+    name: Language[Language.JAVASCRIPT],
+  },
+  roleId: Role.REGULAR,
+  role: { id: Role.REGULAR, name: Role[Role.REGULAR] },
+};
+
 export const MOCK_ADMIN_USER: User = {
   id: MOCK_ADMIN_USER_UUID,
   authProvider: MOCK_AUTH_PROVIDER,
@@ -59,6 +78,15 @@ export const MOCK_USER_1: User = {
   oauthName: MOCK_USER_1_NAME,
   email: MOCK_USER_1_EMAIL,
   userProfile: MOCK_USER_1_PROFILE,
+};
+
+export const MOCK_USER_2: User = {
+  id: MOCK_USER_2_UUID,
+  authProvider: MOCK_AUTH_PROVIDER,
+  authProviderId: MOCK_USER_2_OAUTH_ID,
+  oauthName: MOCK_USER_2_NAME,
+  email: MOCK_USER_2_EMAIL,
+  userProfile: MOCK_USER_2_PROFILE,
 };
 
 export const MOCK_ADMIN_USER_JWT_PAYLOAD: JwtPayload = {

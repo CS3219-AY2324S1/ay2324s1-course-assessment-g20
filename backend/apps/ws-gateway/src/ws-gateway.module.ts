@@ -15,6 +15,7 @@ import { MatchingWebsocketController } from './controller/matchingWebsocket.cont
       Service.COLLABORATION_SERVICE,
       Service.USER_SERVICE,
       Service.MATCHING_SERVICE,
+      Service.QUESTION_SERVICE, // for ws testing setup
     ]),
   ],
   controllers: [MatchingWebsocketController],

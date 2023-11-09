@@ -28,7 +28,8 @@ import ChatbotPopup from '../components/Chatbot/ChatbotPopup';
 import { Language } from '../@types/language';
 import { getAllLanguages } from '../api/userApi';
 import { formatLanguage } from '../utils/stringUtils';
-import { HttpStatusCode, isAxiosError } from 'axios';
+import { HttpStatusCode } from 'axios';
+import { PeerprepBackendError } from '../@types/PeerprepBackendError';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.
@@ -75,8 +76,8 @@ const CodeEditor = () => {
           const { question } = resp.data;
           setQuestion(question);
         })
-        .catch((e) => {
-          if (isAxiosError(e) && e.response?.status === HttpStatusCode.Forbidden) {
+        .catch((e: PeerprepBackendError) => {
+          if (e.details.statusCode === HttpStatusCode.Forbidden) {
             return throwAsyncError('User does not belong in this session!');
           }
           return throwAsyncError('Invalid session!');

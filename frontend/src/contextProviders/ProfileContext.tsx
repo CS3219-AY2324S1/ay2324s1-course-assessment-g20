@@ -33,17 +33,18 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   const updateProfile = async (newProfile: UpdateUserProfile) => {
-    try {
-      const response = await updateUserProfile(newProfile);
-      if (response.status === 200) {
-        fetchAndSetProfile();
-        return response.data;
-      } else {
-        throw new Error('Error occurred when updating profile');
-      }
-    } catch (error) {
-      throw new Error('Error occurred when updating profile');
+    const response = await updateUserProfile(newProfile);
+    const updatedUserProfile = response.data;
+    if (response.status === 200) {
+      setName(updatedUserProfile.name ?? '');
+      setUsername(updatedUserProfile.username ?? '');
+      setPreferredLanguageId(updatedUserProfile.preferredLanguage?.id ?? 1);
+      setPreferredLanguage(updatedUserProfile.preferredLanguage?.name ?? 'JavaScript');
+      setRoleId(updatedUserProfile.role?.id ?? 2);
+      setIsMaintainer(updatedUserProfile.role?.name === 'MAINTAINER');
+      return updatedUserProfile;
     }
+    throw new Error('Error updating profile');
   };
 
   const deleteProfile = async () => {

@@ -5,7 +5,7 @@ import {
   CollaborationServiceControllerMethods,
   CreateCollabSessionRequest,
   GetQuestionIdFromSessionIdResponse,
-  GetSessionIdFromTicketResponse,
+  GetSessionFromTicketResponse,
   GetSessionOrTicketRequest,
   GetSessionResponse,
   GetSessionTicketResponse,
@@ -52,9 +52,13 @@ export class CollaborationController implements CollaborationServiceController {
   }
 
   // NOTE: Added async here to pass compiler typechecks
-  async getSessionIdFromTicket({
+  async getSessionFromTicket({
     id,
-  }: ID): Promise<GetSessionIdFromTicketResponse> {
-    return this.collaborationService.getSessionIdFromTicket(id);
+  }: ID): Promise<GetSessionFromTicketResponse> {
+    return this.collaborationService.getSessionFromTicket(id);
+  }
+
+  closeSession({ id }) {
+    return this.collaborationService.closeSession(id);
   }
 }

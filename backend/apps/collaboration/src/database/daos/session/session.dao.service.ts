@@ -47,11 +47,12 @@ export class SessionDaoService {
     });
   }
 
-  getSessionIdFromTicket(ticketId: string) {
+  getSessionFromTicket(ticketId: string) {
     return this.sessionTicketModel
       .query()
       .select('sessionId')
       .where('ticketId', ticketId)
+      .withGraphFetched('session')
       .first();
   }
 
@@ -61,5 +62,12 @@ export class SessionDaoService {
       .select('questionId')
       .where('id', sessionId)
       .first();
+  }
+
+  closeSession(sessionId: string) {
+    return this.sessionModel
+      .query()
+      .patch({ isClosed: true })
+      .where('id', sessionId);
   }
 }

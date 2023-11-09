@@ -1,31 +1,39 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { SessionDaoService } from './database/daos/session/session.dao.service';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Service } from '@app/microservice/services';
 import { SessionModel } from './database/models/session.model';
 import {
   CreateCollabSessionRequest,
-  GetSessionAndWsTicketRequest,
+  GetQuestionIdFromSessionIdResponse,
+  GetSessionOrTicketRequest,
+  SetSessionLanguageIdRequest,
 } from '@app/microservice/interfaces/collaboration';
 import {
   USER_AUTH_SERVICE_NAME,
   UserAuthServiceClient,
+  USER_PROFILE_SERVICE_NAME,
+  UserProfileServiceClient,
+  UserLanguageServiceClient,
+  USER_LANGUAGE_SERVICE_NAME,
 } from '@app/microservice/interfaces/user';
 import {
   QUESTION_SERVICE_NAME,
   QuestionServiceClient,
 } from '@app/microservice/interfaces/question';
 import { firstValueFrom } from 'rxjs';
+import { ID } from '@app/microservice/interfaces/common';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
+import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
+import { Redis } from 'ioredis';
+import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
   private userAuthService: UserAuthServiceClient;
   private questionService: QuestionServiceClient;
+  private userProfileService: UserProfileServiceClient;
+  private languageService: UserLanguageServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE)
@@ -40,9 +48,17 @@ export class CollaborationService implements OnModuleInit {
       this.userServiceClient.getService<UserAuthServiceClient>(
         USER_AUTH_SERVICE_NAME,
       );
+    this.userProfileService =
+      this.userServiceClient.getService<UserProfileServiceClient>(
+        USER_PROFILE_SERVICE_NAME,
+      );
     this.questionService =
       this.questionServiceClient.getService<QuestionServiceClient>(
         QUESTION_SERVICE_NAME,
+      );
+    this.languageService =
+      this.userServiceClient.getService<UserLanguageServiceClient>(
+        USER_LANGUAGE_SERVICE_NAME,
       );
   }
 
@@ -50,28 +66,83 @@ export class CollaborationService implements OnModuleInit {
     this.validateNumUsers(createSessionInfo.userIds, 2);
     await this.validateUsersExist(createSessionInfo.userIds);
 
+    const userOneLanguage = (
+      await firstValueFrom(
+        this.userProfileService.getUserProfileById({
+          id: createSessionInfo.userIds[0],
+        }),
+      )
+    ).preferredLanguageId;
+    const userTwoLanguage = (
+      await firstValueFrom(
+        this.userProfileService.getUserProfileById({
+          id: createSessionInfo.userIds[1],
+        }),
+      )
+    ).preferredLanguageId;
+
+    let languageId: number;
+    // if not same language, randomly pick one
+    if (userOneLanguage !== userTwoLanguage) {
+      const random = Math.random();
+      if (random < 0.5) {
+        languageId = userTwoLanguage;
+      } else {
+        languageId = userOneLanguage;
+      }
+    } else {
+      languageId = userOneLanguage;
+    }
+
     const graphInfo = {
       ...createSessionInfo,
       userIds: createSessionInfo.userIds.map((userId) => ({ userId })),
+      languageId,
     };
 
     return this.sessionDaoService.create(graphInfo);
   }
 
-  async getSessionAndCreateWsTicket(
-    getSessionInfo: GetSessionAndWsTicketRequest,
-  ) {
+  async setSessionLanguageId(request: SetSessionLanguageIdRequest) {
+    await this.validatedUserInExistingSession(request);
+
+    await this.sessionDaoService.setSessionLanguageId(request);
+
+    // Initiate client reconnection, which reads updated session language
+    Redis.createClient().publish(
+      CollaborationEvent.LANGUAGE_CHANGE,
+      request.sessionId,
+    );
+  }
+
+  async getLanguageIdFromSessionId(sessionId: string) {
     const session = await this.sessionDaoService.findById({
-      sessionId: getSessionInfo.sessionId,
-      withGraphFetched: true,
+      sessionId,
+      withGraphFetched: false,
     });
 
     if (!session) {
-      throw new BadRequestException('Invalid session!');
+      throw new PeerprepException(
+        'Invalid session!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
     }
 
-    await this.validateUsersExist([getSessionInfo.userId]);
-    this.validateUsersBelongInSession(session, [getSessionInfo.userId]);
+    return firstValueFrom(
+      this.languageService.getLanguageById({ id: session.languageId }),
+    );
+  }
+
+  async getQuestionIdFromSessionId(
+    request: ID,
+  ): Promise<GetQuestionIdFromSessionIdResponse> {
+    return this.sessionDaoService.getQuestionIdFromSession(request.id);
+  }
+
+  async getSession(getSessionInfo: GetSessionOrTicketRequest) {
+    const { session } = await this.validatedUserInExistingSession(
+      getSessionInfo,
+    );
 
     const question = await firstValueFrom(
       this.questionService.getQuestionWithId({
@@ -79,20 +150,27 @@ export class CollaborationService implements OnModuleInit {
       }),
     );
 
+    return {
+      question,
+    };
+  }
+
+  async createSessionTicket(getSessionTicketInfo: GetSessionOrTicketRequest) {
+    await this.validatedUserInExistingSession(getSessionTicketInfo);
+
     const ticket = await firstValueFrom(
       this.userAuthService.generateWebsocketTicket({
-        userId: getSessionInfo.userId,
+        userId: getSessionTicketInfo.userId,
       }),
     );
 
     // Link ticket to session
     await this.sessionDaoService.insertTicketForSession(
-      getSessionInfo.sessionId,
+      getSessionTicketInfo.sessionId,
       ticket.id,
     );
 
     return {
-      question,
       ticket: ticket.id,
     };
   }
@@ -101,10 +179,40 @@ export class CollaborationService implements OnModuleInit {
     return this.sessionDaoService.getSessionIdFromTicket(ticketId);
   }
 
+  private async validatedUserInExistingSession(userAndSession: {
+    userId: string;
+    sessionId: string;
+  }) {
+    const session = await this.getAndValidateSessionExists(
+      userAndSession.sessionId,
+    );
+    await this.validateUsersExist([userAndSession.userId]);
+    this.validateUsersBelongInSession(session, [userAndSession.userId]);
+
+    return { session };
+  }
+
+  private async getAndValidateSessionExists(sessionId: string) {
+    const session = await this.sessionDaoService.findById({
+      sessionId,
+      withGraphFetched: true,
+    });
+
+    if (!session) {
+      throw new PeerprepException(
+        'Invalid session!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
+
+    return session;
+  }
+
   private validateNumUsers(userIds: string[], expectedNumber: number) {
     if (userIds.length !== expectedNumber) {
-      throw new BadRequestException(
+      throw new PeerprepException(
         `You must provide exactly ${expectedNumber} userIds to start a session for!`,
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
       );
     }
   }
@@ -115,7 +223,10 @@ export class CollaborationService implements OnModuleInit {
     ).then(({ value }) => value);
 
     if (!validateBothUsers) {
-      throw new BadRequestException('Invalid userId(s) provided!');
+      throw new PeerprepException(
+        'Invalid userId(s) provided!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
     }
   }
 
@@ -124,6 +235,15 @@ export class CollaborationService implements OnModuleInit {
     userIds: string[],
   ) {
     const sessionUsers = session.userIds.map((u) => u.userId);
-    return userIds.every((userId) => sessionUsers.includes(userId));
+    const validateUsersBelongInSession = userIds.every((userId) =>
+      sessionUsers.includes(userId),
+    );
+
+    if (!validateUsersBelongInSession) {
+      throw new PeerprepException(
+        'User does not belong to this session!',
+        PEERPREP_EXCEPTION_TYPES.FORBIDDEN,
+      );
+    }
   }
 }

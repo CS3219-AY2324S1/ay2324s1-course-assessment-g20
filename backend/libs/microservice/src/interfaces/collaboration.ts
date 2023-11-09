@@ -2,20 +2,35 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { ID } from './common';
+import { Empty } from './google/protobuf/empty';
 import { Question } from './question';
+import { Language } from './user';
 
 export interface CreateCollabSessionRequest {
   userIds: string[];
   questionId: string;
 }
 
-export interface GetSessionAndWsTicketRequest {
+export interface GetQuestionIdFromSessionIdResponse {
+  questionId: string;
+}
+
+export interface GetSessionOrTicketRequest {
   sessionId: string;
   userId: string;
 }
 
-export interface GetSessionAndWsTicketResponse {
+export interface SetSessionLanguageIdRequest {
+  sessionId: string;
+  userId: string;
+  languageId: number;
+}
+
+export interface GetSessionResponse {
   question: Question | undefined;
+}
+
+export interface GetSessionTicketResponse {
   ticket: string;
 }
 
@@ -41,13 +56,25 @@ export interface SessionTicket {
 export interface CollaborationServiceClient {
   createCollabSession(request: CreateCollabSessionRequest): Observable<Session>;
 
-  getSessionAndWsTicket(
-    request: GetSessionAndWsTicketRequest,
-  ): Observable<GetSessionAndWsTicketResponse>;
+  getSession(
+    request: GetSessionOrTicketRequest,
+  ): Observable<GetSessionResponse>;
+
+  getSessionTicket(
+    request: GetSessionOrTicketRequest,
+  ): Observable<GetSessionTicketResponse>;
 
   getSessionIdFromTicket(
     request: ID,
   ): Observable<GetSessionIdFromTicketResponse>;
+
+  getQuestionIdFromSessionId(
+    request: ID,
+  ): Observable<GetQuestionIdFromSessionIdResponse>;
+
+  getLanguageIdFromSessionId(request: ID): Observable<Language>;
+
+  setSessionLanguageId(request: SetSessionLanguageIdRequest): Observable<Empty>;
 }
 
 export interface CollaborationServiceController {
@@ -55,12 +82,19 @@ export interface CollaborationServiceController {
     request: CreateCollabSessionRequest,
   ): Promise<Session> | Observable<Session> | Session;
 
-  getSessionAndWsTicket(
-    request: GetSessionAndWsTicketRequest,
+  getSession(
+    request: GetSessionOrTicketRequest,
   ):
-    | Promise<GetSessionAndWsTicketResponse>
-    | Observable<GetSessionAndWsTicketResponse>
-    | GetSessionAndWsTicketResponse;
+    | Promise<GetSessionResponse>
+    | Observable<GetSessionResponse>
+    | GetSessionResponse;
+
+  getSessionTicket(
+    request: GetSessionOrTicketRequest,
+  ):
+    | Promise<GetSessionTicketResponse>
+    | Observable<GetSessionTicketResponse>
+    | GetSessionTicketResponse;
 
   getSessionIdFromTicket(
     request: ID,
@@ -68,14 +102,31 @@ export interface CollaborationServiceController {
     | Promise<GetSessionIdFromTicketResponse>
     | Observable<GetSessionIdFromTicketResponse>
     | GetSessionIdFromTicketResponse;
+
+  getQuestionIdFromSessionId(
+    request: ID,
+  ):
+    | Promise<GetQuestionIdFromSessionIdResponse>
+    | Observable<GetQuestionIdFromSessionIdResponse>
+    | GetQuestionIdFromSessionIdResponse;
+
+  getLanguageIdFromSessionId(
+    request: ID,
+  ): Promise<Language> | Observable<Language> | Language;
+
+  setSessionLanguageId(request: SetSessionLanguageIdRequest): void;
 }
 
 export function CollaborationServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
       'createCollabSession',
-      'getSessionAndWsTicket',
+      'getSession',
+      'getSessionTicket',
       'getSessionIdFromTicket',
+      'getQuestionIdFromSessionId',
+      'getLanguageIdFromSessionId',
+      'setSessionLanguageId',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

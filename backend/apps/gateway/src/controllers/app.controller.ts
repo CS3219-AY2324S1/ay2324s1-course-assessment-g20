@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   OnModuleInit,
+  Patch,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import { Public } from '../jwt/jwtPublic.decorator';
 import QuestionDto from '../dtos/question/question.dto';
 import DifficultyDto from '../dtos/question/difficulty.dto';
 import CategoryDto from '../dtos/question/category.dto';
+import { Roles } from '../roles/roles.decorator';
+import { Role } from '@app/types/roles';
 import { Service } from '@app/microservice/services';
 import {
   QUESTION_SERVICE_NAME,
@@ -37,7 +39,6 @@ export class AppController implements OnModuleInit {
 
   // QUESTIONS
 
-  @Public()
   @Get('questions')
   getQuestions() {
     return this.questionService
@@ -45,21 +46,29 @@ export class AppController implements OnModuleInit {
       .pipe(map(({ questions }) => questions || []));
   }
 
-  @Public()
   @Post('questions')
+  @Roles(Role.MAINTAINER)
   addQuestion(@Body('question') question: QuestionDto) {
     return this.questionService.addQuestion(question);
   }
 
-  @Public()
   @Delete('questions/:id')
+  @Roles(Role.MAINTAINER)
   deleteQuestionWithId(@Param('id') id: string) {
     return this.questionService
       .deleteQuestionWithId({ id })
       .pipe(map(({ id }) => id));
   }
 
-  @Public()
+  @Patch('questions/:id')
+  @Roles(Role.MAINTAINER)
+  updateQuestionWithId(
+    @Param('id') id: string,
+    @Body('question') question: QuestionDto,
+  ) {
+    return this.questionService.updateQuestionWithId({ _id: id, ...question });
+  }
+
   @Get('questions/:id')
   getQuestionWithId(@Param('id') id: string) {
     return this.questionService.getQuestionWithId({ id });
@@ -67,7 +76,6 @@ export class AppController implements OnModuleInit {
 
   // DIFFICULTIES
 
-  @Public()
   @Get('difficulties')
   getDifficulties() {
     return this.questionService
@@ -75,14 +83,14 @@ export class AppController implements OnModuleInit {
       .pipe(map(({ difficulties }) => difficulties || []));
   }
 
-  @Public()
   @Post('difficulties')
+  @Roles(Role.MAINTAINER)
   addDifficulty(@Body('difficulty') difficulty: DifficultyDto) {
     return this.questionService.addDifficulty(difficulty);
   }
 
-  @Public()
   @Delete('difficulties/:id')
+  @Roles(Role.MAINTAINER)
   deleteDifficultyWithId(@Param('id') id: string) {
     return this.questionService
       .deleteDifficultyWithId({ id })
@@ -98,14 +106,14 @@ export class AppController implements OnModuleInit {
       .pipe(map(({ categories }) => categories || []));
   }
 
-  @Public()
   @Post('categories')
+  @Roles(Role.MAINTAINER)
   addCategory(@Body('category') category: CategoryDto) {
     return this.questionService.addCategory(category);
   }
 
-  @Public()
   @Delete('categories/:id')
+  @Roles(Role.MAINTAINER)
   deleteCategoryWithId(@Param('id') id: string) {
     return this.questionService
       .deleteCategoryWithId({ id })

@@ -1,9 +1,4 @@
-import React, { useCallback, useState } from 'react';
-import { AuthContext } from '../contextProviders/AuthContext';
-
-export function useAuth() {
-  return React.useContext(AuthContext);
-}
+import { useCallback, useState } from 'react';
 
 // Hook that rethrows async errors inside of React lifecycle
 export const useThrowAsyncError = () => {

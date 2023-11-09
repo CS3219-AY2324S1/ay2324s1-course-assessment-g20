@@ -3,6 +3,7 @@ import { ModelClass } from 'objection';
 import { SessionModel } from '../../models/session.model';
 import { BaseModel } from '@app/sql-database';
 import { SessionTicketModel } from '../../models/sessionTicket.model';
+import { SetSessionLanguageIdRequest } from '@app/microservice/interfaces/collaboration';
 
 @Injectable()
 export class SessionDaoService {
@@ -33,6 +34,12 @@ export class SessionDaoService {
     return query;
   }
 
+  setSessionLanguageId(request: SetSessionLanguageIdRequest) {
+    return this.sessionModel.query().patchAndFetchById(request.sessionId, {
+      languageId: request.languageId,
+    });
+  }
+
   insertTicketForSession(sessionId: string, ticketId: string) {
     return this.sessionTicketModel.query().insert({
       ticketId,
@@ -45,6 +52,14 @@ export class SessionDaoService {
       .query()
       .select('sessionId')
       .where('ticketId', ticketId)
+      .first();
+  }
+
+  getQuestionIdFromSession(sessionId: string) {
+    return this.sessionModel
+      .query()
+      .select('questionId')
+      .where('id', sessionId)
       .first();
   }
 }

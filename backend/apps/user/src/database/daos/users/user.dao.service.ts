@@ -4,15 +4,20 @@ import { UserModel } from '../../models/user.model';
 
 @Injectable()
 export class UserDaoService {
+  static allGraphs = `[${Object.keys(UserModel.relationMappings())}]`;
+
   constructor(@Inject('UserModel') private userModel: ModelClass<UserModel>) {}
 
   async findOrCreateOAuthUser(user: Partial<UserModel>) {
     const { authProviderId, authProvider } = user;
 
-    const existingEntry = await this.userModel.query().findOne({
-      authProviderId,
-      authProvider,
-    });
+    const existingEntry = await this.userModel
+      .query()
+      .findOne({
+        authProviderId,
+        authProvider,
+      })
+      .withGraphFetched(UserDaoService.allGraphs);
 
     if (existingEntry) {
       return existingEntry;

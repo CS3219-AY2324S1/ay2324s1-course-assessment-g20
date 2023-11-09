@@ -1,12 +1,13 @@
-import { BaseModel } from '@app/sql-database';
+import { BaseModelUUID } from '@app/sql-database';
 import { Model } from 'objection';
 import { UserSessionModel } from './userSession.model';
 import { SessionTicketModel } from './sessionTicket.model';
 
-export class SessionModel extends BaseModel {
+export class SessionModel extends BaseModelUUID {
   static tableName = 'sessions';
 
   readonly questionId: string;
+  readonly languageId: number;
 
   readonly userIds: { userId: string }[];
   readonly sessionTickets: { ticketId: string }[];

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package ChatbotPackage;
+
+service ChatbotService {
+  rpc CreateChatQuery (ChatbotRequest) returns (ChatMessagesResponse);
+  rpc GetChatHistory (ChatHistoryRequest) returns (ChatMessagesResponse);
+}
+
+message ChatbotRequest {
+  string query = 2;
+  string sessionId = 3;
+  string userId = 4;
+  string language = 5;
+  string userSolution = 6;
+}
+
+message ChatHistoryRequest {
+  string userId = 1;
+  string sessionId = 2;
+}
+
+message ChatMessage {
+  string content = 1;
+  string role = 2;
+}
+
+message ChatMessagesResponse {
+  repeated ChatMessage messages = 1;
+}

@@ -1,9 +1,16 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserProfileDaoService } from '../database/daos/userProfiles/userProfile.dao.service';
 import { UserProfileModel } from '../database/models/userProfile.model';
 import { LanguageDaoService } from '../database/daos/languages/language.dao.service';
 import { RoleDaoService } from '../database/daos/roles/role.dao.service';
-import { UserProfile } from '@app/microservice/interfaces/user';
+import { Role } from '@app/types/roles';
+import {
+  Language,
+  UserProfile,
+  Role as RoleObj,
+} from '@app/microservice/interfaces/user';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
+import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
 
 @Injectable()
 export class ProfileService {
@@ -13,7 +20,7 @@ export class ProfileService {
     private readonly roleDaoService: RoleDaoService,
   ) {}
 
-  getUserProfile(userId: string): Promise<UserProfile | undefined> {
+  getUserProfileById(userId: string): Promise<UserProfile | undefined> {
     return this.userProfileDaoService
       .findByUserId({
         userId,
@@ -21,10 +28,27 @@ export class ProfileService {
       })
       .then((profile) => ({
         name: profile.name,
-        preferredLanguage: profile.preferredLanguage,
+        preferredLanguage: profile.preferredLanguage as unknown as Language,
         preferredLanguageId: profile.preferredLanguageId,
-        role: profile.role,
+        role: profile.role as unknown as RoleObj,
         roleId: profile.roleId,
+        username: profile.username,
+      }));
+  }
+
+  getUserProfileByUsername(username: string): Promise<UserProfile | undefined> {
+    return this.userProfileDaoService
+      .findByUsername({
+        username,
+        withGraphFetched: true,
+      })
+      .then((profile) => ({
+        name: profile.name,
+        preferredLanguage: profile.preferredLanguage as unknown as Language,
+        preferredLanguageId: profile.preferredLanguageId,
+        role: profile.role as unknown as RoleObj,
+        roleId: profile.roleId,
+        username: profile.username,
       }));
   }
 
@@ -38,7 +62,10 @@ export class ProfileService {
     await Promise.all(
       fkeyValues.map(async (fkeyValue, idx) => {
         if (fkeyValue && !(await daoServices[idx].findById(fkeyValue))) {
-          throw new HttpException(`Invalid ${fkeyName[idx]}`, 400);
+          throw new PeerprepException(
+            `Invalid ${fkeyName[idx]}`,
+            PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+          );
         }
       }),
     );
@@ -52,6 +79,16 @@ export class ProfileService {
     delete userProfile.userId;
 
     await this.validateForeignKeys(userProfile);
+    const currentProfile = await this.getUserProfileById(userId);
+    if (
+      currentProfile.roleId === Role.REGULAR &&
+      userProfile.roleId === Role.MAINTAINER
+    ) {
+      throw new PeerprepException(
+        `Unauthorized operation: cannot upgrade status to maintainer`,
+        PEERPREP_EXCEPTION_TYPES.UNAUTHORIZED,
+      );
+    }
     return this.userProfileDaoService.updateByUserId(userId, userProfile);
   }
 }

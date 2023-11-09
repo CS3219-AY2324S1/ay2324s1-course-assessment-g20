@@ -8,13 +8,16 @@ export const USER = '/user';
 export const LANGUAGES = '/languages';
 export const QUESTION = '/question';
 export const COLLABORATION = '/collaboration';
+export const MATCHING = '/matching';
 export const VERSION_PREFIX = '/v1';
+export const CHATBOT = '/chatbot';
 
 export const backendServicesPaths = {
   auth: {
     root: `${AUTH}`,
     refresh: `${AUTH}/refresh`,
     googleRedirect: `${AUTH}/google`,
+    ticket: `${AUTH}/ticket`,
   },
   question: {
     root: QUESTION,
@@ -30,7 +33,17 @@ export const backendServicesPaths = {
   },
   collaboration: {
     root: COLLABORATION,
-    getSessionAndWsTicket: `${COLLABORATION}/session`,
+    getSession: `${COLLABORATION}/session`,
+    getSessionTicket: (sessionId: string) => `${COLLABORATION}/session/${sessionId}/ticket`,
+    sessionLanguage: (sessionId: string) => `${COLLABORATION}/session/${sessionId}/language`,
+  },
+  matching: {
+    root: MATCHING,
+  },
+  chatbot: {
+    root: CHATBOT,
+    query: `${CHATBOT}/query`,
+    history: `${CHATBOT}/history`,
   },
 };
 
@@ -44,8 +57,3 @@ export enum HttpRequestMethod {
   DELETE = 'delete',
   PATCH = 'patch',
 }
-
-export const languages = {
-  javascript: 'javascript',
-  typescript: 'typescript',
-};

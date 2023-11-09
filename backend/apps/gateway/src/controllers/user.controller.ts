@@ -5,6 +5,7 @@ import {
   Get,
   Inject,
   OnModuleInit,
+  Param,
   Patch,
   Req,
 } from '@nestjs/common';
@@ -40,7 +41,14 @@ export class UserController implements OnModuleInit {
 
   @Get()
   getUserProfile(@Req() req) {
-    return this.userProfileService.getUserProfile({ id: req.user.id });
+    return this.userProfileService.getUserProfileById({ id: req.user.id });
+  }
+
+  @Get(':username')
+  getSpecifiedUserProfile(@Param() params) {
+    return this.userProfileService.getUserProfileByUsername({
+      username: params.username,
+    });
   }
 
   @Patch()

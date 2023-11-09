@@ -6,7 +6,12 @@ import AuthRedirect from '../pages/AuthRedirect';
 import AppWrapper from './AppWrapper';
 import CodeEditor from '../pages/CodeEditor';
 import Profile from '../pages/Profile';
-import MainMenu from '../pages/MainMenu';
+import Dashboard from '../pages/Dashboard';
+import Onboarding from '../pages/Onboarding';
+import OnboardedRoutes from './OnboardedRoutes';
+import NonOnboardedRoutes from './NonOnboardedRoutes';
+import EditProfile from '../pages/EditProfile';
+import { frontendPaths } from './paths';
 
 const router = createBrowserRouter([
   {
@@ -16,7 +21,7 @@ const router = createBrowserRouter([
         element: <PublicOnlyRoutes />,
         children: [
           {
-            path: '/login',
+            path: frontendPaths.login,
             element: <Login />,
           },
         ],
@@ -25,28 +30,42 @@ const router = createBrowserRouter([
         element: <ProtectedRoutes />,
         children: [
           {
-            path: '/dashboard',
-            element: <MainMenu />,
+            element: <OnboardedRoutes />,
+            children: [
+              {
+                path: frontendPaths.dashboard,
+                element: <Dashboard />,
+              },
+              {
+                path: `${frontendPaths.session}/:sessionId?`,
+                element: <CodeEditor />,
+              },
+              {
+                path: `${frontendPaths.user}/:username`,
+                element: <Profile />,
+              },
+              {
+                path: frontendPaths.editProfile,
+                element: <EditProfile />,
+              },
+            ],
           },
           {
-            path: '/session/:sessionId?',
-            element: <CodeEditor />,
-          },
-          {
-            path: '/profile',
-            element: <Profile />,
+            element: <NonOnboardedRoutes />,
+            children: [
+              {
+                path: frontendPaths.onboarding,
+                element: <Onboarding />,
+              },
+            ],
           },
         ],
       },
-      {
-        path: '/authRedirect',
-        element: <AuthRedirect />,
-      },
-      { path: '*', element: <Navigate to="/login" replace /> },
+      { path: '*', element: <Navigate to={frontendPaths.login} replace /> },
     ],
   },
   {
-    path: '/authRedirect',
+    path: frontendPaths.authRedirect,
     element: <AuthRedirect />,
   },
 ]);

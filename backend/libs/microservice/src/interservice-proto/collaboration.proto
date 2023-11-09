@@ -2,13 +2,19 @@ syntax = "proto3";
 
 package CollaborationPackage;
 
+import "google/protobuf/empty.proto";
 import "question.proto";
 import "common.proto";
+import "user.proto";
 
 service CollaborationService {
   rpc CreateCollabSession (CreateCollabSessionRequest) returns (Session);
-  rpc GetSessionAndWsTicket (GetSessionAndWsTicketRequest) returns (GetSessionAndWsTicketResponse);
+  rpc GetSession (GetSessionOrTicketRequest) returns (GetSessionResponse);
+  rpc GetSessionTicket (GetSessionOrTicketRequest) returns (GetSessionTicketResponse);
   rpc GetSessionIdFromTicket (common.ID) returns (GetSessionIdFromTicketResponse);
+  rpc GetQuestionIdFromSessionId (common.ID) returns (GetQuestionIdFromSessionIdResponse);
+  rpc GetLanguageIdFromSessionId (common.ID) returns (UserPackage.Language);
+  rpc SetSessionLanguageId (SetSessionLanguageIdRequest) returns (google.protobuf.Empty) {}
 }
 
 message CreateCollabSessionRequest {
@@ -16,14 +22,27 @@ message CreateCollabSessionRequest {
   string questionId = 2;
 }
 
-message GetSessionAndWsTicketRequest {
+message GetQuestionIdFromSessionIdResponse {
+  string questionId = 1;
+}
+
+message GetSessionOrTicketRequest {
   string sessionId = 1;
   string userId = 2;
 }
 
-message GetSessionAndWsTicketResponse {
+message SetSessionLanguageIdRequest {
+  string sessionId = 1;
+  string userId = 2;
+  int32 languageId = 3;
+}
+
+message GetSessionResponse {
   QuestionPackage.Question question = 1;
-  string ticket = 2;
+}
+
+message GetSessionTicketResponse {
+  string ticket = 1;
 }
 
 message GetSessionIdFromTicketResponse {

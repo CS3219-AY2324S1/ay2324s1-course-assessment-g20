@@ -15,4 +15,8 @@ export class LanguageController implements UserLanguageServiceController {
       .getAllLanguages()
       .then((languages) => ({ languages }));
   }
+
+  getLanguageById({ id }: { id: number }) {
+    return this.languageService.getLanguageById(id);
+  }
 }

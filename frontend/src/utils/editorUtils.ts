@@ -24,13 +24,15 @@ export const bindYjsToMonacoEditor = (
     }
   };
 
-  authenticatedYjsWebsocketProvider(wsTicket, bindEditorOnAuthenticate, onError);
+  return authenticatedYjsWebsocketProvider(wsTicket, bindEditorOnAuthenticate, onError);
 };
 
 const ROOM_NAME = 'yjs';
-enum YjsWebsocketServerMessage {
+export enum YjsWebsocketServerMessage {
   SESSION_INITIALIZED = 'session_initialized',
   WS_UNAUTHORIZED = 'unauthorized',
+  LANGUAGE_CHANGE = 'language-change',
+  CURRENT_LANGUAGE = 'current_language',
 }
 const authenticatedYjsWebsocketProvider = (
   wsTicket: string,
@@ -42,6 +44,7 @@ const authenticatedYjsWebsocketProvider = (
     params: {
       ticket: wsTicket,
     },
+    disableBc: true,
   });
 
   const ws = provider.ws!;
@@ -52,6 +55,7 @@ const authenticatedYjsWebsocketProvider = (
   const customOnMessage = (event: MessageEvent) => {
     // Waits for connection to be authenticated and Yjs session to be initialized before starting client Yjs sync
     const { data } = event;
+
     if (data === YjsWebsocketServerMessage.SESSION_INITIALIZED) {
       // @ts-expect-error: Yjs provider onOpen does not expect the event to be passed in
       yjsDefaultOnOpen();
@@ -65,4 +69,15 @@ const authenticatedYjsWebsocketProvider = (
 
   ws.onopen = dummyOnOpen;
   ws.onmessage = customOnMessage;
+
+  return provider;
+};
+
+export const bindMessageHandlersToProvider = (
+  provider: WebsocketProvider,
+  handlers: ((this: WebSocket, ev: MessageEvent) => any)[],
+) => {
+  handlers.forEach((handler) => {
+    provider.ws?.addEventListener('message', handler);
+  });
 };

@@ -37,3 +37,23 @@ collaboration-microservice:
   portProtocol: TCP
   containerPort: 4003
   servicePort: 4003
+
+matching-microservice:
+  microserviceName: 'matching'
+  replicaCount: 1
+  image:
+    repository: backend-matching
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4004
+  servicePort: 4004
+
+chatbot-microservice:
+  microserviceName: 'chatbot'
+  replicaCount: 1
+  image:
+    repository: backend-chatbot
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4006
+  servicePort: 4006

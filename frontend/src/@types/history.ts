@@ -1,19 +1,14 @@
 import { IQuestion } from './question';
 
 export interface IAttempt {
-  sessionId: string;
-  questionId: string;
+  attemptText: string;
   dateTimeAttempted: Date;
-}
-
-export interface IRowAttempt {
-  language: string;
   questionId: string;
-  questionAttempt: string;
-  dateTimeAttempted: Date;
+  languageId: number;
 }
 
 export interface IHistoryTableRow {
-  attempt: IRowAttempt;
+  attempt: IAttempt;
   question: IQuestion;
+  language: string;
 }

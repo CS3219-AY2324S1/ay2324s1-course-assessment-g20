@@ -18,7 +18,7 @@ import Popup from './Popup';
 import { parseISO, format } from 'date-fns';
 import { getAllLanguages, getAttemptsByUsername } from '../api/userApi';
 import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
-import { getSessionAttemptText, getSessionLanguageId } from '../api/collaborationServiceApi';
+// import { getSessionAttemptText, getSessionLanguageId } from '../api/collaborationServiceApi';
 
 function HistoryBox({ username }: { username: string }) {
   const { palette } = useTheme();
@@ -35,16 +35,6 @@ function HistoryBox({ username }: { username: string }) {
         .then((response) => response.data)
         .then((attempts) =>
           attempts.map(async (attempt) => {
-            // Fetch languageId from API
-            const languageId = await getSessionLanguageId(attempt.sessionId).then(
-              (response) => response.data.id,
-            );
-
-            // Fetch attempt from API
-            const questionAttempt = await getSessionAttemptText(attempt.sessionId).then(
-              (response) => response.data.attemptText,
-            );
-
             // Fetch question from API
             const question = await getQuestionWithId(attempt.questionId).then(
               (response) => response.data,
@@ -53,12 +43,11 @@ function HistoryBox({ username }: { username: string }) {
             return {
               attempt: {
                 ...attempt,
-                language:
-                  languages.filter((language) => language.id === languageId)[0]?.name ??
-                  DEFAULT_LANGUAGE,
-                questionAttempt,
               },
               question: question,
+              language:
+                languages.filter((language) => language.id === attempt.languageId)[0]?.name ??
+                DEFAULT_LANGUAGE,
             };
           }),
         )
@@ -113,9 +102,9 @@ function HistoryBox({ username }: { username: string }) {
 
                     <Popup
                       title={row.question.title}
-                      children={'Your solution:\n\n' + row.attempt.questionAttempt.toString()}
+                      children={'Your solution:\n\n' + row.attempt.attemptText.toString()}
                       isCode={true}
-                      language={row.attempt.language}
+                      language={row.language}
                       openPopup={rowIndex == index && popupVisibility}
                       closePopup={handlePopupOnClose}
                     ></Popup>
@@ -137,9 +126,7 @@ function HistoryBox({ username }: { username: string }) {
                       'MMMM d, yyyy HH:mm:ss',
                     )}
                   </StyledTableCell>
-                  <StyledTableCell align="left">
-                    {formatLanguage(row.attempt.language)}
-                  </StyledTableCell>
+                  <StyledTableCell align="left">{formatLanguage(row.language)}</StyledTableCell>
                 </StyledTableRow>
               );
             })}

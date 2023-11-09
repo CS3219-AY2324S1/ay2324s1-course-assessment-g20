@@ -11,30 +11,29 @@ import {
 } from '@app/microservice/interfaces/user';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
-import {
-  HISTORY_SERVICE_NAME,
-  HistoryServiceClient,
-} from '@app/microservice/interfaces/history';
 import { Service } from '@app/microservice/services';
 import { ClientGrpc } from '@nestjs/microservices';
-import { ID } from '@app/microservice/interfaces/common';
+import {
+  COLLABORATION_SERVICE_NAME,
+  CollaborationServiceClient,
+} from '@app/microservice/interfaces/collaboration';
 
 @Injectable()
 export class ProfileService {
-  private historyService: HistoryServiceClient;
+  private collaborationService: CollaborationServiceClient;
 
   constructor(
     private readonly userProfileDaoService: UserProfileDaoService,
     private readonly languageDaoService: LanguageDaoService,
     private readonly roleDaoService: RoleDaoService,
-    @Inject(Service.HISTORY_SERVICE)
-    private readonly historyServiceClient: ClientGrpc,
+    @Inject(Service.COLLABORATION_SERVICE)
+    private readonly collaborationServiceClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
-    this.historyService =
-      this.historyServiceClient.getService<HistoryServiceClient>(
-        HISTORY_SERVICE_NAME,
+    this.collaborationService =
+      this.collaborationServiceClient.getService<CollaborationServiceClient>(
+        COLLABORATION_SERVICE_NAME,
       );
   }
 
@@ -116,6 +115,6 @@ export class ProfileService {
         username,
       })
       .then((profile) => profile.userId);
-    return this.historyService.getAttemptsByUserId({ id: userId });
+    return this.collaborationService.getAttemptsFromUserId({ id: userId });
   }
 }

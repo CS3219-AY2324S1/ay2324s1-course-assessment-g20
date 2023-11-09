@@ -5,7 +5,7 @@ import { Service } from '@app/microservice/services';
 import { SessionModel } from './database/models/session.model';
 import {
   CreateCollabSessionRequest,
-  GetAttemptTextFromSessionIdResponse,
+  GetAttemptsFromUserIdResponse,
   GetQuestionIdFromSessionIdResponse,
   GetSessionOrTicketRequest,
   GetUserIdsFromSessionIdResponse,
@@ -275,11 +275,27 @@ export class CollaborationService implements OnModuleInit {
       });
   }
 
-  getAttemptTextFromSessionId(
+  async getAttemptsFromUserId(
     request: ID,
-  ): Promise<GetAttemptTextFromSessionIdResponse> {
-    return this.mdb
-      .getYDoc(request.id)
-      .then((ydoc) => ({ attemptText: ydoc.getText('monaco').toString() }));
+  ): Promise<GetAttemptsFromUserIdResponse> {
+    const sessions = await this.sessionDaoService.getSessionsFromUserId(
+      request.id,
+    );
+    return {
+      attempts: await Promise.all(
+        sessions.map(async (session) => {
+          const attemptText = await this.mdb
+            .getYDoc(session.id)
+            .then((ydoc) => ydoc.getText('monaco').toString());
+
+          return {
+            attemptText,
+            dateTimeAttempted: session.updatedAt,
+            questionId: session.questionId,
+            languageId: session.languageId,
+          };
+        }),
+      ),
+    };
   }
 }

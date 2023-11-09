@@ -44,8 +44,15 @@ export interface GetUserIdsFromSessionIdResponse {
   userIds: UserId[];
 }
 
-export interface GetAttemptTextFromSessionIdResponse {
+export interface GetAttemptsFromUserIdResponse {
+  attempts: Attempt[];
+}
+
+export interface Attempt {
   attemptText: string;
+  dateTimeAttempted: Date;
+  questionId: string;
+  languageId: number;
 }
 
 export interface Session {
@@ -90,9 +97,7 @@ export interface CollaborationServiceClient {
     request: ID,
   ): Observable<GetUserIdsFromSessionIdResponse>;
 
-  getAttemptTextFromSessionId(
-    request: ID,
-  ): Observable<GetAttemptTextFromSessionIdResponse>;
+  getAttemptsFromUserId(request: ID): Observable<GetAttemptsFromUserIdResponse>;
 }
 
 export interface CollaborationServiceController {
@@ -141,12 +146,12 @@ export interface CollaborationServiceController {
     | Observable<GetUserIdsFromSessionIdResponse>
     | GetUserIdsFromSessionIdResponse;
 
-  getAttemptTextFromSessionId(
+  getAttemptsFromUserId(
     request: ID,
   ):
-    | Promise<GetAttemptTextFromSessionIdResponse>
-    | Observable<GetAttemptTextFromSessionIdResponse>
-    | GetAttemptTextFromSessionIdResponse;
+    | Promise<GetAttemptsFromUserIdResponse>
+    | Observable<GetAttemptsFromUserIdResponse>
+    | GetAttemptsFromUserIdResponse;
 }
 
 export function CollaborationServiceControllerMethods() {
@@ -160,7 +165,7 @@ export function CollaborationServiceControllerMethods() {
       'getLanguageIdFromSessionId',
       'setSessionLanguageId',
       'getUserIdsFromSessionId',
-      'getAttemptTextFromSessionId',
+      'getAttemptsFromUserId',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

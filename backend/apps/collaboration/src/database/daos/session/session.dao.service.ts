@@ -72,4 +72,15 @@ export class SessionDaoService {
       .select('userId')
       .where('sessionId', sessionId);
   }
+
+  async getSessionsFromUserId(userId: string) {
+    const userSessions = await this.userSessionModel
+      .query()
+      .where('userId', userId);
+    const query = this.sessionModel
+      .query()
+      .findByIds(userSessions.map((userSession) => userSession.sessionId))
+      .orderBy('updatedAt', 'desc');
+    return query;
+  }
 }

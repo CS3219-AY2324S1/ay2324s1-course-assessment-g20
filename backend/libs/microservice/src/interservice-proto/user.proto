@@ -6,7 +6,7 @@ import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "common.proto";
-import "history.proto";
+import "collaboration.proto";
 
 service UserAuthService {
   rpc GenerateJwts (User) returns (JwtTokens);
@@ -27,7 +27,7 @@ service UserProfileService {
     rpc GetUserProfileById (common.ID) returns (UserProfile);
     rpc GetUserProfileByUsername (Username) returns (UserProfile);
     rpc UpdateUserProfile (UserProfile) returns (UserProfile);
-    rpc GetAttemptsByUsername (Username) returns (HistoryPackage.GetAttemptsByUserIdResponse);
+    rpc GetAttemptsByUsername (Username) returns (CollaborationPackage.GetAttemptsFromUserIdResponse);
 }
 
 message User {

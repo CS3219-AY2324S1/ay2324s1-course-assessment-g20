@@ -19,21 +19,15 @@ import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 import { Language } from '@app/microservice/interfaces/user';
-import {
-  HISTORY_SERVICE_NAME,
-  HistoryServiceClient,
-} from '@app/microservice/interfaces/history';
-import { Mutex } from 'async-mutex';
 
 type YjsWebsocket = AuthenticatedWebsocket & RedisAwareWebsocket;
-const mutex = new Mutex();
+
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
   private static CURRENT_LANGUAGE = 'current_language';
   private mongoUri;
   private collaborationService: CollaborationServiceClient;
-  private historyService: HistoryServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
@@ -52,10 +46,6 @@ export class YjsGateway extends BaseWebsocketGateway {
     this.collaborationService =
       this.collaborationServiceClient.getService<CollaborationServiceClient>(
         COLLABORATION_SERVICE_NAME,
-      );
-    this.historyService =
-      this.historyServiceClient.getService<HistoryServiceClient>(
-        HISTORY_SERVICE_NAME,
       );
   }
   async handleDisconnect(connection: YjsWebsocket): Promise<void> {
@@ -79,15 +69,6 @@ export class YjsGateway extends BaseWebsocketGateway {
     YjsGateway.propagateLanguageToClient(connection, language);
     YjsGateway.subscribeAndHandleLanguageChange(connection, sessionId);
     YjsGateway.setupYjs(connection, sessionId, this.mongoUri);
-
-    mutex.acquire().then(async (release) => {
-      await this.historyService
-        .createHistoryAttempt({
-          sessionId,
-        })
-        .forEach(({ histories }) => histories);
-      release();
-    });
 
     return YjsGateway.sessionInitialized(connection);
   }

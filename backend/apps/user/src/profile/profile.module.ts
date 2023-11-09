@@ -13,7 +13,7 @@ import { registerGrpcClients } from '@app/microservice/utils';
 
 @Module({
   imports: [
-    registerGrpcClients([Service.HISTORY_SERVICE]),
+    registerGrpcClients([Service.COLLABORATION_SERVICE]),
     // Database and DAOs
     SqlDatabaseModule.factory([LanguageModel, RoleModel, UserProfileModel]),
     LanguageDaoModule,

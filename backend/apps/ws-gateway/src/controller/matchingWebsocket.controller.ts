@@ -1,11 +1,9 @@
 import { WebsocketServiceApi } from '@app/microservice/events-api/websocket';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { Public } from '../jwt/jwtPublic.decorator';
 import { MatchingWebsocketService as MatchingWebsocketService } from '../services/matchingWebsocketService';
 
 @Controller()
-@Public()
 export class MatchingWebsocketController {
   constructor(
     private readonly matchingWebsocketService: MatchingWebsocketService,

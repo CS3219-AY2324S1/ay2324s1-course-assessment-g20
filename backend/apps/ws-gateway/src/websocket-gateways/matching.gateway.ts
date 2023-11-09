@@ -6,7 +6,7 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { ClientGrpc } from '@nestjs/microservices';
-import MatchingDto from '../dtos/auth/matching.dto';
+import MatchingDto from '../dtos/matching.dto';
 import { MatchingWebsocketService } from '../services/matchingWebsocketService';
 import { AuthenticatedWebsocket, BaseWebsocketGateway } from '@app/websocket';
 import {

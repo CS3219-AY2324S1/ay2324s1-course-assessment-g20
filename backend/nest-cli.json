@@ -26,6 +26,19 @@
         "watchAssets": true
       }
     },
+    "ws-gateway": {
+      "type": "application",
+      "root": "apps/ws-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/ws-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ws-gateway/tsconfig.app.json",
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
+        "watchAssets": true
+      }
+    },
     "question": {
       "type": "application",
       "root": "apps/question",
@@ -78,6 +91,19 @@
         "watchAssets": true
       }
     },
+    "collaboration": {
+      "type": "application",
+      "root": "apps/collaboration",
+      "entryFile": "main",
+      "sourceRoot": "apps/collaboration/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/collaboration/tsconfig.app.json",
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
+        "watchAssets": true
+      }
+    },
     "config": {
       "type": "library",
       "root": "libs/config",
@@ -112,19 +138,6 @@
       "sourceRoot": "libs/microservice/src",
       "compilerOptions": {
         "tsConfigPath": "libs/microservice/tsconfig.lib.json"
-      }
-    },
-    "collaboration": {
-      "type": "application",
-      "root": "apps/collaboration",
-      "entryFile": "main",
-      "sourceRoot": "apps/collaboration/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/collaboration/tsconfig.app.json",
-        "assets": [
-          "../../../libs/microservice/src/interservice-proto/**/*"
-        ],
-        "watchAssets": true
       }
     },
     "websocket": {

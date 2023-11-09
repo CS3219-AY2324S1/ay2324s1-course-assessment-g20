@@ -27,6 +27,7 @@ export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
   private static CURRENT_LANGUAGE = 'current_language';
   private static LANGUAGE_CHANGE = 'language_change';
+  private static SESSION_CLOSED = 'session_closed';
   private mongoUri;
   private collaborationService: CollaborationServiceClient;
 
@@ -58,17 +59,19 @@ export class YjsGateway extends BaseWebsocketGateway {
     }
 
     const ticketId = YjsGateway.getTicketIdFromUrl(request);
-    const { sessionId, language } = await this.getSessionIdAndLanguage(
-      ticketId,
-    );
-    const docName = sessionId;
+    const { session, language } = await this.getSessionAndLanguage(ticketId);
+    const { id: sessionId } = session;
+
+    if (session.isClosed) {
+      return YjsGateway.closeConnection(connection, YjsGateway.SESSION_CLOSED);
+    }
 
     connection.sessionId = sessionId;
     YjsGateway.initializeRedisPubSubClients(connection);
 
     this.subscribeAndHandleLanguageChange(connection, sessionId);
+    this.setupYjs(connection, sessionId, this.mongoUri);
     YjsGateway.propagateLanguageToClient(connection, language);
-    YjsGateway.setupYjs(connection, docName, this.mongoUri);
 
     return YjsGateway.sessionInitialized(connection);
   }
@@ -108,14 +111,14 @@ export class YjsGateway extends BaseWebsocketGateway {
     });
   }
 
-  private async getSessionIdAndLanguage(ticketId: string) {
-    const { sessionId } = await firstValueFrom(
-      this.collaborationService.getSessionIdFromTicket({ id: ticketId }),
+  private async getSessionAndLanguage(ticketId: string) {
+    const session = await firstValueFrom(
+      this.collaborationService.getSessionFromTicket({ id: ticketId }),
     );
     const language = await firstValueFrom(
-      this.collaborationService.getLanguageIdFromSessionId({ id: sessionId }),
+      this.collaborationService.getLanguageIdFromSessionId({ id: session.id }),
     );
-    return { sessionId, language };
+    return { session, language };
   }
 
   private static propagateLanguageToClient(
@@ -146,7 +149,11 @@ export class YjsGateway extends BaseWebsocketGateway {
     });
   }
 
-  private static setupYjs(connection, docName, mongoUri) {
+  private setupYjs(
+    connection: YjsWebsocket,
+    docName: string,
+    mongoUri: string,
+  ) {
     /**
      * Yjs `setupWSConnection` expects a Request object for auto room detection.
      * We are not using this feature, and can just pass in a dummy object.
@@ -191,6 +198,11 @@ export class YjsGateway extends BaseWebsocketGateway {
 
         // flush document on close to have the smallest possible database
         await mdb.flushDocument(docName);
+
+        // Close collab session when all clients have disconnected
+        await firstValueFrom(
+          this.collaborationService.closeSession({ id: connection.sessionId }),
+        );
       },
     });
   }

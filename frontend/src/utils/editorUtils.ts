@@ -44,6 +44,7 @@ export enum YjsWebsocketServerMessage {
   WS_UNAUTHORIZED = 'unauthorized',
   LANGUAGE_CHANGE = 'language-change',
   CURRENT_LANGUAGE = 'current_language',
+  SESSION_CLOSED = 'session_closed',
 }
 const authenticatedYjsWebsocketProvider = (
   wsTicket: string,
@@ -73,6 +74,9 @@ const authenticatedYjsWebsocketProvider = (
     } else if (data === YjsWebsocketServerMessage.WS_UNAUTHORIZED) {
       provider.disconnect();
       onError && onError('Websocket authentication failed!');
+    } else if (data === YjsWebsocketServerMessage.SESSION_CLOSED) {
+      provider.disconnect();
+      onError && onError('Session has been closed!');
     }
   };
 

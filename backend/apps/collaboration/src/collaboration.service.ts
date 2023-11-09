@@ -96,6 +96,7 @@ export class CollaborationService implements OnModuleInit {
       ...createSessionInfo,
       userIds: createSessionInfo.userIds.map((userId) => ({ userId })),
       languageId,
+      isClosed: false,
     };
 
     return this.sessionDaoService.create(graphInfo);
@@ -177,8 +178,14 @@ export class CollaborationService implements OnModuleInit {
     };
   }
 
-  getSessionIdFromTicket(ticketId: string) {
-    return this.sessionDaoService.getSessionIdFromTicket(ticketId);
+  getSessionFromTicket(ticketId: string) {
+    return this.sessionDaoService
+      .getSessionFromTicket(ticketId)
+      .then((r) => r.session);
+  }
+
+  closeSession(sessionId: string) {
+    return this.sessionDaoService.closeSession(sessionId);
   }
 
   private async validatedUserInExistingSession(userAndSession: {

@@ -460,7 +460,7 @@ describe('Gateway (e2e)', () => {
     const mockCategoryIds: string[] = [];
     let mockDifficultyId: string;
     let mockQuestionId: string;
-    const websocketUrl = `ws://localhost:${process.env.API_GATEWAY_PORT}/matching`;
+    const websocketUrl = `ws://localhost:${process.env.HTTP_GATEWAY_PORT}/matching`;
 
     beforeAll(async () => {
       await Promise.all(

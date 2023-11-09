@@ -11,7 +11,7 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+      - ${HTTP_GATEWAY_PORT}:${HTTP_GATEWAY_PORT}
     networks:
       - backend
     env_file:

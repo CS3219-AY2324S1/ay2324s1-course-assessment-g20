@@ -17,18 +17,10 @@ const collaborationServiceDatabaseOptions = {
   password: process.env.COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD,
   database: process.env.COLLABORATION_SERVICE_SQL_DATABASE_NAME,
 };
-const historyServiceDatabaseOptions = {
-  host: process.env.HISTORY_SERVICE_SQL_DATABASE_HOST,
-  port: process.env.HISTORY_SERVICE_SQL_DATABASE_PORT,
-  user: process.env.HISTORY_SERVICE_SQL_DATABASE_USER,
-  password: process.env.HISTORY_SERVICE_SQL_DATABASE_PASSWORD,
-  database: process.env.HISTORY_SERVICE_SQL_DATABASE_NAME,
-};
 
 const databaseConnections = [
   userServiceDatabaseOptions,
   collaborationServiceDatabaseOptions,
-  historyServiceDatabaseOptions,
 ];
 
 async function createDatabaseIfNotExist(connectionOptions) {

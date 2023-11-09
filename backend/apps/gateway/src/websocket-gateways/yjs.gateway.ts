@@ -33,8 +33,6 @@ export class YjsGateway extends BaseWebsocketGateway {
     @Inject(Service.USER_SERVICE) userServiceClient: ClientGrpc,
     @Inject(Service.COLLABORATION_SERVICE)
     private readonly collaborationServiceClient: ClientGrpc,
-    @Inject(Service.HISTORY_SERVICE)
-    private readonly historyServiceClient: ClientGrpc,
     private readonly configService: ConfigService,
   ) {
     super(userServiceClient);

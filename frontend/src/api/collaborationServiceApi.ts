@@ -25,17 +25,3 @@ export async function updateSessionLanguageId(sessionId: string, languageId: num
     },
   });
 }
-
-export async function getSessionAttemptText(sessionId: string) {
-  return requestBackend<{ attemptText: string }>({
-    url: backendServicesPaths.collaboration.getSessionAttemptText(sessionId),
-    method: HttpRequestMethod.GET,
-  });
-}
-
-export async function getSessionLanguageId(sessionId: string) {
-  return requestBackend<{ id: number }>({
-    url: backendServicesPaths.collaboration.getSessionLanguageId(sessionId),
-    method: HttpRequestMethod.GET,
-  });
-}

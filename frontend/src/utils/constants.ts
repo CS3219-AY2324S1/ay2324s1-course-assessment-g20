@@ -37,9 +37,6 @@ export const backendServicesPaths = {
     getSession: `${COLLABORATION}/session`,
     getSessionTicket: (sessionId: string) => `${COLLABORATION}/session/${sessionId}/ticket`,
     sessionLanguage: (sessionId: string) => `${COLLABORATION}/session/${sessionId}/language`,
-    getSessionAttemptText: (sessionId: string) =>
-      `${COLLABORATION}/session/${sessionId}/attemptText`,
-    getSessionLanguageId: (sessionId: string) => `${COLLABORATION}/session/${sessionId}/language`,
   },
   matching: {
     root: MATCHING,

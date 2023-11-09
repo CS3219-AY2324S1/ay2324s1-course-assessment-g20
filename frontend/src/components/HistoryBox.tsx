@@ -18,7 +18,6 @@ import Popup from './Popup';
 import { parseISO, format } from 'date-fns';
 import { getAllLanguages, getAttemptsByUsername } from '../api/userApi';
 import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
-// import { getSessionAttemptText, getSessionLanguageId } from '../api/collaborationServiceApi';
 
 function HistoryBox({ username }: { username: string }) {
   const { palette } = useTheme();

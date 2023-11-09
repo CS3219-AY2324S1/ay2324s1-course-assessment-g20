@@ -73,17 +73,6 @@ services:
       - backend
     env_file: .env.docker
 
-  history:
-    build:
-      context: .
-      dockerfile: ./apps/history/Dockerfile
-    depends_on:
-      sql-migrations:
-        condition: service_completed_successfully
-    networks:
-      - backend
-    env_file: .env.docker
-
   postgres:
     image: postgres:14.1-alpine
     restart: always

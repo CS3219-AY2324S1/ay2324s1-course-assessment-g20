@@ -40,10 +40,6 @@ export interface GetSessionIdFromTicketResponse {
   sessionId: string;
 }
 
-export interface GetUserIdsFromSessionIdResponse {
-  userIds: UserId[];
-}
-
 export interface GetAttemptsFromUserIdResponse {
   attempts: Attempt[];
 }
@@ -93,10 +89,6 @@ export interface CollaborationServiceClient {
 
   setSessionLanguageId(request: SetSessionLanguageIdRequest): Observable<Empty>;
 
-  getUserIdsFromSessionId(
-    request: ID,
-  ): Observable<GetUserIdsFromSessionIdResponse>;
-
   getAttemptsFromUserId(request: ID): Observable<GetAttemptsFromUserIdResponse>;
 }
 
@@ -139,13 +131,6 @@ export interface CollaborationServiceController {
 
   setSessionLanguageId(request: SetSessionLanguageIdRequest): void;
 
-  getUserIdsFromSessionId(
-    request: ID,
-  ):
-    | Promise<GetUserIdsFromSessionIdResponse>
-    | Observable<GetUserIdsFromSessionIdResponse>
-    | GetUserIdsFromSessionIdResponse;
-
   getAttemptsFromUserId(
     request: ID,
   ):
@@ -164,7 +149,6 @@ export function CollaborationServiceControllerMethods() {
       'getQuestionIdFromSessionId',
       'getLanguageIdFromSessionId',
       'setSessionLanguageId',
-      'getUserIdsFromSessionId',
       'getAttemptsFromUserId',
     ];
     for (const method of grpcMethods) {

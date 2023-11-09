@@ -25,8 +25,6 @@ import { firstValueFrom } from 'rxjs';
 import { ID } from '@app/microservice/interfaces/common';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
-import { Redis } from 'ioredis';
-import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {

@@ -1,15 +1,11 @@
 import { Inject } from '@nestjs/common';
-import { WebSocketGateway } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { setupWSConnection, setPersistence } from 'y-websocket/bin/utils';
 import { Redis } from 'ioredis';
 import { ClientGrpc } from '@nestjs/microservices';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
-import {
-  AuthenticatedWebsocket,
-  BaseWebsocketGateway,
-  RedisAwareWebsocket,
-} from '@app/websocket';
+import { AuthenticatedWebsocket, BaseWebsocketGateway } from '@app/websocket';
 import { Service } from '@app/microservice/services';
 import {
   COLLABORATION_SERVICE_NAME,
@@ -20,12 +16,18 @@ import { ConfigService } from '@nestjs/config';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 import { Language } from '@app/microservice/interfaces/user';
 
-type YjsWebsocket = AuthenticatedWebsocket & RedisAwareWebsocket;
+type YjsWebsocket = AuthenticatedWebsocket & {
+  redisPubClient: Redis;
+  redisSubClient: Redis;
+  sessionId: string;
+};
 
 @WebSocketGateway({ path: '/yjs' })
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
   private static CURRENT_LANGUAGE = 'current_language';
+  private static LANGUAGE_CHANGE = 'language_change';
+  private static SESSION_CLOSED = 'session_closed';
   private mongoUri;
   private collaborationService: CollaborationServiceClient;
 
@@ -47,10 +49,7 @@ export class YjsGateway extends BaseWebsocketGateway {
       );
   }
   async handleDisconnect(connection: YjsWebsocket): Promise<void> {
-    if (connection.redisClient) {
-      // unsubscribe from redis pub sub when connection is closed, to prevent memory leak
-      connection.redisClient.quit();
-    }
+    return YjsGateway.destroyRedisPubSubClients(connection);
   }
 
   async handleConnection(connection: YjsWebsocket, request: Request) {
@@ -60,26 +59,66 @@ export class YjsGateway extends BaseWebsocketGateway {
     }
 
     const ticketId = YjsGateway.getTicketIdFromUrl(request);
-    const { sessionId, language } = await this.getSessionIdAndLanguage(
-      ticketId,
-    );
-    const docName = sessionId + language.id;
+    const { session, language } = await this.getSessionAndLanguage(ticketId);
+    const { id: sessionId } = session;
 
+    if (session.isClosed) {
+      return YjsGateway.closeConnection(connection, YjsGateway.SESSION_CLOSED);
+    }
+
+    connection.sessionId = sessionId;
+    YjsGateway.initializeRedisPubSubClients(connection);
+
+    this.subscribeAndHandleLanguageChange(connection, sessionId);
+    this.setupYjs(connection, sessionId, this.mongoUri);
     YjsGateway.propagateLanguageToClient(connection, language);
-    YjsGateway.subscribeAndHandleLanguageChange(connection, sessionId);
-    YjsGateway.setupYjs(connection, docName, this.mongoUri);
 
     return YjsGateway.sessionInitialized(connection);
   }
 
-  private async getSessionIdAndLanguage(ticketId: string) {
-    const { sessionId } = await firstValueFrom(
-      this.collaborationService.getSessionIdFromTicket({ id: ticketId }),
+  @SubscribeMessage(YjsGateway.LANGUAGE_CHANGE)
+  async handleLanguageChange(connection: YjsWebsocket, data: string) {
+    try {
+      const decoded: number = JSON.parse(data);
+
+      await firstValueFrom(
+        this.collaborationService.setSessionLanguageId({
+          sessionId: connection.sessionId,
+          languageId: decoded,
+        }),
+      );
+
+      connection.redisPubClient.publish(
+        CollaborationEvent.LANGUAGE_CHANGE,
+        connection.sessionId,
+      );
+    } catch (e) {
+      console.log('error handling language change', e);
+    }
+  }
+
+  private static initializeRedisPubSubClients(connection: YjsWebsocket) {
+    connection.redisPubClient = Redis.createClient();
+    connection.redisSubClient = Redis.createClient();
+  }
+
+  private static destroyRedisPubSubClients(connection: YjsWebsocket) {
+    const clients = [connection.redisPubClient, connection.redisSubClient];
+    clients.forEach((client) => {
+      if (client) {
+        client.quit();
+      }
+    });
+  }
+
+  private async getSessionAndLanguage(ticketId: string) {
+    const session = await firstValueFrom(
+      this.collaborationService.getSessionFromTicket({ id: ticketId }),
     );
     const language = await firstValueFrom(
-      this.collaborationService.getLanguageIdFromSessionId({ id: sessionId }),
+      this.collaborationService.getLanguageIdFromSessionId({ id: session.id }),
     );
-    return { sessionId, language };
+    return { session, language };
   }
 
   private static propagateLanguageToClient(
@@ -92,22 +131,29 @@ export class YjsGateway extends BaseWebsocketGateway {
   }
 
   // listen to redis pub sub message for any request to change the language
-  private static subscribeAndHandleLanguageChange(
+  private subscribeAndHandleLanguageChange(
     connection: YjsWebsocket,
     sessionId: string,
   ) {
-    const redisClient = new Redis();
-    connection.redisClient = redisClient;
-    redisClient.subscribe(CollaborationEvent.LANGUAGE_CHANGE);
-    redisClient.on('message', (_, reqSessionId) => {
+    connection.redisSubClient.subscribe(CollaborationEvent.LANGUAGE_CHANGE);
+    connection.redisSubClient.on('message', async (_, reqSessionId) => {
       if (reqSessionId == sessionId) {
-        // Lets client know to reload session language and rebind monaco to a new ws connection
-        connection.send(CollaborationEvent.LANGUAGE_CHANGE);
+        const language = await firstValueFrom(
+          this.collaborationService.getLanguageIdFromSessionId({
+            id: connection.sessionId,
+          }),
+        );
+
+        YjsGateway.propagateLanguageToClient(connection, language);
       }
     });
   }
 
-  private static setupYjs(connection, docName, mongoUri) {
+  private setupYjs(
+    connection: YjsWebsocket,
+    docName: string,
+    mongoUri: string,
+  ) {
     /**
      * Yjs `setupWSConnection` expects a Request object for auto room detection.
      * We are not using this feature, and can just pass in a dummy object.
@@ -152,6 +198,11 @@ export class YjsGateway extends BaseWebsocketGateway {
 
         // flush document on close to have the smallest possible database
         await mdb.flushDocument(docName);
+
+        // Close collab session when all clients have disconnected
+        await firstValueFrom(
+          this.collaborationService.closeSession({ id: connection.sessionId }),
+        );
       },
     });
   }

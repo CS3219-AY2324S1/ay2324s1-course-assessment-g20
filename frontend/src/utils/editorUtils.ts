@@ -16,15 +16,26 @@ export const bindYjsToMonacoEditor = (
   editor: MonacoEditor.IStandaloneCodeEditor,
   onError?: (error: Error | string) => void,
 ) => {
-  const bindEditorOnAuthenticate = (ydoc: Y.Doc, provider: WebsocketProvider) => {
-    const type = ydoc.getText('monaco');
-    const model = editor?.getModel();
+  let binding: MonacoBinding | null = null;
+
+  const ydocument = new Y.Doc();
+  const provider = authenticatedYjsWebsocketProvider(wsTicket, ydocument, onError);
+
+  const bindEditor = (languageId: number) => {
+    if (binding) {
+      // To reuse existing editor, destroy previous collaborative editting handlers
+      binding.destroy();
+    }
+
+    const model = editor.getModel();
+    const ytext = ydocument.getText(languageId.toString());
+
     if (model) {
-      new MonacoBinding(type, model, new Set([editor]), provider.awareness);
+      binding = new MonacoBinding(ytext, model, new Set([editor]), provider.awareness);
     }
   };
 
-  return authenticatedYjsWebsocketProvider(wsTicket, bindEditorOnAuthenticate, onError);
+  return { provider, bindEditor };
 };
 
 const ROOM_NAME = 'yjs';
@@ -33,14 +44,14 @@ export enum YjsWebsocketServerMessage {
   WS_UNAUTHORIZED = 'unauthorized',
   LANGUAGE_CHANGE = 'language-change',
   CURRENT_LANGUAGE = 'current_language',
+  SESSION_CLOSED = 'session_closed',
 }
 const authenticatedYjsWebsocketProvider = (
   wsTicket: string,
-  onAuthenticateCallback: (ydoc: Y.Doc, provider: WebsocketProvider) => void,
+  ydoc: Y.Doc,
   onError?: (error: Error | string) => void,
 ) => {
-  const ydocument = new Y.Doc();
-  const provider = new WebsocketProvider(BACKEND_WEBSOCKET_HOST, ROOM_NAME, ydocument, {
+  const provider = new WebsocketProvider(BACKEND_WEBSOCKET_HOST, ROOM_NAME, ydoc, {
     params: {
       ticket: wsTicket,
     },
@@ -60,10 +71,12 @@ const authenticatedYjsWebsocketProvider = (
       // @ts-expect-error: Yjs provider onOpen does not expect the event to be passed in
       yjsDefaultOnOpen();
       ws.onmessage = yjsDefaultOnMessage;
-      onAuthenticateCallback(ydocument, provider);
     } else if (data === YjsWebsocketServerMessage.WS_UNAUTHORIZED) {
       provider.disconnect();
       onError && onError('Websocket authentication failed!');
+    } else if (data === YjsWebsocketServerMessage.SESSION_CLOSED) {
+      provider.disconnect();
+      onError && onError('Session has been closed!');
     }
   };
 
@@ -81,3 +94,7 @@ export const bindMessageHandlersToProvider = (
     provider.ws?.addEventListener('message', handler);
   });
 };
+
+export enum YjsWebsocketEvent {
+  LANGUAGE_CHANGE = 'language_change',
+}

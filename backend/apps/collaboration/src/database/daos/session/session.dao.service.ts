@@ -50,11 +50,12 @@ export class SessionDaoService {
     });
   }
 
-  getSessionIdFromTicket(ticketId: string) {
+  getSessionFromTicket(ticketId: string) {
     return this.sessionTicketModel
       .query()
       .select('sessionId')
       .where('ticketId', ticketId)
+      .withGraphFetched('session')
       .first();
   }
 
@@ -66,13 +67,6 @@ export class SessionDaoService {
       .first();
   }
 
-  getUserIdsFromSession(sessionId: string) {
-    return this.userSessionModel
-      .query()
-      .select('userId')
-      .where('sessionId', sessionId);
-  }
-
   async getSessionsFromUserId(userId: string) {
     const userSessions = await this.userSessionModel
       .query()
@@ -82,5 +76,12 @@ export class SessionDaoService {
       .findByIds(userSessions.map((userSession) => userSession.sessionId))
       .orderBy('updatedAt', 'desc');
     return query;
+  }
+
+  closeSession(sessionId: string) {
+    return this.sessionModel
+      .query()
+      .patch({ isClosed: true })
+      .where('id', sessionId);
   }
 }

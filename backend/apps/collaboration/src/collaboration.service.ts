@@ -26,8 +26,6 @@ import { firstValueFrom } from 'rxjs';
 import { ID } from '@app/microservice/interfaces/common';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
-import { Redis } from 'ioredis';
-import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 import { ConfigService } from '@nestjs/config';
 import { MongodbPersistence } from 'y-mongodb-provider';
 
@@ -109,21 +107,26 @@ export class CollaborationService implements OnModuleInit {
       ...createSessionInfo,
       userIds: createSessionInfo.userIds.map((userId) => ({ userId })),
       languageId,
+      isClosed: false,
     };
 
     return this.sessionDaoService.create(graphInfo);
   }
 
+  /**
+   * This method is called from an authenticated Websocket, and user is already
+   * validated to be in this session.
+   */
   async setSessionLanguageId(request: SetSessionLanguageIdRequest) {
-    await this.validatedUserInExistingSession(request);
-
-    await this.sessionDaoService.setSessionLanguageId(request);
-
-    // Initiate client reconnection, which reads updated session language
-    Redis.createClient().publish(
-      CollaborationEvent.LANGUAGE_CHANGE,
-      request.sessionId,
-    );
+    await firstValueFrom(
+      this.languageService.getLanguageById({ id: request.languageId }),
+    ).catch(() => {
+      throw new PeerprepException(
+        'Language ID does not exist',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    });
+    return this.sessionDaoService.setSessionLanguageId(request);
   }
 
   async getLanguageIdFromSessionId(sessionId: string) {
@@ -186,8 +189,14 @@ export class CollaborationService implements OnModuleInit {
     };
   }
 
-  getSessionIdFromTicket(ticketId: string) {
-    return this.sessionDaoService.getSessionIdFromTicket(ticketId);
+  getSessionFromTicket(ticketId: string) {
+    return this.sessionDaoService
+      .getSessionFromTicket(ticketId)
+      .then((r) => r.session);
+  }
+
+  closeSession(sessionId: string) {
+    return this.sessionDaoService.closeSession(sessionId);
   }
 
   private async validatedUserInExistingSession(userAndSession: {
@@ -269,7 +278,9 @@ export class CollaborationService implements OnModuleInit {
         sessions.map(async (session) => {
           const attemptText = await this.mdb
             .getYDoc(session.id)
-            .then((ydoc) => ydoc.getText('monaco').toString());
+            .then((ydoc) =>
+              ydoc.getText(session.languageId.toString()).toString(),
+            );
 
           return {
             attemptText,

@@ -24,7 +24,6 @@ export interface GetSessionOrTicketRequest {
 
 export interface SetSessionLanguageIdRequest {
   sessionId: string;
-  userId: string;
   languageId: number;
 }
 
@@ -36,8 +35,11 @@ export interface GetSessionTicketResponse {
   ticket: string;
 }
 
-export interface GetSessionIdFromTicketResponse {
-  sessionId: string;
+export interface GetSessionFromTicketResponse {
+  id: string;
+  questionId: string;
+  languageId: number;
+  isClosed: boolean;
 }
 
 export interface GetAttemptsFromUserIdResponse {
@@ -77,9 +79,7 @@ export interface CollaborationServiceClient {
     request: GetSessionOrTicketRequest,
   ): Observable<GetSessionTicketResponse>;
 
-  getSessionIdFromTicket(
-    request: ID,
-  ): Observable<GetSessionIdFromTicketResponse>;
+  getSessionFromTicket(request: ID): Observable<GetSessionFromTicketResponse>;
 
   getQuestionIdFromSessionId(
     request: ID,
@@ -90,6 +90,8 @@ export interface CollaborationServiceClient {
   setSessionLanguageId(request: SetSessionLanguageIdRequest): Observable<Empty>;
 
   getAttemptsFromUserId(request: ID): Observable<GetAttemptsFromUserIdResponse>;
+
+  closeSession(request: ID): Observable<Empty>;
 }
 
 export interface CollaborationServiceController {
@@ -111,12 +113,12 @@ export interface CollaborationServiceController {
     | Observable<GetSessionTicketResponse>
     | GetSessionTicketResponse;
 
-  getSessionIdFromTicket(
+  getSessionFromTicket(
     request: ID,
   ):
-    | Promise<GetSessionIdFromTicketResponse>
-    | Observable<GetSessionIdFromTicketResponse>
-    | GetSessionIdFromTicketResponse;
+    | Promise<GetSessionFromTicketResponse>
+    | Observable<GetSessionFromTicketResponse>
+    | GetSessionFromTicketResponse;
 
   getQuestionIdFromSessionId(
     request: ID,
@@ -137,6 +139,8 @@ export interface CollaborationServiceController {
     | Promise<GetAttemptsFromUserIdResponse>
     | Observable<GetAttemptsFromUserIdResponse>
     | GetAttemptsFromUserIdResponse;
+
+  closeSession(request: ID): void;
 }
 
 export function CollaborationServiceControllerMethods() {
@@ -145,11 +149,12 @@ export function CollaborationServiceControllerMethods() {
       'createCollabSession',
       'getSession',
       'getSessionTicket',
-      'getSessionIdFromTicket',
+      'getSessionFromTicket',
       'getQuestionIdFromSessionId',
       'getLanguageIdFromSessionId',
       'setSessionLanguageId',
       'getAttemptsFromUserId',
+      'closeSession',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

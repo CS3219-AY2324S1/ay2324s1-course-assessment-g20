@@ -104,9 +104,7 @@ function HistoryBox({ username }: { username: string }) {
 
                     <Popup
                       title={row.question.title}
-                      children={row.attempt.attemptTextByLanguageId[
-                        row.attempt.languageId
-                      ]}
+                      children={row.attempt.attemptTextByLanguageId[row.attempt.languageId]}
                       isCode={true}
                       language={row.language}
                       openPopup={rowIndex == index && popupVisibility}

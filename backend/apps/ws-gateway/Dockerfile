@@ -4,9 +4,9 @@ RUN mkdir -p /app/libs
 WORKDIR /app/libs
 COPY ./libs .
 
-RUN mkdir -p /app/apps/gateway
-WORKDIR /app/apps/gateway
-COPY ./apps/gateway .
+RUN mkdir -p /app/apps/ws-gateway
+WORKDIR /app/apps/ws-gateway
+COPY ./apps/ws-gateway .
 
 # package.json, nest-cli.json, tsconfig.build.json, tsconfig.json
 WORKDIR /app
@@ -18,10 +18,10 @@ RUN yarn install --frozen-lockfile
 
 FROM base as dev
 ENV NODE_ENV development
-RUN yarn build gateway
-CMD ["node", "dist/apps/gateway/main"]
+RUN yarn build ws-gateway
+CMD ["node", "dist/apps/ws-gateway/main"]
 
 FROM base as test
 ENV NODE_ENV test
-RUN yarn build gateway
-CMD ["node", "dist/apps/gateway/main"]
+RUN yarn build ws-gateway
+CMD ["node", "dist/apps/ws-gateway/main"]

@@ -5,9 +5,6 @@ import { Observable } from 'rxjs';
 import { Deleted, ID, IDs, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
 import { BoolValue } from './google/protobuf/wrappers';
-import { GetAttemptsFromUserIdResponse } from './collaboration';
-
-export const USER_PROFILE_SERVICE_NAME = 'UserProfileService';
 
 export interface User {
   id?: string | undefined;
@@ -221,10 +218,6 @@ export interface UserProfileServiceClient {
   getUserProfileByUsername(request: Username): Observable<UserProfile>;
 
   updateUserProfile(request: UserProfile): Observable<UserProfile>;
-
-  getAttemptsByUsername(
-    request: Username,
-  ): Observable<GetAttemptsFromUserIdResponse>;
 }
 
 export interface UserProfileServiceController {
@@ -239,13 +232,6 @@ export interface UserProfileServiceController {
   updateUserProfile(
     request: UserProfile,
   ): Promise<UserProfile> | Observable<UserProfile> | UserProfile;
-
-  getAttemptsByUsername(
-    request: Username,
-  ):
-    | Promise<GetAttemptsFromUserIdResponse>
-    | Observable<GetAttemptsFromUserIdResponse>
-    | GetAttemptsFromUserIdResponse;
 }
 
 export function UserProfileServiceControllerMethods() {
@@ -254,14 +240,13 @@ export function UserProfileServiceControllerMethods() {
       'getUserProfileById',
       'getUserProfileByUsername',
       'updateUserProfile',
-      'getAttemptsByUsername',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,
         method,
       );
-      GrpcMethod(USER_PROFILE_SERVICE_NAME, method)(
+      GrpcMethod('UserProfileService', method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -273,7 +258,7 @@ export function UserProfileServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcStreamMethod(USER_PROFILE_SERVICE_NAME, method)(
+      GrpcStreamMethod('UserProfileService', method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -281,3 +266,5 @@ export function UserProfileServiceControllerMethods() {
     }
   };
 }
+
+export const USER_PROFILE_SERVICE_NAME = 'UserProfileService';

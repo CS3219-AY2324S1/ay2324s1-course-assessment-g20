@@ -4,7 +4,6 @@ import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { BACKEND_WEBSOCKET_HOST } from './constants';
 import { MonacoBinding } from 'y-monaco';
-import { frontendPaths } from '../routes/paths';
 
 // This function transpiles TypeScript to JavaScript, allowing users to write TypeScript in the code editor
 export function tsCompile(source: string): string {
@@ -99,17 +98,3 @@ export const bindMessageHandlersToProvider = (
 export enum YjsWebsocketEvent {
   LANGUAGE_CHANGE = 'language_change',
 }
-
-// Solo Code Editor Utils
-const IDENTIFIER_SEPARATOR = '$';
-
-export const getNavigateToCodeEditorUrl = (questionId: string, languageId: string) => {
-  return `${frontendPaths.codeEditor}/${questionId}${IDENTIFIER_SEPARATOR}${languageId}`;
-};
-
-export const getQuestionIdAndLanguageIdFromIdentifier = (identifier: string) => {
-  const questionIdAndLanguageIdArray = identifier.split(IDENTIFIER_SEPARATOR);
-  const questionId = questionIdAndLanguageIdArray[0];
-  const languageId = questionIdAndLanguageIdArray[1];
-  return { questionId, languageId };
-};

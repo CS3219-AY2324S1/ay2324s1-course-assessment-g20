@@ -62,7 +62,10 @@ export default function Popup({
         }}
       >
         {isCode ? (
-          <CodeContent content={children} language={language.toLowerCase()} />
+          <>
+            Your attempt:
+            <CodeContent content={children} language={language.toLowerCase()} />
+          </>
         ) : (
           <TextContent content={children} />
         )}

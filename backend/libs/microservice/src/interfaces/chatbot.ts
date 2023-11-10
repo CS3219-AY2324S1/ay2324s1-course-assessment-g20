@@ -2,8 +2,6 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
-export const CHATBOT_SERVICE_NAME = 'ChatbotService';
-
 export interface ChatbotRequest {
   query: string;
   sessionId: string;
@@ -56,7 +54,7 @@ export function ChatbotServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcMethod(CHATBOT_SERVICE_NAME, method)(
+      GrpcMethod('ChatbotService', method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -68,7 +66,7 @@ export function ChatbotServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcStreamMethod(CHATBOT_SERVICE_NAME, method)(
+      GrpcStreamMethod('ChatbotService', method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -76,3 +74,5 @@ export function ChatbotServiceControllerMethods() {
     }
   };
 }
+
+export const CHATBOT_SERVICE_NAME = 'ChatbotService';

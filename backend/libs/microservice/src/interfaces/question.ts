@@ -4,8 +4,6 @@ import { Observable } from 'rxjs';
 import { ID } from './common';
 import { Empty } from './google/protobuf/empty';
 
-export const QUESTION_SERVICE_NAME = 'QuestionService';
-
 export interface GetQuestionsResponse {
   questions: Question[];
 }
@@ -139,7 +137,7 @@ export function QuestionServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcMethod(QUESTION_SERVICE_NAME, method)(
+      GrpcMethod('QuestionService', method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -151,7 +149,7 @@ export function QuestionServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcStreamMethod(QUESTION_SERVICE_NAME, method)(
+      GrpcStreamMethod('QuestionService', method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -159,3 +157,5 @@ export function QuestionServiceControllerMethods() {
     }
   };
 }
+
+export const QUESTION_SERVICE_NAME = 'QuestionService';

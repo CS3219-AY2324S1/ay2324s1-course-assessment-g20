@@ -66,4 +66,8 @@ export class CollaborationController implements CollaborationServiceController {
   getAttemptsFromUserId(request: ID): Promise<GetAttemptsFromUserIdResponse> {
     return this.collaborationService.getAttemptsFromUserId(request);
   }
+
+  getSessionAttempt(getSessionAttemptInfo: GetSessionOrTicketRequest) {
+    return this.collaborationService.getSessionAttempt(getSessionAttemptInfo);
+  }
 }

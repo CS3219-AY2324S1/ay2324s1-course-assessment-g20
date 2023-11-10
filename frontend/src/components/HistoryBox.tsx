@@ -13,13 +13,12 @@ import {
 import { StyledTableCell, StyledTableRow, getDifficultyColor } from '../utils/styleUtils';
 import { IHistoryTableRow } from '../@types/history';
 import { useEffect, useState } from 'react';
-import { getQuestionWithId } from '../api/questionBankApi';
 import Popup from './Popup';
 import { parseISO, format } from 'date-fns';
-import { getAllLanguages, getAttemptsByUsername } from '../api/userApi';
+import { getAllLanguages, getUserAttempts } from '../api/userApi';
 import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
 import { useNavigate } from 'react-router-dom';
-import { getNavigateToCodeEditorUrl } from '../utils/editorUtils';
+import { frontendPaths } from '../routes/paths';
 
 function HistoryBox({ username }: { username: string }) {
   const navigate = useNavigate();
@@ -33,20 +32,15 @@ function HistoryBox({ username }: { username: string }) {
       const languages = languageResponse.data;
 
       // Fetch history from API
-      getAttemptsByUsername(username)
+      getUserAttempts()
         .then((response) => response.data)
         .then((attempts) =>
           attempts.map(async (attempt) => {
-            // Fetch question from API
-            const question = await getQuestionWithId(attempt.questionId).then(
-              (response) => response.data,
-            );
-
             return {
               attempt: {
                 ...attempt,
               },
-              question: question,
+              question: attempt.question,
               language:
                 languages.filter((language) => language.id === attempt.languageId)[0]?.name ??
                 DEFAULT_LANGUAGE,
@@ -71,17 +65,7 @@ function HistoryBox({ username }: { username: string }) {
   // Logic for continue attempt button
   const handleContinueAttempt = () => {
     handlePopupOnClose();
-    navigate(
-      getNavigateToCodeEditorUrl(
-        rows[rowIndex].question._id ?? '',
-        rows[rowIndex].attempt.languageId.toString(),
-      ),
-      {
-        state: {
-          attemptText: rows[rowIndex].attempt.attemptText,
-        },
-      },
-    );
+    navigate(`${frontendPaths.codeEditor}/${rows[rowIndex].attempt.sessionId}`);
   };
 
   return (
@@ -120,7 +104,9 @@ function HistoryBox({ username }: { username: string }) {
 
                     <Popup
                       title={row.question.title}
-                      children={'Your solution:\n\n' + row.attempt.attemptText.toString()}
+                      children={row.attempt.attemptTextByLanguageId[
+                        row.attempt.languageId
+                      ]}
                       isCode={true}
                       language={row.language}
                       openPopup={rowIndex == index && popupVisibility}

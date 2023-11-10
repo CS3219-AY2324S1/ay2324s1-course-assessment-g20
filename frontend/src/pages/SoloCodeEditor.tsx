@@ -4,17 +4,13 @@ import EditorScreen from '../components/EditorScreen';
 import { useThrowAsyncError } from '../hooks/useThrowAsyncError';
 import { useEffect, useState } from 'react';
 import { getAllLanguages } from '../api/userApi';
-import { useLocation, useParams } from 'react-router-dom';
-import { IQuestion } from '../@types/question';
-import { getQuestionWithId } from '../api/questionBankApi';
-import { getQuestionIdAndLanguageIdFromIdentifier } from '../utils/editorUtils';
-
-// Get language and question from params
+import { useParams } from 'react-router-dom';
+import { getSessionAttempt } from '../api/collaborationServiceApi';
+import { IAttempt } from '../@types/history';
 
 function SoloCodeEditor() {
-  const { identifier } = useParams<{ identifier: string }>();
-  const { state } = useLocation();
-  const [question, setQuestion] = useState<IQuestion | undefined>(undefined);
+  const { sessionId } = useParams<{ sessionId: string }>();
+  const [attempt, setAttempt] = useState<IAttempt | undefined>(undefined);
   const [selectedLanguage, setSelectedLanguage] = useState<Language | undefined>(undefined);
   const [languages, setLanguages] = useState<Language[]>([]);
 
@@ -26,24 +22,20 @@ function SoloCodeEditor() {
         if (languages.length === 0) {
           setLanguages(resp.data);
         }
+        return resp.data;
       })
       .catch(() => {
         throwAsyncError('Error getting supported languages');
+        return [];
       })
-      .then(() => {
-        if (identifier && selectedLanguage == undefined) {
-          const { questionId, languageId } = getQuestionIdAndLanguageIdFromIdentifier(identifier);
-
-          getQuestionWithId(questionId)
-            .then((response) => response.data)
-            .then((question) => setQuestion(question));
-
-          setSelectedLanguage(getLanguageFromId(parseInt(languageId)));
-        }
+      .then(async (languages) => {
+        const { data: attempt } = await getSessionAttempt(sessionId!);
+        const language = languages.filter((l) => l.id === attempt.languageId)[0];
+        setSelectedLanguage(language);
+        setAttempt(attempt);
       });
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [languages, selectedLanguage]);
+  }, []);
 
   const getLanguageFromId = (id: number) => {
     return languages.filter((language) => language.id === id)[0];
@@ -55,13 +47,14 @@ function SoloCodeEditor() {
 
   return (
     <>
-      {selectedLanguage != undefined && question != undefined && (
+      {selectedLanguage != undefined && attempt?.question != undefined && (
         <EditorScreen
-          question={question}
+          key={selectedLanguage.id}
+          question={attempt?.question}
           selectedLanguage={selectedLanguage}
           languages={languages}
           handleLanguageChange={handleLanguageChange}
-          initialCode={state?.attemptText ?? ''}
+          initialCode={attempt?.attemptTextByLanguageId[selectedLanguage.id] ?? ''}
         />
       )}
     </>

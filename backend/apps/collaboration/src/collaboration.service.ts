@@ -4,6 +4,7 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { Service } from '@app/microservice/services';
 import { SessionModel } from './database/models/session.model';
 import {
+  Attempt,
   CreateCollabSessionRequest,
   GetAttemptsFromUserIdResponse,
   GetQuestionIdFromSessionIdResponse,
@@ -17,6 +18,7 @@ import {
   UserProfileServiceClient,
   UserLanguageServiceClient,
   USER_LANGUAGE_SERVICE_NAME,
+  Language,
 } from '@app/microservice/interfaces/user';
 import {
   QUESTION_SERVICE_NAME,
@@ -28,6 +30,7 @@ import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
 import { ConfigService } from '@nestjs/config';
 import { MongodbPersistence } from 'y-mongodb-provider';
+import * as Y from 'yjs';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
@@ -169,6 +172,20 @@ export class CollaborationService implements OnModuleInit {
     };
   }
 
+  async getSessionAttempt(
+    getSessionAttemptInfo: GetSessionOrTicketRequest,
+  ): Promise<Attempt> {
+    const { languages } = await firstValueFrom(
+      this.languageService.getAllLanguages({}),
+    );
+
+    const { session } = await this.validatedUserInExistingSession(
+      getSessionAttemptInfo,
+    );
+
+    return this.getAttemptBySession(session, languages);
+  }
+
   async createSessionTicket(getSessionTicketInfo: GetSessionOrTicketRequest) {
     await this.validatedUserInExistingSession(getSessionTicketInfo);
 
@@ -273,23 +290,54 @@ export class CollaborationService implements OnModuleInit {
     const sessions = await this.sessionDaoService.getSessionsFromUserId(
       request.id,
     );
+    const { languages } = await firstValueFrom(
+      this.languageService.getAllLanguages({}),
+    );
+
     return {
       attempts: await Promise.all(
-        sessions.map(async (session) => {
-          const attemptText = await this.mdb
-            .getYDoc(session.id)
-            .then((ydoc) =>
-              ydoc.getText(session.languageId.toString()).toString(),
-            );
-
-          return {
-            attemptText,
-            dateTimeAttempted: session.updatedAt,
-            questionId: session.questionId,
-            languageId: session.languageId,
-          };
-        }),
+        sessions.map((session) => this.getAttemptBySession(session, languages)),
       ),
     };
+  }
+
+  private async getAttemptBySession(
+    session: SessionModel,
+    languages: Language[],
+  ) {
+    const attemptTextByLanguageId = await this.getAttemptByLanguagesFromYdoc(
+      session.id,
+      languages,
+    );
+
+    const question = await firstValueFrom(
+      this.questionService.getQuestionWithId({
+        id: session.questionId,
+      }),
+    );
+
+    return {
+      attemptTextByLanguageId,
+      dateTimeAttempted: session.updatedAt,
+      question,
+      languageId: session.languageId,
+      sessionId: session.id,
+    };
+  }
+
+  private async getAttemptByLanguagesFromYdoc(
+    sessionId: string,
+    languages: Language[],
+  ) {
+    const attemptTextByLanguageId: { [key: number]: string } = {};
+    const ydoc: Y.Doc = await this.mdb.getYDoc(sessionId);
+
+    languages.forEach((language) => {
+      attemptTextByLanguageId[language.id] = ydoc
+        .getText(language.id.toString())
+        .toString();
+    });
+
+    return attemptTextByLanguageId;
   }
 }

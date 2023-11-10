@@ -108,13 +108,4 @@ export class ProfileService {
     }
     return this.userProfileDaoService.updateByUserId(userId, userProfile);
   }
-
-  async getAttemptsByUsername(username: string) {
-    const userId = await this.userProfileDaoService
-      .findByUsername({
-        username,
-      })
-      .then((profile) => profile.userId);
-    return this.collaborationService.getAttemptsFromUserId({ id: userId });
-  }
 }

@@ -4,8 +4,6 @@ import { Observable } from 'rxjs';
 import { ID } from './common';
 import { Empty } from './google/protobuf/empty';
 
-export const MATCHING_SERVICE_NAME = 'MatchingService';
-
 export interface MatchingEntry {
   userId: string;
   questionDifficulty: string;
@@ -31,7 +29,7 @@ export function MatchingServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcMethod(MATCHING_SERVICE_NAME, method)(
+      GrpcMethod('MatchingService', method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -43,7 +41,7 @@ export function MatchingServiceControllerMethods() {
         constructor.prototype,
         method,
       );
-      GrpcStreamMethod(MATCHING_SERVICE_NAME, method)(
+      GrpcStreamMethod('MatchingService', method)(
         constructor.prototype[method],
         method,
         descriptor,
@@ -51,3 +49,5 @@ export function MatchingServiceControllerMethods() {
     }
   };
 }
+
+export const MATCHING_SERVICE_NAME = 'MatchingService';

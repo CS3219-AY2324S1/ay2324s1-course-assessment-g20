@@ -50,7 +50,7 @@ const router = createBrowserRouter([
                 element: <EditProfile />,
               },
               {
-                path: `${frontendPaths.codeEditor}/:identifier`,
+                path: `${frontendPaths.codeEditor}/:sessionId`,
                 element: <SoloCodeEditor />,
               },
             ],

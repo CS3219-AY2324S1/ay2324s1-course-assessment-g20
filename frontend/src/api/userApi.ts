@@ -13,7 +13,7 @@ export async function getUserProfile() {
 
 export async function getUserProfileByUsername(username: string) {
   return requestBackend<UserProfile>({
-    url: `${backendServicesPaths.user.root}/${username}`,
+    url: `${backendServicesPaths.user.root}/username/${username}`,
     method: HttpRequestMethod.GET,
   });
 }
@@ -40,9 +40,9 @@ export async function getAllLanguages() {
   });
 }
 
-export async function getAttemptsByUsername(username: string) {
+export async function getUserAttempts() {
   return requestBackend<IAttempt[]>({
-    url: backendServicesPaths.user.getUserAttempts(username),
+    url: backendServicesPaths.user.userAttempts,
     method: HttpRequestMethod.GET,
   });
 }

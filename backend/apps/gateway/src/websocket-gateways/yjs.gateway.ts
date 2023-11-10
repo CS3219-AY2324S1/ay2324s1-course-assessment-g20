@@ -189,6 +189,7 @@ export class YjsGateway extends BaseWebsocketGateway {
 
         // send the persisted data to clients
         Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
+
         // store updates of the document in db
         ydoc.on('update', async (update) => {
           mdb.storeUpdate(docName, update);

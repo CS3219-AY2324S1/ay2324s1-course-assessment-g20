@@ -37,6 +37,14 @@ export class CollaborationController implements OnModuleInit {
     });
   }
 
+  @Get('session/:sessionId/attempt')
+  getSessionAttempt(@Req() req, @Param('sessionId') sessionId) {
+    return this.collaborationService.getSessionAttempt({
+      sessionId,
+      userId: req.user.id,
+    });
+  }
+
   @Get('session/:sessionId/ticket')
   getSessionTicket(@Req() req, @Param('sessionId') sessionId) {
     return this.collaborationService.getSessionTicket({

@@ -7,10 +7,6 @@ gateway-microservice:
   portProtocol: TCP
   containerPort: 4000
   servicePort: 4000
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
 
 question-microservice:
   microserviceName: 'question'
@@ -21,10 +17,6 @@ question-microservice:
   portProtocol: TCP
   containerPort: 4001
   servicePort: 4001
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
 
 user-microservice:
   microserviceName: 'user'
@@ -35,10 +27,6 @@ user-microservice:
   portProtocol: TCP
   containerPort: 4002
   servicePort: 4002
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
 
 collaboration-microservice:
   microserviceName: 'collaboration'
@@ -49,27 +37,3 @@ collaboration-microservice:
   portProtocol: TCP
   containerPort: 4003
   servicePort: 4003
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
-
-# matching-microservice:
-#   microserviceName: 'matching'
-#   replicaCount: 1
-#   image:
-#     repository: backend-matching
-#     tag: 'latest'
-#   portProtocol: TCP
-#   containerPort: 4004
-#   servicePort: 4004
-
-# chatbot-microservice:
-#   microserviceName: 'chatbot'
-#   replicaCount: 1
-#   image:
-#     repository: backend-chatbot
-#     tag: 'latest'
-#   portProtocol: TCP
-#   containerPort: 4006
-#   servicePort: 4006

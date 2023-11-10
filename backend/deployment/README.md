@@ -6,16 +6,11 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Ensure [minikube](https://minikube.sigs.k8s.io/docs/start/), [helm](https://helm.sh/) and [kustomize](https://kustomize.io/) are installed on your local machine.
 
 #### Setup minikube and build Docker containers
-1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Start minikube (e.g. `minikube start`).
 1. Run `eval $(minikube docker-env)` to set the environment .variables for the Docker daemon to run inside the Minikube cluster.
-    - If `eval $(minikube docker-env)` is not compatible with your terminal (i.e. for Windows):
-    - Run `minikube -p minikube docker-env` to ensure your environment variables have updated ports
-    - Then run `& minikube -p minikube docker-env --shell powershell | Invoke-Expression` to point your shell to minikube's docker-daemon
 1. In the same terminal, build the docker images locally (e.g. `docker compose build`).
 
 #### Install ingress-nginx
-1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Install ingress-nginx via Helm on the minikube cluster.
     <!-- Installing directly from Helm to install ingress-nginx into a separate namespace 'nginx'. We cannot specify custom namespaces under 'dependencies' of our custom Helm chart -->
     - Add the ingress-nginx repo to Helm via `helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx`
@@ -23,7 +18,6 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     - Install ingress-nginx and create the `nginx` namespace via `helm install nginx-ingress ingress-nginx/ingress-nginx --namespace nginx --create-namespace`
 
 #### Install Istio
-1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. (Helm) Install Istio via Helm on the minikube cluster.
     - Add the Istio repo to Helm via `helm repo add istio https://istio-release.storage.googleapis.com/charts`
     - `helm repo update`
@@ -36,6 +30,16 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     - `istioctl install --set profile=minimal`
     - `kubectl label namespace default istio-injection=enabled --overwrite` (enable [automatic sidecar injection](https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/))
     - To uninstall, run `istioctl uninstall --purge`
+
+#### Install RabbitMQ
+1. Install RabbitMQ via Helm on the minikube cluster.
+    - Add the RabbitMQ repo to Helm via `helm repo add bitnami https://charts.bitnami.com/bitnami`
+    - `helm repo update`
+    - Install RabbitMQ and create the `rmq` namespace via `helm install rmq bitnami/rabbitmq -n rmq --create-namespace`
+    - Take note of the password to the RabbitMQ instance (e.g. `echo "Password: $(kubectl get secret --namespace rmq rmq-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 -d)"`) We will set this later on in our `.env` file
+
+### Install Redis for Matching service
+<!-- TODO: fill up details for setting up theses services for deployment -->
 
 #### Deploy microservices
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).

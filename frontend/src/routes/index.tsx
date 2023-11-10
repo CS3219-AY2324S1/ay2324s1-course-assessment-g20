@@ -12,6 +12,7 @@ import OnboardedRoutes from './OnboardedRoutes';
 import NonOnboardedRoutes from './NonOnboardedRoutes';
 import EditProfile from '../pages/EditProfile';
 import { frontendPaths } from './paths';
+import SoloCodeEditor from '../pages/SoloCodeEditor';
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
               {
                 path: frontendPaths.editProfile,
                 element: <EditProfile />,
+              },
+              {
+                path: `${frontendPaths.codeEditor}/:sessionId`,
+                element: <SoloCodeEditor />,
               },
             ],
           },

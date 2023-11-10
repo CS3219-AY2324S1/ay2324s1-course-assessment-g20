@@ -480,7 +480,7 @@ describe('Gateway (e2e)', () => {
 
     it(`(GET) specific user should return 200 OK with authenticated user`, async () => {
       const { body } = await request(app.getHttpServer())
-        .get(`${endpoint}/${MOCK_ADMIN_USER_PROFILE.username}`)
+        .get(`${endpoint}/username/${MOCK_ADMIN_USER_PROFILE.username}`)
         .set('Authorization', `Bearer ${MOCK_USER_1_TOKEN}`)
         .expect(200);
       expect(body).toEqual(

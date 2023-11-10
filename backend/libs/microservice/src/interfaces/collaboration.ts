@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { wrappers } from 'protobufjs';
 import { Observable } from 'rxjs';
 import { ID } from './common';
 import { Empty } from './google/protobuf/empty';
@@ -40,6 +41,23 @@ export interface GetSessionFromTicketResponse {
   isClosed: boolean;
 }
 
+export interface GetAttemptsFromUserIdResponse {
+  attempts: Attempt[];
+}
+
+export interface Attempt {
+  attemptTextByLanguageId: { [key: number]: string };
+  dateTimeAttempted: Date | undefined;
+  question: Question | undefined;
+  languageId: number;
+  sessionId: string;
+}
+
+export interface Attempt_AttemptTextByLanguageIdEntry {
+  key: number;
+  value: string;
+}
+
 export interface Session {
   id: string;
   questionId: string;
@@ -54,6 +72,18 @@ export interface UserId {
 export interface SessionTicket {
   ticketId: string;
 }
+
+wrappers['.google.protobuf.Timestamp'] = {
+  fromObject(value: Date) {
+    return {
+      seconds: value.getTime() / 1000,
+      nanos: (value.getTime() % 1000) * 1e6,
+    };
+  },
+  toObject(message: { seconds: number; nanos: number }) {
+    return new Date(message.seconds * 1000 + message.nanos / 1e6);
+  },
+} as any;
 
 export interface CollaborationServiceClient {
   createCollabSession(request: CreateCollabSessionRequest): Observable<Session>;
@@ -75,6 +105,10 @@ export interface CollaborationServiceClient {
   getLanguageIdFromSessionId(request: ID): Observable<Language>;
 
   setSessionLanguageId(request: SetSessionLanguageIdRequest): Observable<Empty>;
+
+  getAttemptsFromUserId(request: ID): Observable<GetAttemptsFromUserIdResponse>;
+
+  getSessionAttempt(request: GetSessionOrTicketRequest): Observable<Attempt>;
 
   closeSession(request: ID): Observable<Empty>;
 }
@@ -118,6 +152,17 @@ export interface CollaborationServiceController {
 
   setSessionLanguageId(request: SetSessionLanguageIdRequest): void;
 
+  getAttemptsFromUserId(
+    request: ID,
+  ):
+    | Promise<GetAttemptsFromUserIdResponse>
+    | Observable<GetAttemptsFromUserIdResponse>
+    | GetAttemptsFromUserIdResponse;
+
+  getSessionAttempt(
+    request: GetSessionOrTicketRequest,
+  ): Promise<Attempt> | Observable<Attempt> | Attempt;
+
   closeSession(request: ID): void;
 }
 
@@ -131,6 +176,8 @@ export function CollaborationServiceControllerMethods() {
       'getQuestionIdFromSessionId',
       'getLanguageIdFromSessionId',
       'setSessionLanguageId',
+      'getAttemptsFromUserId',
+      'getSessionAttempt',
       'closeSession',
     ];
     for (const method of grpcMethods) {

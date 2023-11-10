@@ -18,14 +18,22 @@ import {
   UserAuthServiceClient,
   UserProfileServiceClient,
 } from '@app/microservice/interfaces/user';
+import { map } from 'rxjs';
+import {
+  COLLABORATION_SERVICE_NAME,
+  CollaborationServiceClient,
+} from '@app/microservice/interfaces/collaboration';
 
 @Controller('user')
 export class UserController implements OnModuleInit {
   private userAuthService: UserAuthServiceClient;
   private userProfileService: UserProfileServiceClient;
+  private collaborationService: CollaborationServiceClient;
 
   constructor(
     @Inject(Service.USER_SERVICE) private userServiceClient: ClientGrpc,
+    @Inject(Service.COLLABORATION_SERVICE)
+    private collaborationServiceClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
@@ -37,6 +45,10 @@ export class UserController implements OnModuleInit {
       this.userServiceClient.getService<UserProfileServiceClient>(
         USER_PROFILE_SERVICE_NAME,
       );
+    this.collaborationService =
+      this.collaborationServiceClient.getService<CollaborationServiceClient>(
+        COLLABORATION_SERVICE_NAME,
+      );
   }
 
   @Get()
@@ -44,7 +56,14 @@ export class UserController implements OnModuleInit {
     return this.userProfileService.getUserProfileById({ id: req.user.id });
   }
 
-  @Get(':username')
+  @Get('attempts')
+  getUserAttempts(@Req() req) {
+    return this.collaborationService
+      .getAttemptsFromUserId({ id: req.user.id })
+      .pipe(map(({ attempts }) => attempts || []));
+  }
+
+  @Get('/username/:username')
   getSpecifiedUserProfile(@Param() params) {
     return this.userProfileService.getUserProfileByUsername({
       username: params.username,

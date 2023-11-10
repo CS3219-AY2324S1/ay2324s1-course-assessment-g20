@@ -1,11 +1,15 @@
 import { Inject } from '@nestjs/common';
-import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { SubscribeMessage } from '@nestjs/websockets';
 import { setupWSConnection, setPersistence } from 'y-websocket/bin/utils';
 import { Redis, RedisOptions } from 'ioredis';
 import { ClientGrpc } from '@nestjs/microservices';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
-import { AuthenticatedWebsocket, BaseWebsocketGateway } from '@app/websocket';
+import {
+  AuthenticatedWebsocket,
+  BaseWebsocketGateway,
+  PrefixedWebsocketGateway,
+} from '@app/websocket';
 import { Service } from '@app/microservice/services';
 import {
   COLLABORATION_SERVICE_NAME,
@@ -22,7 +26,7 @@ type YjsWebsocket = AuthenticatedWebsocket & {
   sessionId: string;
 };
 
-@WebSocketGateway({ path: '/yjs' })
+@PrefixedWebsocketGateway('/yjs')
 export class YjsGateway extends BaseWebsocketGateway {
   private static SESSION_INITIALIZED = 'session_initialized';
   private static CURRENT_LANGUAGE = 'current_language';

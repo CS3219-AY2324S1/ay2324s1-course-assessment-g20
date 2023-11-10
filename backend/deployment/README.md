@@ -4,11 +4,13 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 ### Local K8s Cluster Setup
 #### Prerequisites
 1. Ensure [minikube](https://minikube.sigs.k8s.io/docs/start/), [helm](https://helm.sh/) and [kustomize](https://kustomize.io/) are installed on your local machine.
+1. Ensure PostgreSQL, MongoDB and Redis are installed on your local machine. Start these services.
 
 #### Setup minikube and build Docker containers
 1. Start minikube (e.g. `minikube start`).
 1. Run `eval $(minikube docker-env)` to set the environment .variables for the Docker daemon to run inside the Minikube cluster.
-1. In the same terminal, build the docker images locally (e.g. `docker compose build`).
+1. In the same terminal, build the docker images locally (e.g. `docker compose build`). 
+    > The **teaching team** can skip this step while deploying locally - the images will be pulled automatically when running the steps under the `Deploy microservices` section below
 
 #### Install ingress-nginx
 1. Install ingress-nginx via Helm on the minikube cluster.
@@ -38,7 +40,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     - Install RabbitMQ and create the `rmq` namespace via `helm install rmq bitnami/rabbitmq -n rmq --create-namespace`
     - Take note of the password to the RabbitMQ instance (e.g. `echo "Password: $(kubectl get secret --namespace rmq rmq-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 -d)"`) We will set this later on in our `.env` file -->
 
-### Install Redis for Matching service
+<!-- ### Install Redis for Matching service -->
 <!-- TODO: fill up details for setting up theses services for deployment -->
 
 #### Deploy microservices
@@ -46,6 +48,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Copy `custom-values.example.yaml` as `custom-values.yaml` and set the corresponding variables.
 1. Run `helm dependency update` to install the local `base-xxx` Helm charts.
 1. Run `helm template peerprep-backend . --values ./values.yaml --values ./custom-values.yaml > ./base/backend.yaml` to generate the Helm templated K8s manifest.
+    > For the following steps below, replace the `dev` in the filepaths with `prod` for deployment to production. The **teaching team** is to use `prod` if they do not wish to build the Docker images locally - the images will be automatically pulled from DockerHub
 1. Copy and set the backend `.env` file in the `deployment/backend/overlays/dev` directory.
     - **IMPT NOTE (microservice hosts)**: Set all `{MICROSERVICE}_SERVICE_HOST` to `{microservice}.default.svc.cluster.local` (e.g. `QUESTION_SERVICE_HOST=question.default.svc.cluster.local`) and `{MICROSERVICE}_SERVICE_PORT` to the corresponding port specified in `values.yaml` inside the copied `.env` file.
     - **IMPT NOTE (database hosts)**: Set all the `{MICROSERVICE}_SERVICE_SQL_DATABASE_HOST` to `peer-prep-external-postgres-service.default.svc`, and all the `{MICROSERVICE}_SERVICE_MONGODB_URL` to `mongodb://peer-prep-external-mongodb-service.default.svc:27017/{database_name}`.
@@ -60,5 +63,10 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Access the nginx server via `http://localhost`
 <!-- 1. To access the API gateway from localhost, run `kubectl port-forward deployment/http-gateway 4000:4000`. This is a temporary workaround until the ingress is properly configured. -->
 
-#### Deployment Architecture Diagram
+### Pushing Docker images
+1. Run `docker compose build` to build the latest images.
+1. Login to DockerHub via `docker login`.
+1. Push the images to DockerHub via `docker compose push`.
+
+### Deployment Architecture Diagram
 ![Deployment Architecture Diagram](deployment_architecture.png)

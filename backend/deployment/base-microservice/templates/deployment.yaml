@@ -3,6 +3,10 @@
 {{- $imageRepository := .Values.image.repository | required ".Values.image.repository is required." -}}
 {{- $imageTag := .Values.image.tag | required ".Values.image.tag is required." -}}
 {{- $containerPort := .Values.containerPort | required ".Values.containerPort is required." -}}
+{{- $requestsMemory := .Values.requestsMemory | required ".Values.requestsMemory is required." -}}
+{{- $requestsCpu := .Values.requestsCpu | required ".Values.requestsCpu is required." -}}
+{{- $limitsMemory := .Values.limitsMemory | required ".Values.limitsMemory is required." -}}
+{{- $limitsCpu := .Values.limitsCpu | required ".Values.limitsCpu is required." -}}
 
 ---
 apiVersion: apps/v1
@@ -22,6 +26,13 @@ spec:
       containers:
         - name: {{ $microserviceName }}
           image: {{ $imageRepository }}:{{ $imageTag }}
+          resources:
+          requests:
+            memory: {{ $requestsMemory }}
+            cpu: {{ $requestsCpu }}
+          limits:
+            memory: {{ $limitsMemory }}
+            cpu: {{ $limitsCpu }}
           imagePullPolicy: Never
           ports:
             - containerPort: {{ $containerPort }}

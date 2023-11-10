@@ -138,7 +138,8 @@ const CodeEditor = () => {
   const handleCompile = () => {
     const codeEvaluator = new CodeEvaluator();
 
-    const transpiledCode = selectedLanguage?.name === 'typescript' ? tsCompile(code) : code;
+    const transpiledCode =
+      selectedLanguage?.name.toLowerCase() === 'typescript' ? tsCompile(code) : code;
 
     codeEvaluator
       .evalAsync(transpiledCode)

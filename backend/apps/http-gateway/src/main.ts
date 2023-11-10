@@ -2,15 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { WsAdapter } from '@nestjs/platform-ws';
-import { MicroserviceOptions } from '@nestjs/microservices';
 import { GatewayExceptionFilter } from '@app/utils/exceptionFilter/gateway-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-
-  app.useWebSocketAdapter(new WsAdapter(app));
 
   app.enableVersioning({
     type: VersioningType.URI,
@@ -37,13 +33,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GatewayExceptionFilter());
 
   const port = configService.get('port');
-  const websocketGatewayOptions = configService.get('websocketGatewayOptions');
-
-  app.connectMicroservice<MicroserviceOptions>(websocketGatewayOptions);
-
-  await app.startAllMicroservices();
-
   await app.listen(port);
-  console.log(`Gateway running on port ${port}`);
+  console.log(`HTTP Gateway running on port ${port}`);
 }
 bootstrap();

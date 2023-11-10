@@ -1,8 +1,8 @@
-gateway-microservice:
-  microserviceName: 'gateway'
+http-gateway-microservice:
+  microserviceName: 'http-gateway'
   replicaCount: 1
   image:
-    repository: backend-gateway
+    repository: backend-http-gateway
     tag: 'latest'
   portProtocol: TCP
   containerPort: 4000

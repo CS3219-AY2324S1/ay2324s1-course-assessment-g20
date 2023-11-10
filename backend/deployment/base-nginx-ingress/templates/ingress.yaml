@@ -13,7 +13,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: gateway
+            name: http-gateway
             port: 
               number: 4000
 

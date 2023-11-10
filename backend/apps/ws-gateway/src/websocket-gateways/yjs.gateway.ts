@@ -170,9 +170,13 @@ export class YjsGateway extends BaseWebsocketGateway {
 
     setPersistence({
       bindState: async (docName, ydoc) => {
-        const persistedYdoc = await mdb.getYDoc(docName);
-        const persistedStateVector = Y.encodeStateVector(persistedYdoc);
-        const diff = Y.encodeStateAsUpdate(ydoc, persistedStateVector);
+        const persistedYdoc: Y.Doc = await mdb.getYDoc(docName);
+        const persistedStateVector: Uint8Array =
+          Y.encodeStateVector(persistedYdoc);
+        const diff: Uint8Array = Y.encodeStateAsUpdate(
+          ydoc,
+          persistedStateVector,
+        );
 
         // store the new data in db (if there is any: empty update is an array of 0s)
         if (

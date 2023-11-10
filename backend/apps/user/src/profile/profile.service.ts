@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserProfileDaoService } from '../database/daos/userProfiles/userProfile.dao.service';
 import { UserProfileModel } from '../database/models/userProfile.model';
 import { LanguageDaoService } from '../database/daos/languages/language.dao.service';
@@ -11,14 +11,31 @@ import {
 } from '@app/microservice/interfaces/user';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
+import { Service } from '@app/microservice/services';
+import { ClientGrpc } from '@nestjs/microservices';
+import {
+  COLLABORATION_SERVICE_NAME,
+  CollaborationServiceClient,
+} from '@app/microservice/interfaces/collaboration';
 
 @Injectable()
 export class ProfileService {
+  private collaborationService: CollaborationServiceClient;
+
   constructor(
     private readonly userProfileDaoService: UserProfileDaoService,
     private readonly languageDaoService: LanguageDaoService,
     private readonly roleDaoService: RoleDaoService,
+    @Inject(Service.COLLABORATION_SERVICE)
+    private readonly collaborationServiceClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.collaborationService =
+      this.collaborationServiceClient.getService<CollaborationServiceClient>(
+        COLLABORATION_SERVICE_NAME,
+      );
+  }
 
   getUserProfileById(userId: string): Promise<UserProfile | undefined> {
     return this.userProfileDaoService

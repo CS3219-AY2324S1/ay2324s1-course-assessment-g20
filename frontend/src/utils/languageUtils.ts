@@ -1,3 +1,5 @@
+export const DEFAULT_LANGUAGE = 'JavaScript';
+
 export const formatLanguage = (language: string) => {
   if (language.toLowerCase() === 'javascript') {
     return 'JavaScript';

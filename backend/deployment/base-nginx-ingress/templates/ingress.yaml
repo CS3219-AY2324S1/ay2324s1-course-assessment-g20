@@ -4,7 +4,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: peer-prep-ingress
-  # namespace: default
+  cert-manager.io/cluster-issuer: peerprep-clusterissuer
 spec:
   ingressClassName: nginx
   tls:

@@ -1,7 +1,3 @@
-- op: replace
-  path: '/spec/rules/0/host'
-  value:
-
 - op: add
   path: '/metadata/annotations'
   value: 

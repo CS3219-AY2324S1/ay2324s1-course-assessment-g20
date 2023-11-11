@@ -43,6 +43,11 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 <!-- ### Install Redis for Matching service -->
 <!-- TODO: fill up details for setting up theses services for deployment -->
 
+#### Configuring TLS Certificate (for `prod` directory build)
+1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
+1. Install `cert-manager` to issue Let's Encrypt certificates via `kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.1/cert-manager.yaml`
+1. Ensure that the `cert-manager` namespace has 3 pods that are running via `kubectl get pods -n cert-manager --watch`
+
 #### Deploy microservices
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Copy `custom-values.example.yaml` as `custom-values.yaml` and set the corresponding variables.
@@ -67,6 +72,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Run `docker compose build` to build the latest images.
 1. Login to DockerHub via `docker login`.
 1. Push the images to DockerHub via `docker compose push`.
+1. Alternatively, a GitHub Action has been configured to build and push to the remote DockerHub repository on push to `master`.
 
 ### Deployment Architecture Diagram
 ![Deployment Architecture Diagram](deployment_architecture.png)

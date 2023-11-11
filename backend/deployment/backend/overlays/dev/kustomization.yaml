@@ -8,6 +8,10 @@ patches:
   - path: patch.yaml
     target:
       kind: Deployment
+  - path: delete-acme-patch.yaml
+  - path: delete-ingress-tls-patch.yaml
+    target:
+      kind: Ingress
 
 secretGenerator:
   - name: env-file

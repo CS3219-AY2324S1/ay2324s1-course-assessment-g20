@@ -47,15 +47,12 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Create your own Certificate and Private Key either with Let's Encrypt(https://letsencrypt.org/getting-started/) or with OpenSSl (following the steps below):
     - Create two files, `private_key.key` and `certificate.crt`.
-    - Run `openssl genpkey -algorithm RSA -out private_key.key` to generate your private key.
+    - Run `openssl genpkey -algorithm RSA -out private_key.key` to generate a private key.
     - Then run `openssl req -new -key private-key.pem -out CSR.csr` to generate a certificate signing request.
-    - Then run `openssl x509 -req -in CSR.csr -signkey private_key.key -out certificate.crt`.
+    - Then run `openssl x509 -req -in CSR.csr -signkey private_key.key -out certificate.crt` to generate a certificate.
 1. Run `kubectl create secret tls my-tls-secret --key private_key.key --cert certificate.crt` to create a Kubernetes Secret that contains the TLS certificate and private key.
     - The actual secret can be retrieved using `kubectl get secret`.
-1. Ensure the Ingress configuration matches that in `ingress.yaml`, specially the name of the tls secret.
-> Come back to this step after deploying the microservices
-1. After you deploy the microservices, cd into the `deployment/backend/base-nginx-ingress/templates` directory.
-1. Apply the updated Ingress configuration to the Kubernetes cluster using `kubectl apply -f ingress.yaml`.
+1. Ensure the Ingress configuration matches that in `ingress.yaml`, specially the `secretName`.
 
 #### Deploy microservices
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).

@@ -5,9 +5,12 @@ resources:
   - ../../base
 
 patches:
-  - path: patch.yaml
+  - path: deployment-patch.yaml
     target:
       kind: Deployment
+  - path: ingress-patch.yaml
+    target:
+      kind: Ingress
 
 secretGenerator:
   - name: env-file

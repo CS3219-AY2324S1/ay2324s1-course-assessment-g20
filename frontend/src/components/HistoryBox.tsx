@@ -19,6 +19,7 @@ import { getAllLanguages, getUserAttempts } from '../api/userApi';
 import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
 import { useNavigate } from 'react-router-dom';
 import { frontendPaths } from '../routes/paths';
+import { getSessionIsClosed } from '../api/collaborationServiceApi';
 
 function HistoryBox({ username }: { username: string }) {
   const navigate = useNavigate();
@@ -63,9 +64,21 @@ function HistoryBox({ username }: { username: string }) {
   const handlePopupOnClose = () => setPopupVisibility(false);
 
   // Logic for continue attempt button
-  const handleContinueAttempt = () => {
-    handlePopupOnClose();
-    navigate(`${frontendPaths.codeEditor}/${rows[rowIndex].attempt.sessionId}`);
+  const handleContinueAttempt = (sessionId: string) => {
+    return () => {
+      handlePopupOnClose();
+
+      // Fetch isClosed session from API
+      getSessionIsClosed(sessionId)
+        .then((response) => response.data.isClosed)
+        .then((isClosedSession) =>
+          navigate(
+            `${isClosedSession ? frontendPaths.codeEditor : frontendPaths.session}/${
+              rows[rowIndex].attempt.sessionId
+            }`,
+          ),
+        );
+    };
   };
 
   return (
@@ -111,7 +124,7 @@ function HistoryBox({ username }: { username: string }) {
                       closePopup={handlePopupOnClose}
                       showButton={true}
                       buttonText={'Continue Attempt'}
-                      buttonOnClick={handleContinueAttempt}
+                      buttonOnClick={handleContinueAttempt(row.attempt.sessionId)}
                     ></Popup>
                   </StyledTableCell>
                   <StyledTableCell align="left">

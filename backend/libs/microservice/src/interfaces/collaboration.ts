@@ -45,6 +45,10 @@ export interface GetAttemptsFromUserIdResponse {
   attempts: Attempt[];
 }
 
+export interface GetSessionIsClosedFromSessionIdResponse {
+  isClosed: boolean;
+}
+
 export interface Attempt {
   attemptTextByLanguageId: { [key: number]: string };
   dateTimeAttempted: Date | undefined;
@@ -111,6 +115,10 @@ export interface CollaborationServiceClient {
   getSessionAttempt(request: GetSessionOrTicketRequest): Observable<Attempt>;
 
   closeSession(request: ID): Observable<Empty>;
+
+  getSessionIsClosedFromSessionId(
+    request: ID,
+  ): Observable<GetSessionIsClosedFromSessionIdResponse>;
 }
 
 export interface CollaborationServiceController {
@@ -164,6 +172,13 @@ export interface CollaborationServiceController {
   ): Promise<Attempt> | Observable<Attempt> | Attempt;
 
   closeSession(request: ID): void;
+
+  getSessionIsClosedFromSessionId(
+    request: ID,
+  ):
+    | Promise<GetSessionIsClosedFromSessionIdResponse>
+    | Observable<GetSessionIsClosedFromSessionIdResponse>
+    | GetSessionIsClosedFromSessionIdResponse;
 }
 
 export function CollaborationServiceControllerMethods() {
@@ -179,6 +194,7 @@ export function CollaborationServiceControllerMethods() {
       'getAttemptsFromUserId',
       'getSessionAttempt',
       'closeSession',
+      'getSessionIsClosedFromSessionId',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

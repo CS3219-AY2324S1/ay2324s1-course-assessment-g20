@@ -37,6 +37,7 @@ export const backendServicesPaths = {
     getSession: `${COLLABORATION}/session`,
     getSessionAttempt: (sessionId: string) => `${COLLABORATION}/session/${sessionId}/attempt`,
     getSessionTicket: (sessionId: string) => `${COLLABORATION}/session/${sessionId}/ticket`,
+    getSessionIsClosed: (sessionId: string) => `${COLLABORATION}/session/${sessionId}/isClosed`,
   },
   matching: {
     root: MATCHING,

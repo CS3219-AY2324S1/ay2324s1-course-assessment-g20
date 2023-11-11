@@ -4,3 +4,5 @@ base-externals:
   mongodbHost: host.docker.internal
   postgresHost: host.docker.internal
   redisHost: host.docker.internal
+  hostName: localhost
+  acmeEmail:

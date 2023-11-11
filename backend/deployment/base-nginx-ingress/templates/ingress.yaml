@@ -1,3 +1,5 @@
+{{- $hostName := .Values.hostName | required ".Values.hostName is required." -}}
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -7,10 +9,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - localhost
-    secretName: my-tls-secret
+    - {{ $hostName }}
+    secretName: acme-secret
   rules:
-  - host: localhost
+  - host: {{ $hostName }}
     http:
       paths:
       - path: /

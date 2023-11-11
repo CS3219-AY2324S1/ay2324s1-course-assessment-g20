@@ -43,16 +43,10 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 <!-- ### Install Redis for Matching service -->
 <!-- TODO: fill up details for setting up theses services for deployment -->
 
-#### Configuring TLS Certificate
+#### Configuring TLS Certificate (for `prod` directory build)
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
-1. Create your own Certificate and Private Key either with Let's Encrypt(https://letsencrypt.org/getting-started/) or with OpenSSl (following the steps below):
-    - Create two files, `private_key.key` and `certificate.crt`.
-    - Run `openssl genpkey -algorithm RSA -out private_key.key` to generate a private key.
-    - Then run `openssl req -new -key private-key.pem -out CSR.csr` to generate a certificate signing request.
-    - Then run `openssl x509 -req -in CSR.csr -signkey private_key.key -out certificate.crt` to generate a certificate.
-1. Run `kubectl create secret tls my-tls-secret --key private_key.key --cert certificate.crt` to create a Kubernetes Secret that contains the TLS certificate and private key.
-    - The actual secret can be retrieved using `kubectl get secret`.
-1. Ensure the Ingress configuration matches that in `ingress.yaml`, specially the `secretName`.
+1. Install `cert-manager` to issue Let's Encrypt certificates via `kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.1/cert-manager.yaml`
+1. Ensure that the `cert-manager` namespace has 3 pods that are running via `kubectl get pods -n cert-manager --watch`
 
 #### Deploy microservices
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
@@ -78,6 +72,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Run `docker compose build` to build the latest images.
 1. Login to DockerHub via `docker login`.
 1. Push the images to DockerHub via `docker compose push`.
+1. Alternatively, a GitHub Action has been configured to build and push to the remote DockerHub repository on push to `master`.
 
 ### Deployment Architecture Diagram
 ![Deployment Architecture Diagram](deployment_architecture.png)

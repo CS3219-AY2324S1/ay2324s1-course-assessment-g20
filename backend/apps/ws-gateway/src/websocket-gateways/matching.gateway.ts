@@ -1,6 +1,5 @@
 import { Inject } from '@nestjs/common';
 import {
-  WebSocketGateway,
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
@@ -8,7 +7,11 @@ import {
 import { ClientGrpc } from '@nestjs/microservices';
 import MatchingDto from '../dtos/matching.dto';
 import { MatchingWebsocketService } from '../services/matchingWebsocketService';
-import { AuthenticatedWebsocket, BaseWebsocketGateway } from '@app/websocket';
+import {
+  AuthenticatedWebsocket,
+  BaseWebsocketGateway,
+  PrefixedWebsocketGateway,
+} from '@app/websocket';
 import {
   MatchingServiceClient,
   MATCHING_SERVICE_NAME,
@@ -17,7 +20,7 @@ import { Service } from '@app/microservice/services';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 
-@WebSocketGateway({ path: '/matching' })
+@PrefixedWebsocketGateway('/matching')
 export class MatchingGateway extends BaseWebsocketGateway {
   private matchingService: MatchingServiceClient;
 

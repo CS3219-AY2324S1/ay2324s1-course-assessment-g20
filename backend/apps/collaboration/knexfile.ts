@@ -5,7 +5,6 @@ import * as dotenv from 'dotenv';
 import { knexSnakeCaseMappers } from 'objection';
 
 const NODE_ENV = process.env.NODE_ENV;
-const IS_DEPLOYMENT = ['staging', 'production'].includes(NODE_ENV);
 
 dotenv.config({ path: `../../.env${NODE_ENV ? `.${NODE_ENV}` : ''}` });
 const databaseConfigurationOptions = getDatabaseConfigurationForService(
@@ -17,11 +16,11 @@ const knexConfig = {
   connection: databaseConfigurationOptions,
   migrations: {
     directory: './src/database/migrations',
-    loadExtensions: IS_DEPLOYMENT ? ['.js'] : ['.ts'],
+    loadExtensions: ['.ts'],
   },
   seeds: {
     directory: './src/database/seeds',
-    loadExtensions: IS_DEPLOYMENT ? ['.js'] : ['.ts'],
+    loadExtensions: ['.ts'],
   },
   ...knexSnakeCaseMappers(),
 };

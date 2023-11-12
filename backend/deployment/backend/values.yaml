@@ -2,19 +2,29 @@ http-gateway-microservice:
   microserviceName: 'http-gateway'
   replicaCount: 1
   image:
-    repository: backend-http-gateway
+    repository: chownces/backend-http-gateway
     tag: 'latest'
-  portProtocol: http
+  portProtocol: TCP
   containerPort: 4000
   servicePort: 4000
+
+ws-gateway-microservice:
+  microserviceName: 'ws-gateway'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-ws-gateway
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4200
+  servicePort: 4200
 
 question-microservice:
   microserviceName: 'question'
   replicaCount: 1
   image:
-    repository: backend-question
+    repository: chownces/backend-question
     tag: 'latest'
-  portProtocol: tcp
+  portProtocol: TCP
   containerPort: 4001
   servicePort: 4001
 
@@ -22,8 +32,38 @@ user-microservice:
   microserviceName: 'user'
   replicaCount: 1
   image:
-    repository: backend-user
+    repository: chownces/backend-user
     tag: 'latest'
-  portProtocol: tcp
+  portProtocol: TCP
   containerPort: 4002
   servicePort: 4002
+
+collaboration-microservice:
+  microserviceName: 'collaboration'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-collaboration
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4003
+  servicePort: 4003
+
+matching-microservice:
+  microserviceName: 'matching'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-matching
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4004
+  servicePort: 4004
+
+chatbot-microservice:
+  microserviceName: 'chatbot'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-chatbot
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4006
+  servicePort: 4006

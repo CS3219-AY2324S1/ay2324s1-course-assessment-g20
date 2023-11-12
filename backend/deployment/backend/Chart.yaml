@@ -12,6 +12,11 @@ dependencies:
     version: '0.1.0'
     repository: file://../base-microservice
 
+  - alias: ws-gateway-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
   - alias: question-microservice
     name: base-microservice
     version: '0.1.0'
@@ -23,6 +28,16 @@ dependencies:
     repository: file://../base-microservice
 
   - alias: collaboration-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: matching-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: chatbot-microservice
     name: base-microservice
     version: '0.1.0'
     repository: file://../base-microservice

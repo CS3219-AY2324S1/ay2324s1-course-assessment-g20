@@ -6,7 +6,8 @@ metadata:
   name: peer-prep-ingress
   annotations:
     # kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: peerprep-clusterissuer
+    # cert-manager.io/cluster-issuer: peerprep-clusterissuer
+    cert-manager.io/issuer: peerprep-issuer
 spec:
   ingressClassName: nginx
   tls:

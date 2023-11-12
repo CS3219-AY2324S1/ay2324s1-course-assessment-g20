@@ -10,16 +10,17 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { IQuestion } from '../@types/question';
-import TextContent from './TextContent';
-import { formatLanguage } from '../utils/languageUtils';
+import { IQuestion } from '../../@types/question';
+import TextContent from '../TextContent';
+import { formatLanguage } from '../../utils/languageUtils';
 import { editor as MonacoEditor } from 'monaco-editor';
-import { ICodeEvalOutput } from '../@types/codeEditor';
-import { CodeEvaluator } from '../utils/codeEvaluator';
-import { tsCompile } from '../utils/editorUtils';
+import { ICodeEvalOutput } from '../../@types/codeEditor';
+import { CodeEvaluator } from '../../utils/codeEvaluator';
+import { tsCompile } from '../../utils/editorUtils';
 import Editor from '@monaco-editor/react';
-import { Language, PLACEHOLDER_LANGUAGE } from '../@types/language';
-import ChatbotPopup from './Chatbot/ChatbotPopup';
+import { Language, PLACEHOLDER_LANGUAGE } from '../../@types/language';
+import ChatbotPopup from '../Chatbot/ChatbotPopup';
+import './Editor.css';
 
 interface EditorScreenProps {
   question: IQuestion | undefined;

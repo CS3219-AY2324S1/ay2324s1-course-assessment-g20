@@ -10,8 +10,8 @@ spec:
     server: https://acme-v02.api.letsencrypt.org/directory
     email: {{ $acmeEmail }}
     privateKeySecretRef:
-      name: acme-secret
+      name: lets-encrpyt-prod
     solvers:
     - http01:
         ingress:
-          class: nginx
+          ingressClassName: nginx

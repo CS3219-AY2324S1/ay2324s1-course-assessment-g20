@@ -1,0 +1,5 @@
+$patch: delete
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: peerprep-issuer

@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "build:ci": "nest build && nest build user && nest build question && nest build collaboration && nest build matching && nest build chatbot",
+    "build:ci": "nest build && nest build ws-gateway && nest build user && nest build question && nest build collaboration && nest build matching && nest build chatbot",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\" \"scripts/**/*.{ts,js}\"",
     "format:ci": "prettier --list-different \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",

@@ -5,11 +5,10 @@ resources:
   - ../../base
 
 patches:
-  - path: patch.yaml
+  - path: deployment-patch.yaml
     target:
       kind: Deployment
-  - path: delete-acme-patch.yaml
-  - path: delete-ingress-tls-patch.yaml
+  - path: ingress-patch.yaml
     target:
       kind: Ingress
 

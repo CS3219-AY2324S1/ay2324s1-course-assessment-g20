@@ -35,7 +35,7 @@ describe('WsGatewayController (e2e)', () => {
     let wsTicket1: string;
     let wsTicket2: string;
     let mockDifficultyId: string;
-    const websocketUrl = `ws://localhost:${process.env.WS_GATEWAY_PORT}/matching`;
+    const websocketUrl = `ws://localhost:${process.env.WS_GATEWAY_PORT}/ws/matching`;
 
     beforeAll(async () => {
       const questionServiceClient: ClientGrpc = app.get(

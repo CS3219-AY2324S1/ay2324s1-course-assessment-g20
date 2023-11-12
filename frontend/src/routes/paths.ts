@@ -7,4 +7,5 @@ export const frontendPaths = {
   user: '/user',
   session: '/session',
   editProfile: '/profile/edit',
+  codeEditor: '/codeEditor',
 };

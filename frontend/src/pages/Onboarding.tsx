@@ -18,7 +18,9 @@ import { useProfile } from '../hooks/useProfile';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { frontendPaths } from '../routes/paths';
-import { formatLanguage } from '../utils/stringUtils';
+import { formatLanguage } from '../utils/languageUtils';
+import { PeerprepBackendError } from '../@types/PeerprepBackendError';
+import { EMPTY_USERNAME_ERROR } from '../utils/errorMessages';
 
 export default function Onboarding() {
   const [languages, setLanguages] = useState<Language[]>([]);
@@ -27,7 +29,8 @@ export default function Onboarding() {
   const [newPreferredLanguageId, setNewPreferredLanguageId] = useState(1);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const [validationError, setValidationError] = useState(false);
+  const [isUsernameEdited, setIsUsernameEdited] = useState(false);
+  const [usernameValidationErrorText, setUsernameValidationErrorText] = useState('');
 
   useEffect(() => {
     const fetchAndSetLanguages = async () => {
@@ -41,7 +44,16 @@ export default function Onboarding() {
     fetchAndSetLanguages();
   }, []);
 
+  useEffect(() => {
+    if (isUsernameEdited && newUsername.length === 0) {
+      setUsernameValidationErrorText(EMPTY_USERNAME_ERROR);
+      return;
+    }
+    setUsernameValidationErrorText('');
+  }, [newUsername, isUsernameEdited]);
+
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsUsernameEdited(true);
     setNewUsername(event.target.value);
   };
 
@@ -52,8 +64,6 @@ export default function Onboarding() {
 
   const handleSubmit = async () => {
     if (newUsername.length === 0) {
-      console.error('username cannot be empty');
-      setValidationError(true);
       return;
     }
     try {
@@ -64,9 +74,11 @@ export default function Onboarding() {
       enqueueSnackbar('Successfully completed onboarding!', { variant: 'success' });
       navigate(frontendPaths.dashboard);
     } catch (error) {
-      console.error(error);
-      enqueueSnackbar('Error updating profile :(', { variant: 'error' });
-      return;
+      if (error instanceof PeerprepBackendError) {
+        setUsernameValidationErrorText(error.details.message);
+        return;
+      }
+      throw error;
     }
   };
 
@@ -87,8 +99,8 @@ export default function Onboarding() {
             label="e.g. redsalmon42"
             value={newUsername}
             onChange={handleUsernameChange}
-            error={validationError}
-            helperText={validationError && 'Username cannot be empty'}
+            error={!!usernameValidationErrorText && isUsernameEdited}
+            helperText={usernameValidationErrorText}
           />
           <Typography>Select your preferred language</Typography>
           <FormControl fullWidth>

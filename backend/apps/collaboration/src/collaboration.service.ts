@@ -4,7 +4,9 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { Service } from '@app/microservice/services';
 import { SessionModel } from './database/models/session.model';
 import {
+  Attempt,
   CreateCollabSessionRequest,
+  GetAttemptsFromUserIdResponse,
   GetQuestionIdFromSessionIdResponse,
   GetSessionOrTicketRequest,
   SetSessionLanguageIdRequest,
@@ -16,6 +18,7 @@ import {
   UserProfileServiceClient,
   UserLanguageServiceClient,
   USER_LANGUAGE_SERVICE_NAME,
+  Language,
 } from '@app/microservice/interfaces/user';
 import {
   QUESTION_SERVICE_NAME,
@@ -25,8 +28,9 @@ import { firstValueFrom } from 'rxjs';
 import { ID } from '@app/microservice/interfaces/common';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
-import { Redis } from 'ioredis';
-import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
+import { ConfigService } from '@nestjs/config';
+import { MongodbPersistence } from 'y-mongodb-provider';
+import * as Y from 'yjs';
 
 @Injectable()
 export class CollaborationService implements OnModuleInit {
@@ -34,6 +38,7 @@ export class CollaborationService implements OnModuleInit {
   private questionService: QuestionServiceClient;
   private userProfileService: UserProfileServiceClient;
   private languageService: UserLanguageServiceClient;
+  private mdb: MongodbPersistence;
 
   constructor(
     @Inject(Service.USER_SERVICE)
@@ -41,7 +46,14 @@ export class CollaborationService implements OnModuleInit {
     @Inject(Service.QUESTION_SERVICE)
     private readonly questionServiceClient: ClientGrpc,
     private readonly sessionDaoService: SessionDaoService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const mongoUri = configService.getOrThrow('mongoUri');
+    this.mdb = new MongodbPersistence(mongoUri, {
+      flushSize: 100,
+      multipleCollections: true,
+    });
+  }
 
   onModuleInit() {
     this.userAuthService =
@@ -98,21 +110,26 @@ export class CollaborationService implements OnModuleInit {
       ...createSessionInfo,
       userIds: createSessionInfo.userIds.map((userId) => ({ userId })),
       languageId,
+      isClosed: false,
     };
 
     return this.sessionDaoService.create(graphInfo);
   }
 
+  /**
+   * This method is called from an authenticated Websocket, and user is already
+   * validated to be in this session.
+   */
   async setSessionLanguageId(request: SetSessionLanguageIdRequest) {
-    await this.validatedUserInExistingSession(request);
-
-    await this.sessionDaoService.setSessionLanguageId(request);
-
-    // Initiate client reconnection, which reads updated session language
-    Redis.createClient().publish(
-      CollaborationEvent.LANGUAGE_CHANGE,
-      request.sessionId,
-    );
+    await firstValueFrom(
+      this.languageService.getLanguageById({ id: request.languageId }),
+    ).catch(() => {
+      throw new PeerprepException(
+        'Language ID does not exist',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    });
+    return this.sessionDaoService.setSessionLanguageId(request);
   }
 
   async getLanguageIdFromSessionId(sessionId: string) {
@@ -155,6 +172,20 @@ export class CollaborationService implements OnModuleInit {
     };
   }
 
+  async getSessionAttempt(
+    getSessionAttemptInfo: GetSessionOrTicketRequest,
+  ): Promise<Attempt> {
+    const { languages } = await firstValueFrom(
+      this.languageService.getAllLanguages({}),
+    );
+
+    const { session } = await this.validatedUserInExistingSession(
+      getSessionAttemptInfo,
+    );
+
+    return this.getAttemptBySession(session, languages);
+  }
+
   async createSessionTicket(getSessionTicketInfo: GetSessionOrTicketRequest) {
     await this.validatedUserInExistingSession(getSessionTicketInfo);
 
@@ -175,8 +206,14 @@ export class CollaborationService implements OnModuleInit {
     };
   }
 
-  getSessionIdFromTicket(ticketId: string) {
-    return this.sessionDaoService.getSessionIdFromTicket(ticketId);
+  getSessionFromTicket(ticketId: string) {
+    return this.sessionDaoService
+      .getSessionFromTicket(ticketId)
+      .then((r) => r.session);
+  }
+
+  closeSession(sessionId: string) {
+    return this.sessionDaoService.closeSession(sessionId);
   }
 
   private async validatedUserInExistingSession(userAndSession: {
@@ -245,5 +282,62 @@ export class CollaborationService implements OnModuleInit {
         PEERPREP_EXCEPTION_TYPES.FORBIDDEN,
       );
     }
+  }
+
+  async getAttemptsFromUserId(
+    request: ID,
+  ): Promise<GetAttemptsFromUserIdResponse> {
+    const sessions = await this.sessionDaoService.getSessionsFromUserId(
+      request.id,
+    );
+    const { languages } = await firstValueFrom(
+      this.languageService.getAllLanguages({}),
+    );
+
+    return {
+      attempts: await Promise.all(
+        sessions.map((session) => this.getAttemptBySession(session, languages)),
+      ),
+    };
+  }
+
+  private async getAttemptBySession(
+    session: SessionModel,
+    languages: Language[],
+  ) {
+    const attemptTextByLanguageId = await this.getAttemptByLanguagesFromYdoc(
+      session.id,
+      languages,
+    );
+
+    const question = await firstValueFrom(
+      this.questionService.getQuestionWithId({
+        id: session.questionId,
+      }),
+    );
+
+    return {
+      attemptTextByLanguageId,
+      dateTimeAttempted: session.updatedAt,
+      question,
+      languageId: session.languageId,
+      sessionId: session.id,
+    };
+  }
+
+  private async getAttemptByLanguagesFromYdoc(
+    sessionId: string,
+    languages: Language[],
+  ) {
+    const attemptTextByLanguageId: { [key: number]: string } = {};
+    const ydoc: Y.Doc = await this.mdb.getYDoc(sessionId);
+
+    languages.forEach((language) => {
+      attemptTextByLanguageId[language.id] = ydoc
+        .getText(language.id.toString())
+        .toString();
+    });
+
+    return attemptTextByLanguageId;
   }
 }

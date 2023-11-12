@@ -47,7 +47,10 @@ export class BaseWebsocketGateway
     const ticketId = BaseWebsocketGateway.getTicketIdFromUrl(request);
 
     if (!ticketId) {
-      return BaseWebsocketGateway.closeConnection(connection);
+      return BaseWebsocketGateway.closeConnection(
+        connection,
+        BaseWebsocketGateway.UNAUTHORIZED_MESSAGE,
+      );
     }
 
     const ticket = await firstValueFrom(
@@ -57,7 +60,10 @@ export class BaseWebsocketGateway
     ).catch((e) => null);
 
     if (!ticket) {
-      return BaseWebsocketGateway.closeConnection(connection);
+      return BaseWebsocketGateway.closeConnection(
+        connection,
+        BaseWebsocketGateway.UNAUTHORIZED_MESSAGE,
+      );
     }
 
     connection.ticket = ticket;
@@ -65,8 +71,8 @@ export class BaseWebsocketGateway
   }
 
   // Close connection and return `false` for authentication failure.
-  private static closeConnection(connection: AuthenticatedWebsocket) {
-    connection.send(BaseWebsocketGateway.UNAUTHORIZED_MESSAGE);
+  static closeConnection(connection: AuthenticatedWebsocket, message: string) {
+    connection.send(message);
     connection.close();
     return false;
   }

@@ -1,8 +1,8 @@
-gateway-microservice:
-  microserviceName: 'gateway'
+http-gateway-microservice:
+  microserviceName: 'http-gateway'
   replicaCount: 1
   image:
-    repository: backend-gateway
+    repository: chownces/backend-http-gateway
     tag: 'latest'
   portProtocol: TCP
   containerPort: 4000
@@ -12,11 +12,25 @@ gateway-microservice:
   limitsMemory: "512Mi"
   limitsCpu: "1"
 
+ws-gateway-microservice:
+  microserviceName: 'ws-gateway'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-ws-gateway
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4200
+  servicePort: 4200
+  requestsMemory: "256Mi"
+  requestsCpu: "500m"
+  limitsMemory: "512Mi"
+  limitsCpu: "1"
+
 question-microservice:
   microserviceName: 'question'
   replicaCount: 1
   image:
-    repository: backend-question
+    repository: chownces/backend-question
     tag: 'latest'
   portProtocol: TCP
   containerPort: 4001
@@ -30,7 +44,7 @@ user-microservice:
   microserviceName: 'user'
   replicaCount: 1
   image:
-    repository: backend-user
+    repository: chownces/backend-user
     tag: 'latest'
   portProtocol: TCP
   containerPort: 4002
@@ -44,7 +58,7 @@ collaboration-microservice:
   microserviceName: 'collaboration'
   replicaCount: 1
   image:
-    repository: backend-collaboration
+    repository: chownces/backend-collaboration
     tag: 'latest'
   portProtocol: TCP
   containerPort: 4003
@@ -54,22 +68,30 @@ collaboration-microservice:
   limitsMemory: "512Mi"
   limitsCpu: "1"
 
-# matching-microservice:
-#   microserviceName: 'matching'
-#   replicaCount: 1
-#   image:
-#     repository: backend-matching
-#     tag: 'latest'
-#   portProtocol: TCP
-#   containerPort: 4004
-#   servicePort: 4004
+matching-microservice:
+  microserviceName: 'matching'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-matching
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4004
+  servicePort: 4004
+  requestsMemory: "256Mi"
+  requestsCpu: "500m"
+  limitsMemory: "512Mi"
+  limitsCpu: "1"
 
-# chatbot-microservice:
-#   microserviceName: 'chatbot'
-#   replicaCount: 1
-#   image:
-#     repository: backend-chatbot
-#     tag: 'latest'
-#   portProtocol: TCP
-#   containerPort: 4006
-#   servicePort: 4006
+chatbot-microservice:
+  microserviceName: 'chatbot'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-chatbot
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4006
+  servicePort: 4006
+  requestsMemory: "256Mi"
+  requestsCpu: "500m"
+  limitsMemory: "512Mi"
+  limitsCpu: "1"

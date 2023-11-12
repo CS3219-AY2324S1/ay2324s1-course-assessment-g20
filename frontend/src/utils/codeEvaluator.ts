@@ -51,7 +51,12 @@ export class CodeEvaluator {
         if (e?.data?.log) {
           this.output.logs += e?.data?.log + '\n';
         } else {
-          this.output.result = JSON.stringify(e.data);
+          const result = JSON.stringify(e.data);
+          if (result === undefined) {
+            this.output.result = 'undefined';
+          } else {
+            this.output.result = result;
+          }
           clearTimeout(timeoutHandler);
           resolve(this.output);
         }

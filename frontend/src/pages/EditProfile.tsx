@@ -18,7 +18,9 @@ import { useNavigate } from 'react-router-dom';
 import { Language } from '../@types/language';
 import { useProfile } from '../hooks/useProfile';
 import { frontendPaths } from '../routes/paths';
-import { formatLanguage } from '../utils/stringUtils';
+import { formatLanguage } from '../utils/languageUtils';
+import { PeerprepBackendError } from '../@types/PeerprepBackendError';
+import { EMPTY_USERNAME_ERROR } from '../utils/errorMessages';
 
 const modalStyle = {
   position: 'absolute' as const,
@@ -49,6 +51,7 @@ export default function EditProfile() {
   const navigate = useNavigate();
   const [languages, setLanguages] = useState<Language[]>([]);
   const [isModalOpen, setisModalOpen] = useState(false);
+  const [usernameValidationErrorText, setUsernameValidationErrorText] = useState('');
 
   useEffect(() => {
     const fetchAndSetLanguages = async () => {
@@ -58,6 +61,14 @@ export default function EditProfile() {
     };
     fetchAndSetLanguages();
   }, []);
+
+  useEffect(() => {
+    if (newUsername.length === 0) {
+      setUsernameValidationErrorText(EMPTY_USERNAME_ERROR);
+      return;
+    }
+    setUsernameValidationErrorText('');
+  }, [newUsername]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(event.target.value);
@@ -69,12 +80,23 @@ export default function EditProfile() {
     setNewPreferredLanguageId(parseInt(event.target.value, 10));
   };
   const handleUpdateProfile = async () => {
-    await updateProfile({
-      name: newName,
-      username: newUsername,
-      preferredLanguageId: newPreferredLanguageId,
-    });
-    navigate(`${frontendPaths.user}/${newUsername}`);
+    if (newUsername.length === 0) {
+      return;
+    }
+    try {
+      await updateProfile({
+        name: newName,
+        username: newUsername,
+        preferredLanguageId: newPreferredLanguageId,
+      });
+      navigate(`${frontendPaths.user}/${newUsername}`);
+    } catch (error) {
+      if (error instanceof PeerprepBackendError) {
+        setUsernameValidationErrorText(error.details.message);
+        return;
+      }
+      throw error;
+    }
   };
   const handleDeleteAccount = async () => {
     await deleteUserProfile();
@@ -114,6 +136,8 @@ export default function EditProfile() {
                 value={newUsername}
                 defaultValue={newUsername}
                 onChange={handleUsernameChange}
+                error={!!usernameValidationErrorText}
+                helperText={usernameValidationErrorText}
               />
             </Box>
             <Box pb={3}>

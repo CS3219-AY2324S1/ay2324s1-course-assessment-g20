@@ -21,6 +21,7 @@ import {
   updateQuestionWithId,
 } from '../api/questionBankApi';
 import { EMPTY_QUESTION, ICategory, IDifficulty, IQuestion } from '../@types/question';
+import { PeerprepBackendError } from '../@types/PeerprepBackendError';
 
 interface FormProps {
   openForm: boolean;
@@ -117,9 +118,8 @@ export default function QuestionForm({
         .then(() => {
           fetchAndSet();
         })
-        .catch((error) => {
-          console.error('Error:', error);
-          enqueueSnackbar(error.response.data.message, { variant: 'error' });
+        .catch((error: PeerprepBackendError) => {
+          enqueueSnackbar(error.details.message, { variant: 'error' });
         });
     }
     closeForm();

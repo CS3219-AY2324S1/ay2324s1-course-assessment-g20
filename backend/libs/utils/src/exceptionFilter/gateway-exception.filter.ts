@@ -1,13 +1,14 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import {
   getErrorTypeAndMessageFromException,
   getStatusFromErrorType,
 } from './utils/peerPrepExceptionUtils';
 
-@Catch()
+@Catch(RpcException)
 export class GatewayExceptionFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: RpcException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();

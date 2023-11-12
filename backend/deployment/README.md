@@ -33,24 +33,23 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     - `kubectl label namespace default istio-injection=enabled --overwrite` (enable [automatic sidecar injection](https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/))
     - To uninstall, run `istioctl uninstall --purge`
 
-<!-- #### Install RabbitMQ
-1. Install RabbitMQ via Helm on the minikube cluster.
-    - Add the RabbitMQ repo to Helm via `helm repo add bitnami https://charts.bitnami.com/bitnami`
-    - `helm repo update`
-    - Install RabbitMQ and create the `rmq` namespace via `helm install rmq bitnami/rabbitmq -n rmq --create-namespace`
-    - Take note of the password to the RabbitMQ instance (e.g. `echo "Password: $(kubectl get secret --namespace rmq rmq-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 -d)"`) We will set this later on in our `.env` file -->
-
-<!-- ### Install Redis for Matching service -->
-<!-- TODO: fill up details for setting up theses services for deployment -->
-
 #### Configuring TLS Certificate (for `prod` directory build)
-1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
-1. Install `cert-manager` to issue Let's Encrypt certificates via `kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.1/cert-manager.yaml`
-1. Ensure that the `cert-manager` namespace has 3 pods that are running via `kubectl get pods -n cert-manager --watch`
+1. Install `cert-manager`.
+    1. Referenced from [here](https://cert-manager.io/docs/installation/helm/)
+    1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
+    1. `helm repo add jetstack https://charts.jetstack.io`
+    1. `helm repo update`
+    1. `kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.crds.yaml`
+    1. `helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.13.2`
+1. Configure a static IP address for the cluster ingress (e.g. on GKE, refer [here](https://cloud.google.com/kubernetes-engine/docs/tutorials/http-balancer#optional_configuring_a_static_ip_address
+)).
+1. Register a domain name that points to the deployed k8s cluster ingress.
+1. Run the k8s manifests in the section below on Deploy microservices.
 
 #### Deploy microservices
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Copy `custom-values.example.yaml` as `custom-values.yaml` and set the corresponding variables.
+    1. For `prod` deployments, set the ingress `hostName` to the domain gotten from the previous section on TLS certificates.
 1. Run `helm dependency update` to install the local `base-xxx` Helm charts.
 1. Run `helm template peerprep-backend . --values ./values.yaml --values ./custom-values.yaml > ./base/backend.yaml` to generate the Helm templated K8s manifest.
     > For the following steps below, replace the `dev` in the filepaths with `prod` for deployment to production. The **teaching team** is to use `prod` if they do not wish to build the Docker images locally - the images will be automatically pulled from DockerHub
@@ -69,7 +68,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 <!-- 1. To access the API gateway from localhost, run `kubectl port-forward deployment/http-gateway 4000:4000`. This is a temporary workaround until the ingress is properly configured. -->
 
 ### Pushing Docker images
-1. Run `docker compose build` to build the latest images.
+1. Run `docker compose build` to build the latest images. (should be building on platform `linux/amd64` for production deployments)
 1. Login to DockerHub via `docker login`.
 1. Push the images to DockerHub via `docker compose push`.
 1. Alternatively, a GitHub Action has been configured to build and push to the remote DockerHub repository on push to `master`.

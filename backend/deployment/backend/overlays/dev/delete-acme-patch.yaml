@@ -1,6 +1,5 @@
 $patch: delete
 apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
+kind: Issuer
 metadata:
-  name: peerprep-clusterissuer
-  namespace: cert-manager
+  name: peerprep-issuer

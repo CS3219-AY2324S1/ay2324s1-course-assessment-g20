@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: ./apps/http-gateway/Dockerfile
       target: dev
+    image: chownces/backend-http-gateway
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
@@ -20,6 +21,7 @@ services:
       context: .
       dockerfile: ./apps/ws-gateway/Dockerfile
       target: dev
+    image: chownces/backend-ws-gateway
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
@@ -35,6 +37,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/question/Dockerfile
+    image: chownces/backend-question
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
@@ -46,6 +49,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/user/Dockerfile
+    image: chownces/backend-user
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
@@ -57,6 +61,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/collaboration/Dockerfile
+    image: chownces/backend-collaboration
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
@@ -68,6 +73,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/matching/Dockerfile
+    image: chownces/backend-matching
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
@@ -81,6 +87,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/chatbot/Dockerfile
+    image: chownces/backend-chatbot
     depends_on:
       sql-migrations:
         condition: service_completed_successfully

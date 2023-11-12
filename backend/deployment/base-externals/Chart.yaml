@@ -1,0 +1,7 @@
+apiVersion: v2
+name: base-externals
+description: Base Helm chart for deployment of external databases in PeerPrep
+
+type: application
+
+version: 0.1.0

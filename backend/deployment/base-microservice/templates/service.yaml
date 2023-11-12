@@ -12,6 +12,7 @@ spec:
   selector:
     app: {{ $microserviceName }}
   ports:
-    - name: {{ $portProtocol }}
+    - name: {{ $microserviceName }}
+      protocol: {{ $portProtocol }}
       port: {{ $servicePort }}
       targetPort: {{ $containerPort }}

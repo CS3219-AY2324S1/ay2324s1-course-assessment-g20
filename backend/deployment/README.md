@@ -10,7 +10,6 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Start minikube (e.g. `minikube start`).
 1. Run `eval $(minikube docker-env)` to set the environment .variables for the Docker daemon to run inside the Minikube cluster.
 1. In the same terminal, build the docker images locally (e.g. `docker compose build`). 
-    > The **teaching team** can skip this step while deploying locally - the images will be pulled automatically when running the steps under the `Deploy microservices` section below
 
 #### Install ingress-nginx
 1. Install ingress-nginx via Helm on the minikube cluster.
@@ -33,7 +32,8 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     - `kubectl label namespace default istio-injection=enabled --overwrite` (enable [automatic sidecar injection](https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/))
     - To uninstall, run `istioctl uninstall --purge`
 
-#### Configuring TLS Certificate (for `prod` directory build)
+#### Configuring TLS Certificate (for `prod` directory build only)
+> The teaching team should ignore this step when running a `dev` build.
 1. Install `cert-manager`.
     1. Referenced from [here](https://cert-manager.io/docs/installation/helm/)
     1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
@@ -52,12 +52,15 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     1. For `prod` deployments, set the ingress `hostName` to the domain gotten from the previous section on TLS certificates.
 1. Run `helm dependency update` to install the local `base-xxx` Helm charts.
 1. Run `helm template peerprep-backend . --values ./values.yaml --values ./custom-values.yaml > ./base/backend.yaml` to generate the Helm templated K8s manifest.
-    > For the following steps below, replace the `dev` in the filepaths with `prod` for deployment to production. The **teaching team** is to use `prod` if they do not wish to build the Docker images locally - the images will be automatically pulled from DockerHub
+    > For the following steps below, replace the `dev` in the **filepaths** with `prod` for deployment to production. The **teaching team** should use `dev` and build their own Docker images as outlined above.
 1. Copy and set the backend `.env` file in the `deployment/backend/overlays/dev` directory.
     - **IMPT NOTE (microservice hosts)**: Set all `{MICROSERVICE}_SERVICE_HOST` to `{microservice}.default.svc.cluster.local` (e.g. `QUESTION_SERVICE_HOST=question.default.svc.cluster.local`) and `{MICROSERVICE}_SERVICE_PORT` to the corresponding port specified in `values.yaml` inside the copied `.env` file.
-    - **IMPT NOTE (database hosts)**: Set all the `{MICROSERVICE}_SERVICE_SQL_DATABASE_HOST` to `peer-prep-external-postgres-service.default.svc`, and all the `{MICROSERVICE}_SERVICE_MONGODB_URL` to `mongodb://peer-prep-external-mongodb-service.default.svc:27017/{database_name}`.
-    - **IMPT NOTE (Google OAuth)**: Set `OAUTH_GOOGLE_REDIRECT_URL=http://localhost/v1/auth/google/redirect`.
-    <!-- - **IMPT NOTE (RMQ)**: Set `RMQ_URL=amqp://user:${PASSWORD}@rmq-rabbitmq.rmq.svc.cluster.local:5672`, where `${PASSWORD}` is to be replaced by the password obtained from the RabbitMQ installation step above. -->
+    - **IMPT NOTE (database hosts)**: Set
+        - All the `{MICROSERVICE}_SERVICE_SQL_DATABASE_HOST` to `peer-prep-external-postgres-service.default.svc`
+        - All the `{MICROSERVICE}_SERVICE_MONGODB_URL` to `mongodb://peer-prep-external-mongodb-service.default.svc:27017/{database_name}`
+        - `REDIS_HOST` to `peer-prep-external-redis-service.default.svc`.
+        > For `prod` builds, these steps can be ignored if you are able to specify the private VPC IP to the above services in the `.env` file itself.
+    - **IMPT NOTE (Google OAuth)**: Set `OAUTH_GOOGLE_REDIRECT_URL=http://localhost/v1/auth/google/redirect` (modify URL for `prod` accordingly).
 1. Run `kustomize build overlays/dev` to check that kustomize has been configured correctly, and can successfully override the values from the K8s manifest generated above by Helm.
     - The updated K8s manifest will be printed to the terminal if successful.
 1. Run `kustomize build overlays/dev | kubectl apply -f -` to apply the kustomized K8s manifest file in the minikube cluster and deploy our microservices
@@ -67,7 +70,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Access the nginx server via `http://localhost`
 <!-- 1. To access the API gateway from localhost, run `kubectl port-forward deployment/http-gateway 4000:4000`. This is a temporary workaround until the ingress is properly configured. -->
 
-### Pushing Docker images
+### Pushing Docker images (for production release)
 1. Run `docker compose build` to build the latest images. (should be building on platform `linux/amd64` for production deployments)
 1. Login to DockerHub via `docker login`.
 1. Push the images to DockerHub via `docker compose push`.

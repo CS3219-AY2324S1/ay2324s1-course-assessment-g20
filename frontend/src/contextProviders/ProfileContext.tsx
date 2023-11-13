@@ -67,7 +67,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   };
 
   const isOnboarded = useMemo(
-    () => (isProfileFetched ? username.length > 0 : true),
+    () => (isProfileFetched ? (!!username && username.length > 0) : true),
     [username, isProfileFetched],
   );
 

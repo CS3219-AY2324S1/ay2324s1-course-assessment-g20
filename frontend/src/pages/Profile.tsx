@@ -5,15 +5,19 @@ import { UserProfile } from '../@types/userProfile';
 import ProfileBox from '../components/ProfileBox';
 import { getUserProfileByUsername } from '../api/userApi';
 import HistoryBox from '../components/HistoryBox';
+import { CircularProgress } from '@mui/material';
 
 export default function Profile() {
   const { username } = useParams();
   const { username: ownUsername, preferredLanguage, name } = useProfile();
-  const [isOwnProfile, setIsOwnProfile] = useState(true);
+  const [isOwnProfile, setIsOwnProfile] = useState(username === ownUsername);
   const [profile, setProfile] = useState<UserProfile>();
 
   useEffect(() => {
     setIsOwnProfile(username === ownUsername);
+  }, [username, ownUsername]);
+
+  useEffect(() => {
     if (!isOwnProfile) {
       const fetchAndSetProfile = async () => {
         try {
@@ -25,7 +29,11 @@ export default function Profile() {
       };
       fetchAndSetProfile();
     }
-  }, [isOwnProfile, ownUsername, username]);
+  }, [isOwnProfile, username]);
+
+  if (!isOwnProfile && !profile) {
+    return <CircularProgress />;
+  }
 
   return (
     <>

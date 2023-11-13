@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { getUserProfile, updateUserProfile, deleteUserProfile } from '../api/userApi';
 import { UpdateUserProfile } from '../@types/userProfile';
 import { IProfileContext } from '../@types/userProfile';
@@ -12,8 +12,10 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   const [preferredLanguage, setPreferredLanguage] = useState<string>('');
   const [roleId, setRoleId] = useState<number>(2);
   const [isMaintainer, setIsMaintainer] = useState<boolean>(false);
+  const [isProfileFetched, setIsProfileFetched] = useState<boolean>(false);
 
-  useEffect(() => {
+  // Prioritise fetching profile before all other API calls in child components
+  useLayoutEffect(() => {
     fetchAndSetProfile();
   }, []);
 
@@ -26,6 +28,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
         setPreferredLanguage(data.preferredLanguage?.name ?? 'JavaScript');
         setRoleId(data.role?.id ?? 2);
         setIsMaintainer(data.role?.name === 'MAINTAINER');
+        setIsProfileFetched(true);
       })
       .catch((error) => {
         console.error(error);
@@ -63,7 +66,10 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     }
   };
 
-  const isOnboarded = useMemo(() => username.length > 0, [username]);
+  const isOnboarded = useMemo(
+    () => (isProfileFetched ? username.length > 0 : true),
+    [username, isProfileFetched],
+  );
 
   const value = {
     name,

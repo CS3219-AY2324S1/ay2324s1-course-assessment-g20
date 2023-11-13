@@ -1,4 +1,9 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   getErrorTypeAndMessageFromException,
@@ -7,14 +12,13 @@ import {
 
 @Catch()
 export class GatewayExceptionFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
-
-    const [errorType, message] = getErrorTypeAndMessageFromException(exception);
-    const status: number = getStatusFromErrorType(errorType);
-
+  private static generateErrorResponse(
+    status: number,
+    errorType: string,
+    message: string,
+    request: Request,
+    response: Response,
+  ): void {
     response.status(status).json({
       statusCode: status,
       error: errorType,
@@ -23,5 +27,37 @@ export class GatewayExceptionFilter implements ExceptionFilter {
       path: request.url,
       method: request.method,
     });
+  }
+
+  catch(exception: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+
+    // handles HttpException
+    if (exception instanceof HttpException) {
+      const status = exception.getStatus();
+
+      GatewayExceptionFilter.generateErrorResponse(
+        status,
+        exception.name,
+        exception.message,
+        request,
+        response,
+      );
+      return;
+    }
+
+    // handles RpcException and other exceptions
+    const [errorType, message] = getErrorTypeAndMessageFromException(exception);
+    const status: number = getStatusFromErrorType(errorType);
+
+    GatewayExceptionFilter.generateErrorResponse(
+      status,
+      errorType,
+      message,
+      request,
+      response,
+    );
   }
 }

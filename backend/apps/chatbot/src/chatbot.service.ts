@@ -24,7 +24,6 @@ import { ChatCompletion } from 'openai/resources';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils';
 
-
 @Injectable()
 export class ChatbotService {
   private static greetingMessage: ChatMessage = {

@@ -27,6 +27,8 @@ spec:
           resources:
             requests:
               cpu: {{ $requestsCpu }}
+            limits:
+              cpu: {{ $limitsCpu }}
           imagePullPolicy: Never
           ports:
             - containerPort: {{ $containerPort }}

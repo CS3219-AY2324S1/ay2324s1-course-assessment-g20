@@ -57,7 +57,7 @@ export class BaseWebsocketGateway
       this.userAuthService.consumeWebsocketTicket({
         id: ticketId,
       }),
-    ).catch((e) => null);
+    ).catch(() => null);
 
     if (!ticket) {
       return BaseWebsocketGateway.closeConnection(
@@ -77,7 +77,7 @@ export class BaseWebsocketGateway
     return false;
   }
 
-  handleDisconnect(connection: AuthenticatedWebsocket): void {
+  handleDisconnect(_connection: AuthenticatedWebsocket): void {
     // No implementation
   }
 }

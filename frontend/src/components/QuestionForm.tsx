@@ -64,7 +64,7 @@ export default function QuestionForm({
       .catch((error) => {
         console.error('Error:', error);
       });
-  });
+  }, []);
 
   // Usestates and useeffect to handle the current question creation/update status
   const [currTitle, setCurrTitle] = useState('');

@@ -101,7 +101,7 @@ const CodeEditor = () => {
         provider.current.destroy();
       }
     };
-  }, [editor, throwAsyncError]);
+  }, [editor, sessionId, throwAsyncError]);
 
   const onGetSessionLanguageWebsocketHandler =
     (bindEditor: (languageId: number) => void) => (event: MessageEvent) => {

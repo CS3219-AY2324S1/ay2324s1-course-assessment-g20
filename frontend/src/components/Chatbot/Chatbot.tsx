@@ -47,11 +47,12 @@ export default function Chatbot({
       .then((resp) => {
         const { messages } = resp.data;
         setMessages(messages);
-        setLoading(false);
-        setInput('');
       })
       .catch((err) => {
         enqueueSnackbar(err?.message, { variant: 'error' });
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 

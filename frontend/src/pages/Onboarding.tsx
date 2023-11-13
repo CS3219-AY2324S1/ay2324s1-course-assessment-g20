@@ -64,6 +64,7 @@ export default function Onboarding() {
 
   const handleSubmit = async () => {
     if (newUsername.length === 0) {
+      setUsernameValidationErrorText(EMPTY_USERNAME_ERROR);
       return;
     }
     try {
@@ -99,7 +100,7 @@ export default function Onboarding() {
             label="e.g. redsalmon42"
             value={newUsername}
             onChange={handleUsernameChange}
-            error={!!usernameValidationErrorText && isUsernameEdited}
+            error={!!usernameValidationErrorText}
             helperText={usernameValidationErrorText}
           />
           <Typography>Select your preferred language</Typography>

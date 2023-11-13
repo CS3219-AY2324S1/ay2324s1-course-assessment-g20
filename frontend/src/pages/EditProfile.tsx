@@ -81,6 +81,7 @@ export default function EditProfile() {
   };
   const handleUpdateProfile = async () => {
     if (newUsername.length === 0) {
+      setUsernameValidationErrorText(EMPTY_USERNAME_ERROR);
       return;
     }
     try {

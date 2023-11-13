@@ -21,13 +21,12 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useProfile } from '../hooks/useProfile';
 import { frontendPaths } from '../routes/paths';
-import logoUrl from '../assets/logo.png';
 
 export default function MainMenuBar() {
   const authContext = useAuth();
   const navigate = useNavigate();
   const { palette } = useTheme();
-  const { username } = useProfile();
+  const { username, isOnboarded } = useProfile();
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -60,7 +59,13 @@ export default function MainMenuBar() {
         alignItems="center"
         sx={{ backgroundColor: '#2F4858' }}
       >
-        <img src={logoUrl} alt="logo" width="35px" height="35px" style={{ marginRight: '10px' }} />
+        <img
+          src="/assets/logo.png"
+          alt="logo"
+          width="35px"
+          height="35px"
+          style={{ marginRight: '10px' }}
+        />
         <Typography variant="h6" color="white" sx={{ py: 2, backgroundColor: 'secondary' }}>
           PeerPrep
         </Typography>
@@ -89,7 +94,9 @@ export default function MainMenuBar() {
             }}
           >
             <Box
-              onClick={() => navigate('/')}
+              onClick={() =>
+                navigate(isOnboarded ? frontendPaths.dashboard : frontendPaths.onboarding)
+              }
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -99,7 +106,7 @@ export default function MainMenuBar() {
               }}
             >
               <img
-                src="/src/assets/logo.png"
+                src="/assets/logo.png"
                 alt="logo"
                 width="35px"
                 height="35px"

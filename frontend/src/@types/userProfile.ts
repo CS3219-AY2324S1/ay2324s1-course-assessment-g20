@@ -24,6 +24,7 @@ export interface IProfileContext {
   roleId: number;
   isMaintainer: boolean;
   isOnboarded: boolean;
+  isLoading: boolean;
   updateProfile: (newProfile: UpdateUserProfile) => Promise<UserProfile>;
   deleteProfile: () => Promise<void>;
 }

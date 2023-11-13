@@ -1,7 +1,7 @@
 - op: add
   path: '/spec/template/spec/containers/0/env'
   value:
-    - name: NODE_ENVIRONMENT
+    - name: NODE_ENV
       value: 'production'
 
 - op: replace

@@ -9,7 +9,9 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 #### Setup minikube and build Docker containers
 1. Start minikube (e.g. `minikube start`).
 1. Run `eval $(minikube docker-env)` to set the environment .variables for the Docker daemon to run inside the Minikube cluster.
-1. In the same terminal, build the docker images locally (e.g. `docker compose build`). 
+    - If `eval $(minikube docker-env)` is not compatible with your terminal (i.e. for Windows):
+    - Then run `& minikube -p minikube docker-env --shell powershell | Invoke-Expression`
+1. In the same terminal, build the docker images locally (e.g. `docker compose build`). Ensure that you are in the `/backend` directory of the repository or its subdirectories when doing so.
 
 #### Install ingress-nginx
 1. Install ingress-nginx via Helm on the minikube cluster.
@@ -46,6 +48,10 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Register a domain name that points to the deployed k8s cluster ingress.
 1. Run the k8s manifests in the section below on Deploy microservices.
 
+#### Configuring Horizontal Pod Autoscaling
+1. If you are on a minikube cluster (e.g. local development) and want to try out autoscaling, install the metrics server via `minikube addons enable metrics-server`.
+1. Note that this deployment will only attempt to scale by CPU and not memory. This can be tweaked in the future beyond the project since we do not have specific business requirements specified in the given project document right now.
+
 #### Deploy microservices
 1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Copy `custom-values.example.yaml` as `custom-values.yaml` and set the corresponding variables.
@@ -59,7 +65,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
         - All the `{MICROSERVICE}_SERVICE_SQL_DATABASE_HOST` to `peer-prep-external-postgres-service.default.svc`
         - All the `{MICROSERVICE}_SERVICE_MONGODB_URL` to `mongodb://peer-prep-external-mongodb-service.default.svc:27017/{database_name}`
         - `REDIS_HOST` to `peer-prep-external-redis-service.default.svc`.
-        > For `prod` builds, these steps can be ignored if you are able to specify the private VPC IP to the above services in the `.env` file itself.
+        > For `prod` builds, this step above can be ignored if you are able to specify the private VPC IP to the above services in the `.env` file itself.
     - **IMPT NOTE (Google OAuth)**: Set `OAUTH_GOOGLE_REDIRECT_URL=http://localhost/v1/auth/google/redirect` (modify URL for `prod` accordingly).
 1. Run `kustomize build overlays/dev` to check that kustomize has been configured correctly, and can successfully override the values from the K8s manifest generated above by Helm.
     - The updated K8s manifest will be printed to the terminal if successful.
@@ -69,6 +75,17 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Run `minikube tunnel` to connect to the nginx LoadBalancer service
 1. Access the nginx server via `http://localhost`
 <!-- 1. To access the API gateway from localhost, run `kubectl port-forward deployment/http-gateway 4000:4000`. This is a temporary workaround until the ingress is properly configured. -->
+
+### Testing out Horizontal Pod Autoscaling
+Let's test that the Horizontal Pod Autoscaling (HPA) works as configured (we will generate load to the `http-gateway` deployment in the following example to demonstrate HPA):
+1. Ensure that the `dev` (NOT `prod`) deployment has been setup and runs correctly as per the previous steps (e.g. `kubectl get all`).
+1. Run a pod to generate load to the `http-gateway` deployment via `kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://http-gateway:4000/v1/loadtesting; done"`
+    - NOTE that this endpoint only exists in a non-production environment
+1. Wait 2-3 minutes for the CPU usage to spike. Monitor the HPA via `kubectl get hpa hpa-http-gateway-microservice --watch` in a separate terminal (check the TARGETS column for the usage and target threshold)
+    - Once the usage spikes beyond the threshold of 50%, check the number of pods in the `http-gateway` deployment (e.g. `kubectl get all`)
+    - The number of pods should increase to 2 or 3 as configured in `values.yaml`
+1. Ctrl-C to terminate the load-generator pod from the previous step and run `kubectl delete pod/load-generator` to delete it.
+1. After a few minutes, verify that the number of pods has been scaled back down to 1 as configured under `minReplicas` of the custom base-microservice Helm chart.
 
 ### Pushing Docker images (for production release)
 1. Run `docker compose build` to build the latest images. (should be building on platform `linux/amd64` for production deployments)

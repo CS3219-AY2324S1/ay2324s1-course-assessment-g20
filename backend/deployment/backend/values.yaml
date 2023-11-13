@@ -7,6 +7,9 @@ http-gateway-microservice:
   portProtocol: TCP
   containerPort: 4000
   servicePort: 4000
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 ws-gateway-microservice:
   microserviceName: 'ws-gateway'
@@ -17,6 +20,9 @@ ws-gateway-microservice:
   portProtocol: TCP
   containerPort: 4200
   servicePort: 4200
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 1
 
 question-microservice:
   microserviceName: 'question'
@@ -27,6 +33,9 @@ question-microservice:
   portProtocol: TCP
   containerPort: 4001
   servicePort: 4001
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 user-microservice:
   microserviceName: 'user'
@@ -37,6 +46,9 @@ user-microservice:
   portProtocol: TCP
   containerPort: 4002
   servicePort: 4002
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 collaboration-microservice:
   microserviceName: 'collaboration'
@@ -47,6 +59,9 @@ collaboration-microservice:
   portProtocol: TCP
   containerPort: 4003
   servicePort: 4003
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 matching-microservice:
   microserviceName: 'matching'
@@ -57,6 +72,9 @@ matching-microservice:
   portProtocol: TCP
   containerPort: 4004
   servicePort: 4004
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 chatbot-microservice:
   microserviceName: 'chatbot'
@@ -67,3 +85,6 @@ chatbot-microservice:
   portProtocol: TCP
   containerPort: 4006
   servicePort: 4006
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3

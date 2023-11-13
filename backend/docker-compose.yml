@@ -1,72 +1,99 @@
-version: "3"
+version: '3'
 services:
-  gateway:
+  http-gateway:
     build: 
       context: .
-      dockerfile: ./apps/gateway/Dockerfile
+      dockerfile: ./apps/http-gateway/Dockerfile
+      target: dev
+    image: chownces/backend-http-gateway
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
     ports:
-      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+      - ${HTTP_GATEWAY_PORT}:${HTTP_GATEWAY_PORT}
     networks:
       - backend
     env_file:
-      .env
-    environment:
-      - QUESTION_SERVICE_HOST=question
-      - USER_SERVICE_HOST=user
-      - COLLABORATION_SERVICE_HOST=collaboration
+      .env.docker
+
+  ws-gateway:
+    build: 
+      context: .
+      dockerfile: ./apps/ws-gateway/Dockerfile
+      target: dev
+    image: chownces/backend-ws-gateway
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    ports:
+      - ${WS_GATEWAY_PORT}:${WS_GATEWAY_PORT}
+    networks:
+      - backend
+    env_file: .env.docker
 
   question:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/question/Dockerfile
+    image: chownces/backend-question
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
     networks:
       - backend
-    env_file:
-      .env
-    environment:
-      - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question
+    env_file: .env.docker
 
   user:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/user/Dockerfile
+    image: chownces/backend-user
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
     networks:
       - backend
-    env_file:
-      .env
-    environment:
-      - USER_SERVICE_SQL_DATABASE_HOST=postgres
-      - USER_SERVICE_SQL_DATABASE_PORT=5432
-      - USER_SERVICE_SQL_DATABASE_USER=postgres
-      - USER_SERVICE_SQL_DATABASE_PASSWORD=postgres
+    env_file: .env.docker
 
   collaboration:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/collaboration/Dockerfile
+    image: chownces/backend-collaboration
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
     networks:
       - backend
-    env_file:
-      .env
-    environment:
-      - QUESTION_SERVICE_HOST=question
-      - USER_SERVICE_HOST=user
-      - COLLABORATION_SERVICE_SQL_DATABASE_HOST=postgres
-      - COLLABORATION_SERVICE_SQL_DATABASE_PORT=5432
-      - COLLABORATION_SERVICE_SQL_DATABASE_USER=postgres
-      - COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD=postgres
+    env_file: .env.docker
+
+  matching:
+    build:
+      context: .
+      dockerfile: ./apps/matching/Dockerfile
+    image: chownces/backend-matching
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+    env_file: .env.docker
+
+  chatbot:
+    build:
+      context: .
+      dockerfile: ./apps/chatbot/Dockerfile
+    image: chownces/backend-chatbot
+    depends_on:
+      sql-migrations:
+        condition: service_completed_successfully
+    networks:
+      - backend
+    env_file: .env.docker
 
   postgres:
     image: postgres:14.1-alpine
@@ -79,11 +106,11 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ['CMD-SHELL', 'pg_isready']
       interval: 10s
       timeout: 5s
       retries: 5
-  
+
   mongo:
     image: mongo
     restart: always
@@ -100,7 +127,7 @@ services:
       start_period: 20s
 
   sql-migrations:
-    build: 
+    build:
       context: .
       dockerfile: ./scripts/Dockerfile
     depends_on:
@@ -108,35 +135,37 @@ services:
         condition: service_healthy
       mongo:
         condition: service_healthy
-    env_file:
-      .env
-    networks:
-      - backend
+    env_file: .env.docker
     environment:
-      - USER_SERVICE_SQL_DATABASE_HOST=postgres
-      - USER_SERVICE_SQL_DATABASE_PORT=5432
-      - USER_SERVICE_SQL_DATABASE_USER=postgres
-      - USER_SERVICE_SQL_DATABASE_PASSWORD=postgres
-
-      - COLLABORATION_SERVICE_SQL_DATABASE_HOST=postgres
-      - COLLABORATION_SERVICE_SQL_DATABASE_PORT=5432
-      - COLLABORATION_SERVICE_SQL_DATABASE_USER=postgres
-      - COLLABORATION_SERVICE_SQL_DATABASE_PASSWORD=postgres
-
       - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question?authMechanism=DEFAULT
       - COLLABORATION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-collaboration?authMechanism=DEFAULT
-
-  rabbitmq:
-    image: rabbitmq:management
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
     networks:
       - backend
+
+  # rabbitmq:
+  #   image: rabbitmq:management
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=guest
+  #     - RABBITMQ_DEFAULT_PASS=guest
+  #   networks:
+  #     - backend
+  #   healthcheck:
+  #     test: [ "CMD", "rabbitmqctl", "status"]
+  #     interval: 5s
+  #     timeout: 20s
+  #     retries: 5
+
+  redis:
+    image: redis:7.2-alpine
+    restart: always
+    networks:
+      - backend
+    env_file: .env.docker
+    command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
     healthcheck:
-      test: [ "CMD", "rabbitmqctl", "status"]
-      interval: 5s
-      timeout: 20s
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 10s
+      timeout: 5s
       retries: 5
 
 networks:

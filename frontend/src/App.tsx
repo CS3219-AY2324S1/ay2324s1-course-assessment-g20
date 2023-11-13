@@ -1,11 +1,20 @@
 import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './contextProviders/AuthContext';
+import ThemeProvider from './theme';
 import router from './routes';
+import { ProfileProvider } from './contextProviders/ProfileContext';
+import { SnackbarProvider } from 'notistack';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <ThemeProvider>
+      <SnackbarProvider maxSnack={3}>
+        <ProfileProvider>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </ProfileProvider>
+      </SnackbarProvider>
+    </ThemeProvider>
   );
 }

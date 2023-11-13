@@ -2,7 +2,7 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { wrappers } from 'protobufjs';
 import { Observable } from 'rxjs';
-import { Deleted, ID, IDs } from './common';
+import { Deleted, ID, IDs, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
 import { BoolValue } from './google/protobuf/wrappers';
 
@@ -22,6 +22,7 @@ export interface UserProfile {
   roleId: number;
   preferredLanguage?: Language | undefined;
   role?: Role | undefined;
+  username?: string | undefined;
 }
 
 export interface RefreshTokenRequest {
@@ -36,11 +37,16 @@ export interface WebsocketTicket {
   id: string;
   expiry: Date | undefined;
   isUsed: boolean;
+  userId: string;
 }
 
 export interface JwtTokens {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface Username {
+  username: string;
 }
 
 export interface Language {
@@ -158,6 +164,8 @@ export const USER_AUTH_SERVICE_NAME = 'UserAuthService';
 
 export interface UserLanguageServiceClient {
   getAllLanguages(request: Empty): Observable<GetAllLanguagesResponse>;
+
+  getLanguageById(request: NumericID): Observable<Language>;
 }
 
 export interface UserLanguageServiceController {
@@ -167,11 +175,15 @@ export interface UserLanguageServiceController {
     | Promise<GetAllLanguagesResponse>
     | Observable<GetAllLanguagesResponse>
     | GetAllLanguagesResponse;
+
+  getLanguageById(
+    request: NumericID,
+  ): Promise<Language> | Observable<Language> | Language;
 }
 
 export function UserLanguageServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['getAllLanguages'];
+    const grpcMethods: string[] = ['getAllLanguages', 'getLanguageById'];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,
@@ -201,14 +213,20 @@ export function UserLanguageServiceControllerMethods() {
 export const USER_LANGUAGE_SERVICE_NAME = 'UserLanguageService';
 
 export interface UserProfileServiceClient {
-  getUserProfile(request: ID): Observable<UserProfile>;
+  getUserProfileById(request: ID): Observable<UserProfile>;
+
+  getUserProfileByUsername(request: Username): Observable<UserProfile>;
 
   updateUserProfile(request: UserProfile): Observable<UserProfile>;
 }
 
 export interface UserProfileServiceController {
-  getUserProfile(
+  getUserProfileById(
     request: ID,
+  ): Promise<UserProfile> | Observable<UserProfile> | UserProfile;
+
+  getUserProfileByUsername(
+    request: Username,
   ): Promise<UserProfile> | Observable<UserProfile> | UserProfile;
 
   updateUserProfile(
@@ -218,7 +236,11 @@ export interface UserProfileServiceController {
 
 export function UserProfileServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['getUserProfile', 'updateUserProfile'];
+    const grpcMethods: string[] = [
+      'getUserProfileById',
+      'getUserProfileByUsername',
+      'updateUserProfile',
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

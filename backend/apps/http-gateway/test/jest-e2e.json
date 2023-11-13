@@ -1,0 +1,21 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@app/config(|/.*)$": "<rootDir>/../../../libs/config/src/$1",
+    "^@app/sql-database(|/.*)$": "<rootDir>/../../../libs/sql-database/src/$1",
+    "^@app/types(|/.*)$": "<rootDir>/../../../libs/types/src/$1",
+    "^@app/microservice(|/.*)$": "<rootDir>/../../../libs/microservice/src/$1",
+    "^@app/mocks(|/.*)$": "<rootDir>/../../../libs/mocks/src/$1",
+    "^@app/websocket(|/.*)$": "<rootDir>/../../../libs/websocket/src/$1",
+    "^@app/utils(|/.*)$": "<rootDir>/../../../libs/utils/src/$1"
+  },
+  "setupFiles": [
+    "dotenv/config"
+  ]
+}

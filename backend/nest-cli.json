@@ -1,24 +1,41 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/gateway/src",
+  "sourceRoot": "apps/http-gateway/src",
   "monorepo": true,
-  "root": "apps/gateway",
+  "root": "apps/http-gateway",
   "compilerOptions": {
     "webpack": true,
-    "tsConfigPath": "apps/gateway/tsconfig.app.json",
-    "assets": ["**/*.proto"],
+    "tsConfigPath": "apps/http-gateway/tsconfig.app.json",
+    "assets": [
+      "**/*.proto"
+    ],
     "watchAssets": true
   },
   "projects": {
-    "gateway": {
+    "http-gateway": {
       "type": "application",
-      "root": "apps/gateway",
+      "root": "apps/http-gateway",
       "entryFile": "main",
-      "sourceRoot": "apps/gateway/src",
+      "sourceRoot": "apps/http-gateway/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/gateway/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "tsConfigPath": "apps/http-gateway/tsconfig.app.json",
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
+        "watchAssets": true
+      }
+    },
+    "ws-gateway": {
+      "type": "application",
+      "root": "apps/ws-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/ws-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ws-gateway/tsconfig.app.json",
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
         "watchAssets": true
       }
     },
@@ -29,7 +46,22 @@
       "sourceRoot": "apps/question/src",
       "compilerOptions": {
         "tsConfigPath": "apps/question/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
+        "watchAssets": true
+      }
+    },
+    "chatbot": {
+      "type": "application",
+      "root": "apps/chatbot",
+      "entryFile": "main",
+      "sourceRoot": "apps/chatbot/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/chatbot/tsconfig.app.json",
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
         "watchAssets": true
       }
     },
@@ -40,7 +72,35 @@
       "sourceRoot": "apps/user/src",
       "compilerOptions": {
         "tsConfigPath": "apps/user/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
+        "watchAssets": true
+      }
+    },
+    "matching": {
+      "type": "application",
+      "root": "apps/matching",
+      "entryFile": "main",
+      "sourceRoot": "apps/matching/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/matching/tsconfig.app.json",
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
+        "watchAssets": true
+      }
+    },
+    "collaboration": {
+      "type": "application",
+      "root": "apps/collaboration",
+      "entryFile": "main",
+      "sourceRoot": "apps/collaboration/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/collaboration/tsconfig.app.json",
+        "assets": [
+          "../../../libs/microservice/src/interservice-proto/**/*"
+        ],
         "watchAssets": true
       }
     },
@@ -80,17 +140,6 @@
         "tsConfigPath": "libs/microservice/tsconfig.lib.json"
       }
     },
-    "collaboration": {
-      "type": "application",
-      "root": "apps/collaboration",
-      "entryFile": "main",
-      "sourceRoot": "apps/collaboration/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/collaboration/tsconfig.app.json",
-        "assets": ["../../../libs/microservice/src/interservice-proto/**/*"],
-        "watchAssets": true
-      }
-    },
     "websocket": {
       "type": "library",
       "root": "libs/websocket",
@@ -98,6 +147,24 @@
       "sourceRoot": "libs/websocket/src",
       "compilerOptions": {
         "tsConfigPath": "libs/websocket/tsconfig.lib.json"
+      }
+    },
+    "utils": {
+      "type": "library",
+      "root": "libs/utils",
+      "entryFile": "index",
+      "sourceRoot": "libs/utils/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/utils/tsconfig.lib.json"
+      }
+    },
+    "mocks": {
+      "type": "library",
+      "root": "libs/mocks",
+      "entryFile": "index",
+      "sourceRoot": "libs/mocks/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mocks/tsconfig.lib.json"
       }
     }
   }

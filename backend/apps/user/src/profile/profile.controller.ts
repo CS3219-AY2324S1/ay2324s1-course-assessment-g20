@@ -4,6 +4,7 @@ import {
   UserProfile,
   UserProfileServiceController,
   UserProfileServiceControllerMethods,
+  Username,
 } from '@app/microservice/interfaces/user';
 import { ID } from '@app/microservice/interfaces/common';
 
@@ -12,8 +13,12 @@ import { ID } from '@app/microservice/interfaces/common';
 export class ProfileController implements UserProfileServiceController {
   constructor(private readonly profileService: ProfileService) {}
 
-  getUserProfile({ id }: ID) {
-    return this.profileService.getUserProfile(id);
+  getUserProfileById({ id }: ID) {
+    return this.profileService.getUserProfileById(id);
+  }
+
+  getUserProfileByUsername({ username }: Username) {
+    return this.profileService.getUserProfileByUsername(username);
   }
 
   updateUserProfile(data: UserProfile) {

@@ -8,4 +8,8 @@ export class LanguageService {
   async getAllLanguages() {
     return await this.languageDaoService.getAll();
   }
+
+  async getLanguageById(id: number) {
+    return await this.languageDaoService.findById(id);
+  }
 }

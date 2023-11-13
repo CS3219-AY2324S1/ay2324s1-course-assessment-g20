@@ -7,6 +7,7 @@ export class UserProfileModel extends BaseModel {
   static tableName = 'userProfiles';
 
   readonly userId: string;
+  readonly username: string;
   readonly name: string;
   readonly preferredLanguageId: number;
   readonly roleId: number;

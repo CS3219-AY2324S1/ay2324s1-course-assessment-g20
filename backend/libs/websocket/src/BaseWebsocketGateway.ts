@@ -6,6 +6,7 @@ import { OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { firstValueFrom } from 'rxjs';
+import { AuthenticatedWebsocket } from './types';
 
 /**
  * BaseWebsocketGateway class which handles authentication via a custom ticketing
@@ -40,36 +41,43 @@ export class BaseWebsocketGateway
    * and returns false.
    */
   async handleConnection(
-    connection: WebSocket,
+    connection: AuthenticatedWebsocket,
     request: Request,
   ): Promise<boolean> {
     const ticketId = BaseWebsocketGateway.getTicketIdFromUrl(request);
 
     if (!ticketId) {
-      return BaseWebsocketGateway.closeConnection(connection);
+      return BaseWebsocketGateway.closeConnection(
+        connection,
+        BaseWebsocketGateway.UNAUTHORIZED_MESSAGE,
+      );
     }
 
     const ticket = await firstValueFrom(
       this.userAuthService.consumeWebsocketTicket({
         id: ticketId,
       }),
-    );
+    ).catch((e) => null);
 
     if (!ticket) {
-      return BaseWebsocketGateway.closeConnection(connection);
+      return BaseWebsocketGateway.closeConnection(
+        connection,
+        BaseWebsocketGateway.UNAUTHORIZED_MESSAGE,
+      );
     }
 
+    connection.ticket = ticket;
     return true;
   }
 
   // Close connection and return `false` for authentication failure.
-  private static closeConnection(connection: WebSocket) {
-    connection.send(BaseWebsocketGateway.UNAUTHORIZED_MESSAGE);
+  static closeConnection(connection: AuthenticatedWebsocket, message: string) {
+    connection.send(message);
     connection.close();
     return false;
   }
 
-  handleDisconnect(): void {
+  handleDisconnect(connection: AuthenticatedWebsocket): void {
     // No implementation
   }
 }

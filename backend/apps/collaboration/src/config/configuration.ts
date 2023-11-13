@@ -10,8 +10,8 @@ const collaborationConfiguration = () => {
 
   return {
     port: parseInt(process.env.COLLABORATION_SERVICE_PORT, 10),
+    mongoUri: process.env.COLLABORATION_SERVICE_MONGODB_URL,
     databaseConfigurationOptions,
-    rmqUrl: process.env.RMQ_URL,
   };
 };
 

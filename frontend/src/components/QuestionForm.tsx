@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -9,36 +10,39 @@ import {
   MenuItem,
   Select,
   TextField,
+  useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { getCategories, getDifficulties } from '../api/questionBankApi';
-import { ICategory, IDifficulty } from '../@types/question';
+import { useSnackbar } from 'notistack';
+import {
+  addQuestion,
+  getCategories,
+  getDifficulties,
+  updateQuestionWithId,
+} from '../api/questionBankApi';
+import { EMPTY_QUESTION, ICategory, IDifficulty, IQuestion } from '../@types/question';
+import { PeerprepBackendError } from '../@types/PeerprepBackendError';
 
 interface FormProps {
-  formType: string;
-  category: string[];
-  inputTitle: (event: any) => void;
-  inputCategory: (event: any) => void;
-  inputComplexity: (event: any) => void;
-  inputDescription: (event: any) => void;
   openForm: boolean;
   closeForm: () => void;
-  submitForm: () => void;
-  isValidated: boolean;
+  fetchAndSet: () => void;
+  updateQuestion: IQuestion;
 }
 
 export default function QuestionForm({
-  formType,
-  category,
-  inputTitle,
-  inputCategory,
-  inputComplexity,
-  inputDescription,
   openForm,
   closeForm,
-  submitForm,
-  isValidated,
+  fetchAndSet,
+  updateQuestion,
 }: FormProps) {
+  const { palette } = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const addQnsHeader = 'Add a new question';
+  const updateQnsHeader = 'Update this question';
+
+  // Usestates and useeffect to handle the list of categories and difficulties available
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [difficulties, setDifficulties] = useState<IDifficulty[]>([]);
 
@@ -62,12 +66,83 @@ export default function QuestionForm({
       });
   }, []);
 
+  // Usestates and useeffect to handle the current question creation/update status
+  const [currTitle, setCurrTitle] = useState('');
+  const handleTitleInputChange = (event: any) => {
+    setCurrTitle(event.target.value);
+  };
+
+  const [currDifficulty, setCurrDifficulty] = useState('');
+  const handleDiffInputChange = (event: any) => {
+    setCurrDifficulty(event.target.value);
+  };
+
+  const [currDescription, setCurrDescription] = useState('');
+  const handleDescInputChange = (event: any) => {
+    setCurrDescription(event.target.value);
+  };
+
+  const [currCategory, setCurrCategory] = useState<string[]>([]);
+  const handleCatInputChange = (event: any) => {
+    setCurrCategory(event.target.value);
+  };
+
+  useEffect(() => {
+    if (updateQuestion != EMPTY_QUESTION) {
+      setCurrTitle(updateQuestion.title);
+      setCurrCategory(updateQuestion.categories);
+      setCurrDifficulty(updateQuestion.difficulty);
+      setCurrDescription(updateQuestion.description);
+    }
+  }, [updateQuestion]);
+
+  // Functions to handle form submission
+  const handleFormSubmission = () => {
+    const questionInput: IQuestion = {
+      title: currTitle,
+      categories: currCategory,
+      difficulty: currDifficulty,
+      description: currDescription,
+    };
+    if (updateQuestion != EMPTY_QUESTION) {
+      questionInput._id = updateQuestion._id;
+      updateQuestionWithId(questionInput)
+        .then(() => {
+          fetchAndSet();
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    } else {
+      addQuestion(questionInput)
+        .then(() => {
+          fetchAndSet();
+        })
+        .catch((error: PeerprepBackendError) => {
+          enqueueSnackbar(error.details.message, { variant: 'error' });
+        });
+    }
+    closeForm();
+  };
+
+  const isInvalidForm = () => {
+    return (
+      !(currTitle.trim().length > 0) ||
+      !currCategory ||
+      !currDifficulty ||
+      !(currDescription.trim().length > 0)
+    );
+  };
+  const isFormDisabled = isInvalidForm();
+
   return (
-    <Dialog open={openForm} onClose={closeForm}>
-      <DialogTitle>{formType}</DialogTitle>
+    <Dialog open={openForm} onClose={closeForm} fullWidth>
+      <DialogTitle sx={{ backgroundColor: palette.primary.main, color: 'white' }}>
+        {updateQuestion != EMPTY_QUESTION ? updateQnsHeader : addQnsHeader}
+      </DialogTitle>
       <DialogContent dividers>
         <DialogContentText>
-          Fill in the question's title, category, complexity and description
+          Fill in the question's title, category, complexity and description.
         </DialogContentText>
         <br />
         <InputLabel id="title-label">Question Title</InputLabel>
@@ -79,23 +154,26 @@ export default function QuestionForm({
           fullWidth
           variant="outlined"
           multiline
-          onChange={inputTitle}
+          value={currTitle}
+          onChange={handleTitleInputChange}
         ></TextField>
         <InputLabel id="category-label">Question Category</InputLabel>
         <Select
-          sx={{ marginBottom: '4px', marginTop: '8px' }}
+          sx={{ marginBottom: '4px', marginTop: '8px', maxWidth: '100%' }}
           required
           margin="dense"
           id="category"
           fullWidth
           variant="outlined"
           multiple
-          value={category}
-          onChange={inputCategory}
+          value={currCategory}
+          onChange={handleCatInputChange}
+          renderValue={(selected) => selected.join(', ')}
         >
-          {categories.map((category) => (
-            <MenuItem key={category._id} value={category.name}>
-              {category.name}
+          {categories.map((availableCategories) => (
+            <MenuItem key={availableCategories._id} value={availableCategories.name}>
+              <Checkbox checked={currCategory.indexOf(availableCategories.name) > -1} />
+              {availableCategories.name}
             </MenuItem>
           ))}
         </Select>
@@ -107,7 +185,8 @@ export default function QuestionForm({
           fullWidth
           variant="outlined"
           select
-          onChange={inputComplexity}
+          value={currDifficulty}
+          onChange={handleDiffInputChange}
         >
           {difficulties.map((difficulty) => (
             <MenuItem key={difficulty._id} value={difficulty.name}>
@@ -124,12 +203,13 @@ export default function QuestionForm({
           fullWidth
           variant="outlined"
           multiline
-          onChange={inputDescription}
+          value={currDescription}
+          onChange={handleDescInputChange}
         ></TextField>
       </DialogContent>
       <DialogActions>
         <Button onClick={closeForm}>Cancel</Button>
-        <Button type="submit" onClick={submitForm} disabled={isValidated}>
+        <Button type="submit" onClick={handleFormSubmission} disabled={isFormDisabled}>
           Done
         </Button>
       </DialogActions>

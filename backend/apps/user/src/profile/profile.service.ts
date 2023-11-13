@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserProfileDaoService } from '../database/daos/userProfiles/userProfile.dao.service';
 import { UserProfileModel } from '../database/models/userProfile.model';
 import { LanguageDaoService } from '../database/daos/languages/language.dao.service';
@@ -9,18 +9,35 @@ import {
   UserProfile,
   Role as RoleObj,
 } from '@app/microservice/interfaces/user';
-import { PeerprepException } from 'libs/exception-filter/peerprep.exception';
-import { PEERPREP_EXCEPTION_TYPES } from 'libs/exception-filter/constants';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
+import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
+import { Service } from '@app/microservice/services';
+import { ClientGrpc } from '@nestjs/microservices';
+import {
+  COLLABORATION_SERVICE_NAME,
+  CollaborationServiceClient,
+} from '@app/microservice/interfaces/collaboration';
 
 @Injectable()
 export class ProfileService {
+  private collaborationService: CollaborationServiceClient;
+
   constructor(
     private readonly userProfileDaoService: UserProfileDaoService,
     private readonly languageDaoService: LanguageDaoService,
     private readonly roleDaoService: RoleDaoService,
+    @Inject(Service.COLLABORATION_SERVICE)
+    private readonly collaborationServiceClient: ClientGrpc,
   ) {}
 
-  getUserProfile(userId: string): Promise<UserProfile | undefined> {
+  onModuleInit() {
+    this.collaborationService =
+      this.collaborationServiceClient.getService<CollaborationServiceClient>(
+        COLLABORATION_SERVICE_NAME,
+      );
+  }
+
+  getUserProfileById(userId: string): Promise<UserProfile | undefined> {
     return this.userProfileDaoService
       .findByUserId({
         userId,
@@ -32,6 +49,23 @@ export class ProfileService {
         preferredLanguageId: profile.preferredLanguageId,
         role: profile.role as unknown as RoleObj,
         roleId: profile.roleId,
+        username: profile.username,
+      }));
+  }
+
+  getUserProfileByUsername(username: string): Promise<UserProfile | undefined> {
+    return this.userProfileDaoService
+      .findByUsername({
+        username,
+        withGraphFetched: true,
+      })
+      .then((profile) => ({
+        name: profile.name,
+        preferredLanguage: profile.preferredLanguage as unknown as Language,
+        preferredLanguageId: profile.preferredLanguageId,
+        role: profile.role as unknown as RoleObj,
+        roleId: profile.roleId,
+        username: profile.username,
       }));
   }
 
@@ -62,7 +96,7 @@ export class ProfileService {
     delete userProfile.userId;
 
     await this.validateForeignKeys(userProfile);
-    const currentProfile = await this.getUserProfile(userId);
+    const currentProfile = await this.getUserProfileById(userId);
     if (
       currentProfile.roleId === Role.REGULAR &&
       userProfile.roleId === Role.MAINTAINER

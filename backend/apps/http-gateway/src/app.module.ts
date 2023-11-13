@@ -5,7 +5,7 @@ import { RolesModule } from './roles/roles.module';
 import { ChatbotController } from './controllers/chatbot.controller';
 import { Module } from '@nestjs/common';
 import httpGatewayConfiguration from './config/configuration';
-import { AppController } from './controllers/app.controller';
+import { QuestionController } from './controllers/question.controller';
 import { AuthController } from './controllers/auth.controller';
 import { CollaborationController } from './controllers/collaboration.controller';
 import { LanguagesController } from './controllers/languages.controller';
@@ -26,7 +26,7 @@ import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strate
     ]),
   ],
   controllers: [
-    AppController,
+    QuestionController,
     AuthController,
     UserController,
     LanguagesController,

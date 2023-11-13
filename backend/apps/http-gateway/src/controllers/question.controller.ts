@@ -23,7 +23,7 @@ import {
 import { map } from 'rxjs';
 
 @Controller('question')
-export class AppController implements OnModuleInit {
+export class QuestionController implements OnModuleInit {
   private questionService: QuestionServiceClient;
 
   constructor(

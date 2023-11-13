@@ -219,7 +219,7 @@ export class ChatbotService {
       });
     } catch (e) {
       throw new PeerprepException(
-        e.error.message,
+        'The chatbot service is currently unavailable.',
         PEERPREP_EXCEPTION_TYPES.SERVICE_UNAVAILABLE,
       );
     }

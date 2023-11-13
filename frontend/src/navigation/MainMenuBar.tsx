@@ -26,7 +26,7 @@ export default function MainMenuBar() {
   const authContext = useAuth();
   const navigate = useNavigate();
   const { palette } = useTheme();
-  const { username } = useProfile();
+  const { username, isOnboarded } = useProfile();
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -94,7 +94,9 @@ export default function MainMenuBar() {
             }}
           >
             <Box
-              onClick={() => navigate('/')}
+              onClick={() =>
+                navigate(isOnboarded ? frontendPaths.dashboard : frontendPaths.onboarding)
+              }
               sx={{
                 display: 'flex',
                 alignItems: 'center',

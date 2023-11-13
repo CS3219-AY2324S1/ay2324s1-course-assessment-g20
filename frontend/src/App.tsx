@@ -9,11 +9,11 @@ export default function App() {
   return (
     <ThemeProvider>
       <SnackbarProvider maxSnack={3}>
-        <ProfileProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <ProfileProvider>
             <RouterProvider router={router} />
-          </AuthProvider>
-        </ProfileProvider>
+          </ProfileProvider>
+        </AuthProvider>
       </SnackbarProvider>
     </ThemeProvider>
   );

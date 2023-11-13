@@ -33,7 +33,7 @@ export default function Chatbot({
       const { messages } = resp.data;
       setMessages(messages);
     });
-  }, []);
+  }, [sessionId]);
 
   const handleSend = () => {
     setMessages([...messages, { role: 'user', content: input }]);

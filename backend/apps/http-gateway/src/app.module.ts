@@ -12,6 +12,7 @@ import { LanguagesController } from './controllers/languages.controller';
 import { UserController } from './controllers/user.controller';
 import { JwtModule } from './jwt/jwt.module';
 import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
+import { AppController } from './controllers/app.controller';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strate
     ]),
   ],
   controllers: [
+    AppController,
     QuestionController,
     AuthController,
     UserController,

@@ -7,10 +7,9 @@ http-gateway-microservice:
   portProtocol: TCP
   containerPort: 4000
   servicePort: 4000
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 ws-gateway-microservice:
   microserviceName: 'ws-gateway'
@@ -21,10 +20,9 @@ ws-gateway-microservice:
   portProtocol: TCP
   containerPort: 4200
   servicePort: 4200
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 1
 
 question-microservice:
   microserviceName: 'question'
@@ -35,10 +33,9 @@ question-microservice:
   portProtocol: TCP
   containerPort: 4001
   servicePort: 4001
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 user-microservice:
   microserviceName: 'user'
@@ -49,10 +46,9 @@ user-microservice:
   portProtocol: TCP
   containerPort: 4002
   servicePort: 4002
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 collaboration-microservice:
   microserviceName: 'collaboration'
@@ -63,10 +59,9 @@ collaboration-microservice:
   portProtocol: TCP
   containerPort: 4003
   servicePort: 4003
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 matching-microservice:
   microserviceName: 'matching'
@@ -77,10 +72,9 @@ matching-microservice:
   portProtocol: TCP
   containerPort: 4004
   servicePort: 4004
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
 
 chatbot-microservice:
   microserviceName: 'chatbot'
@@ -91,7 +85,6 @@ chatbot-microservice:
   portProtocol: TCP
   containerPort: 4006
   servicePort: 4006
-  requestsMemory: "256Mi"
-  requestsCpu: "500m"
-  limitsMemory: "512Mi"
-  limitsCpu: "1"
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3

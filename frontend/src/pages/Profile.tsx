@@ -25,7 +25,7 @@ export default function Profile() {
       };
       fetchAndSetProfile();
     }
-  }, [isOwnProfile, username]);
+  }, [isOwnProfile, ownUsername, username]);
 
   return (
     <>

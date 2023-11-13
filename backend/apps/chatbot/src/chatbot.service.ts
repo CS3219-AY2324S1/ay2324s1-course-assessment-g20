@@ -20,6 +20,9 @@ import {
   CollaborationServiceClient,
   COLLABORATION_SERVICE_NAME,
 } from '@app/microservice/interfaces/collaboration';
+import { ChatCompletion } from 'openai/resources';
+import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
+import { PeerprepException } from '@app/utils';
 
 @Injectable()
 export class ChatbotService {
@@ -202,15 +205,24 @@ export class ChatbotService {
   private async getOpenAIResponse(
     messages: ChatMessage[],
   ): Promise<ChatMessage> {
-    const response = await this.openai.chat.completions.create({
-      model: 'gpt-3.5-turbo-16k',
-      messages:
-        messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
-      temperature: 1,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
-    });
+    let response: ChatCompletion;
+
+    try {
+      response = await this.openai.chat.completions.create({
+        model: 'gpt-3.5-turbo-16k',
+        messages:
+          messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+        temperature: 1,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+      });
+    } catch (e) {
+      throw new PeerprepException(
+        'The chatbot service is currently unavailable.',
+        PEERPREP_EXCEPTION_TYPES.SERVICE_UNAVAILABLE,
+      );
+    }
 
     return response.choices[0].message;
   }

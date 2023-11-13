@@ -4,6 +4,7 @@ import { IChatbotMessage } from '../../@types/chatbot';
 import { getChatbotMessageHistory, queryChatbot } from '../../api/chatbotApi';
 import Message from './Message';
 import SendIcon from '@mui/icons-material/Send';
+import { useSnackbar } from 'notistack';
 
 export interface IChatbotProps {
   sessionId: string;
@@ -28,6 +29,8 @@ export default function Chatbot({
   const [messages, setMessages] = useState<IChatbotMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const { enqueueSnackbar } = useSnackbar();
+
   useEffect(() => {
     getChatbotMessageHistory(sessionId).then((resp) => {
       const { messages } = resp.data;
@@ -40,12 +43,16 @@ export default function Chatbot({
     setLoading(true);
     setInput('');
 
-    queryChatbot(sessionId, language, input, userSolution).then((resp) => {
-      const { messages } = resp.data;
-      setMessages(messages);
-      setLoading(false);
-      setInput('');
-    });
+    queryChatbot(sessionId, language, input, userSolution)
+      .then((resp) => {
+        const { messages } = resp.data;
+        setMessages(messages);
+        setLoading(false);
+        setInput('');
+      })
+      .catch((err) => {
+        enqueueSnackbar(err?.message, { variant: 'error' });
+      });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

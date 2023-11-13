@@ -1,4 +1,9 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   getErrorTypeAndMessageFromException,
@@ -7,8 +12,13 @@ import {
 
 @Catch()
 export class GatewayExceptionFilter implements ExceptionFilter {
-
-  private static generateErrorResponse(status: number, errorType: string, message: string, request: Request, response: Response): void {
+  private static generateErrorResponse(
+    status: number,
+    errorType: string,
+    message: string,
+    request: Request,
+    response: Response,
+  ): void {
     response.status(status).json({
       statusCode: status,
       error: errorType,
@@ -28,7 +38,13 @@ export class GatewayExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
 
-      GatewayExceptionFilter.generateErrorResponse(status, exception.name, exception.message, request, response);
+      GatewayExceptionFilter.generateErrorResponse(
+        status,
+        exception.name,
+        exception.message,
+        request,
+        response,
+      );
       return;
     }
 
@@ -36,6 +52,12 @@ export class GatewayExceptionFilter implements ExceptionFilter {
     const [errorType, message] = getErrorTypeAndMessageFromException(exception);
     const status: number = getStatusFromErrorType(errorType);
 
-    GatewayExceptionFilter.generateErrorResponse(status, errorType, message, request, response);
+    GatewayExceptionFilter.generateErrorResponse(
+      status,
+      errorType,
+      message,
+      request,
+      response,
+    );
   }
 }

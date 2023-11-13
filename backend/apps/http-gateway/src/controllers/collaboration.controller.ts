@@ -52,11 +52,4 @@ export class CollaborationController implements OnModuleInit {
       userId: req.user.id,
     });
   }
-
-  @Get('session/:sessionId/isClosed')
-  getSessionIsClosed(@Param('sessionId') sessionId) {
-    return this.collaborationService.getSessionIsClosedFromSessionId({
-      id: sessionId,
-    });
-  }
 }

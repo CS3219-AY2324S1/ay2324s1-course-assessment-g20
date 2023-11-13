@@ -322,6 +322,7 @@ export class CollaborationService implements OnModuleInit {
       question,
       languageId: session.languageId,
       sessionId: session.id,
+      isClosed: session.isClosed,
     };
   }
 
@@ -339,21 +340,5 @@ export class CollaborationService implements OnModuleInit {
     });
 
     return attemptTextByLanguageId;
-  }
-
-  async getSessionIsClosedFromSessionId(sessionId: string) {
-    const session = await this.sessionDaoService.findById({
-      sessionId,
-      withGraphFetched: false,
-    });
-
-    if (!session) {
-      throw new PeerprepException(
-        'Invalid session!',
-        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
-      );
-    }
-
-    return { isClosed: session.isClosed };
   }
 }

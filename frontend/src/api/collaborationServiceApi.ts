@@ -23,10 +23,3 @@ export function getSessionTicket(sessionId: string) {
     method: HttpRequestMethod.GET,
   });
 }
-
-export function getSessionIsClosed(sessionId: string) {
-  return requestBackend<{ isClosed: boolean }>({
-    url: backendServicesPaths.collaboration.getSessionIsClosed(sessionId),
-    method: HttpRequestMethod.GET,
-  });
-}

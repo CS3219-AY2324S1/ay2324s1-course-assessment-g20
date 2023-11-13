@@ -6,6 +6,7 @@ export interface IAttempt {
   question: IQuestion;
   languageId: number;
   sessionId: string;
+  isClosed: boolean;
 }
 
 export interface IHistoryTableRow {

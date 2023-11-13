@@ -70,8 +70,4 @@ export class CollaborationController implements CollaborationServiceController {
   getSessionAttempt(getSessionAttemptInfo: GetSessionOrTicketRequest) {
     return this.collaborationService.getSessionAttempt(getSessionAttemptInfo);
   }
-
-  getSessionIsClosedFromSessionId({ id }: ID) {
-    return this.collaborationService.getSessionIsClosedFromSessionId(id);
-  }
 }

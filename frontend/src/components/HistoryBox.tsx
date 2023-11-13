@@ -19,9 +19,13 @@ import { getAllLanguages, getUserAttempts } from '../api/userApi';
 import { DEFAULT_LANGUAGE, formatLanguage } from '../utils/languageUtils';
 import { useNavigate } from 'react-router-dom';
 import { frontendPaths } from '../routes/paths';
-import { getSessionIsClosed } from '../api/collaborationServiceApi';
 
 function HistoryBox({ username }: { username: string }) {
+  const SESSION_STATUS = {
+    ONGOING: 'Ongoing',
+    ENDED: 'Ended',
+  };
+
   const navigate = useNavigate();
   const { palette } = useTheme();
 
@@ -64,21 +68,14 @@ function HistoryBox({ username }: { username: string }) {
   const handlePopupOnClose = () => setPopupVisibility(false);
 
   // Logic for continue attempt button
-  const handleContinueAttempt = (sessionId: string) => {
-    return () => {
-      handlePopupOnClose();
+  const handleContinueAttempt = () => {
+    handlePopupOnClose();
 
-      // Fetch isClosed session from API
-      getSessionIsClosed(sessionId)
-        .then((response) => response.data.isClosed)
-        .then((isClosedSession) =>
-          navigate(
-            `${isClosedSession ? frontendPaths.codeEditor : frontendPaths.session}/${
-              rows[rowIndex].attempt.sessionId
-            }`,
-          ),
-        );
-    };
+    navigate(
+      `${rows[rowIndex].attempt.isClosed ? frontendPaths.codeEditor : frontendPaths.session}/${
+        rows[rowIndex].attempt.sessionId
+      }`,
+    );
   };
 
   return (
@@ -100,6 +97,7 @@ function HistoryBox({ username }: { username: string }) {
               <StyledTableCell align="left">Difficulty</StyledTableCell>
               <StyledTableCell align="left">Date Attempted</StyledTableCell>
               <StyledTableCell align="left">Language</StyledTableCell>
+              <StyledTableCell align="left">Session Status</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -123,8 +121,8 @@ function HistoryBox({ username }: { username: string }) {
                       openPopup={rowIndex == index && popupVisibility}
                       closePopup={handlePopupOnClose}
                       showButton={true}
-                      buttonText={'Continue Attempt'}
-                      buttonOnClick={handleContinueAttempt(row.attempt.sessionId)}
+                      buttonText={row.attempt.isClosed ? 'Review Attempt' : 'Rejoin Session'}
+                      buttonOnClick={handleContinueAttempt}
                     ></Popup>
                   </StyledTableCell>
                   <StyledTableCell align="left">
@@ -145,6 +143,14 @@ function HistoryBox({ username }: { username: string }) {
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="left">{formatLanguage(row.language)}</StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Typography
+                      variant="subtitle2"
+                      color={row.attempt.isClosed ? palette.error.main : palette.success.main}
+                    >
+                      {row.attempt.isClosed ? SESSION_STATUS.ENDED : SESSION_STATUS.ONGOING}
+                    </Typography>
+                  </StyledTableCell>
                 </StyledTableRow>
               );
             })}

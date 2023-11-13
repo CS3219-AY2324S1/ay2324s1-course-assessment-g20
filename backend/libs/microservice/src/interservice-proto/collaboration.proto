@@ -18,7 +18,6 @@ service CollaborationService {
   rpc SetSessionLanguageId (SetSessionLanguageIdRequest) returns (google.protobuf.Empty) {}
   rpc GetAttemptsFromUserId (common.ID) returns (GetAttemptsFromUserIdResponse);
   rpc GetSessionAttempt (GetSessionOrTicketRequest) returns (Attempt);
-  rpc GetSessionIsClosedFromSessionId (common.ID) returns (GetSessionIsClosedFromSessionIdResponse);
   rpc CloseSession (common.ID) returns (google.protobuf.Empty);
 }
 
@@ -60,16 +59,13 @@ message GetAttemptsFromUserIdResponse {
   repeated Attempt attempts = 1;
 }
 
-message GetSessionIsClosedFromSessionIdResponse {
-  bool isClosed = 1;
-}
-
 message Attempt {
   map<int32, string> attemptTextByLanguageId = 1;
   google.protobuf.Timestamp dateTimeAttempted = 2;
   QuestionPackage.Question question = 3;
   int32 languageId = 4;
   string sessionId = 5;
+  bool isClosed = 6;
 }
 
 message Session {

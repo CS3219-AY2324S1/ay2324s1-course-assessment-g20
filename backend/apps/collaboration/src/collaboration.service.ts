@@ -322,6 +322,7 @@ export class CollaborationService implements OnModuleInit {
       question,
       languageId: session.languageId,
       sessionId: session.id,
+      isClosed: session.isClosed,
     };
   }
 

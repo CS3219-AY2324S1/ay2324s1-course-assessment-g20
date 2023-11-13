@@ -21,6 +21,11 @@ import { useNavigate } from 'react-router-dom';
 import { frontendPaths } from '../routes/paths';
 
 function HistoryBox({ username }: { username: string }) {
+  const SESSION_STATUS = {
+    ONGOING: 'Ongoing',
+    ENDED: 'Ended',
+  };
+
   const navigate = useNavigate();
   const { palette } = useTheme();
 
@@ -65,7 +70,12 @@ function HistoryBox({ username }: { username: string }) {
   // Logic for continue attempt button
   const handleContinueAttempt = () => {
     handlePopupOnClose();
-    navigate(`${frontendPaths.codeEditor}/${rows[rowIndex].attempt.sessionId}`);
+
+    navigate(
+      `${rows[rowIndex].attempt.isClosed ? frontendPaths.codeEditor : frontendPaths.session}/${
+        rows[rowIndex].attempt.sessionId
+      }`,
+    );
   };
 
   return (
@@ -87,6 +97,7 @@ function HistoryBox({ username }: { username: string }) {
               <StyledTableCell align="left">Difficulty</StyledTableCell>
               <StyledTableCell align="left">Date Attempted</StyledTableCell>
               <StyledTableCell align="left">Language</StyledTableCell>
+              <StyledTableCell align="left">Session Status</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -110,7 +121,7 @@ function HistoryBox({ username }: { username: string }) {
                       openPopup={rowIndex == index && popupVisibility}
                       closePopup={handlePopupOnClose}
                       showButton={true}
-                      buttonText={'Continue Attempt'}
+                      buttonText={row.attempt.isClosed ? 'Review Attempt' : 'Rejoin Session'}
                       buttonOnClick={handleContinueAttempt}
                     ></Popup>
                   </StyledTableCell>
@@ -132,6 +143,14 @@ function HistoryBox({ username }: { username: string }) {
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="left">{formatLanguage(row.language)}</StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Typography
+                      variant="subtitle2"
+                      color={row.attempt.isClosed ? palette.error.main : palette.success.main}
+                    >
+                      {row.attempt.isClosed ? SESSION_STATUS.ENDED : SESSION_STATUS.ONGOING}
+                    </Typography>
+                  </StyledTableCell>
                 </StyledTableRow>
               );
             })}

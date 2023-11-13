@@ -51,6 +51,7 @@ export interface Attempt {
   question: Question | undefined;
   languageId: number;
   sessionId: string;
+  isClosed: boolean;
 }
 
 export interface Attempt_AttemptTextByLanguageIdEntry {

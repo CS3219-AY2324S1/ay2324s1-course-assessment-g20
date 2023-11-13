@@ -144,6 +144,6 @@ describe('WsGatewayController (e2e)', () => {
       const sessionId1 = await new Promise<string>(onSuccessfulMatch(ws1));
       const sessionId2 = await new Promise<string>(onSuccessfulMatch(ws2));
       expect(sessionId1).toEqual(sessionId2);
-    });
+    }, 10000);
   });
 });

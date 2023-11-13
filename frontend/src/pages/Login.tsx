@@ -1,6 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useAuth } from '../hooks/useAuth';
+import logoUrl from '../assets/logo.png';
 
 export default function Login() {
   const auth = useAuth();
@@ -14,7 +15,7 @@ export default function Login() {
           alignItems: 'center',
         }}
       >
-        <img src="/src/assets/logo.png" alt="logo" width="200px" height="200px" />
+        <img src={logoUrl} alt="logo" width="200px" height="200px" />
         <Typography variant="h2" gutterBottom>
           PeerPrep
         </Typography>

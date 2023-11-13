@@ -7,15 +7,13 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 1. Ensure PostgreSQL, MongoDB and Redis are installed on your local machine. Start these services.
 
 #### Setup minikube and build Docker containers
-1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Start minikube (e.g. `minikube start`).
 1. Run `eval $(minikube docker-env)` to set the environment .variables for the Docker daemon to run inside the Minikube cluster.
     - If `eval $(minikube docker-env)` is not compatible with your terminal (i.e. for Windows):
     - Then run `& minikube -p minikube docker-env --shell powershell | Invoke-Expression`
-1. In the same terminal, build the docker images locally (e.g. `docker compose build`).
+1. In the same terminal, build the docker images locally (e.g. `docker compose build`). Ensure that you are in the `/backend` directory of the repository or its subdirectories when doing so.
 
 #### Install ingress-nginx
-1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. Install ingress-nginx via Helm on the minikube cluster.
     <!-- Installing directly from Helm to install ingress-nginx into a separate namespace 'nginx'. We cannot specify custom namespaces under 'dependencies' of our custom Helm chart -->
     - Add the ingress-nginx repo to Helm via `helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx`
@@ -23,7 +21,6 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     - Install ingress-nginx and create the `nginx` namespace via `helm install nginx-ingress ingress-nginx/ingress-nginx --namespace nginx --create-namespace`
 
 #### Install Istio
-1. Navigate into the `deployment/backend` directory (e.g. `cd deployment/backend`).
 1. (Helm) Install Istio via Helm on the minikube cluster.
     - Add the Istio repo to Helm via `helm repo add istio https://istio-release.storage.googleapis.com/charts`
     - `helm repo update`

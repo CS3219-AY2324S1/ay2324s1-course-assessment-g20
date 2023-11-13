@@ -1,5 +1,4 @@
-import { Knex } from "knex";
-
+import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.alterTable('userProfiles', function (table) {
@@ -8,6 +7,7 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema.table('userProfiles', t => t.string('username').notNullable().alter());
+  return knex.schema.table('userProfiles', (t) =>
+    t.string('username').notNullable().alter(),
+  );
 }
-

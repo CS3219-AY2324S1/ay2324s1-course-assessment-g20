@@ -1,5 +1,8 @@
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 function TextContent({ content }: { content: string }) {
-  return <div dangerouslySetInnerHTML={{ __html: content }} />;
+  return <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>;
 }
 
 export default TextContent;

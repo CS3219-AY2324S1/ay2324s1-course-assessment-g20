@@ -15,7 +15,8 @@ export const getLcQuestionListQuery = (skip: number, limit: number) =>
       titleSlug
       topicTags {
         name
-      }
+      },
+      paidOnly: isPaidOnly
     }
   }
 }`,

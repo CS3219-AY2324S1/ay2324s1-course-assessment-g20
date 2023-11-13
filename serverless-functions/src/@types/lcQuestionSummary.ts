@@ -5,4 +5,5 @@ export type LcQuestionSummary = {
   titleSlug: string;
   difficulty: string;
   topicTags: LcQuestionTopicTag[];
+  paidOnly: boolean;
 };

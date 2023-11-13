@@ -1,6 +1,6 @@
 import { SelectChangeEvent } from '@mui/material';
 import { Language } from '../@types/language';
-import EditorScreen from '../components/EditorScreen';
+import EditorScreen from '../components/Editor/EditorScreen';
 import { useThrowAsyncError } from '../hooks/useThrowAsyncError';
 import { useEffect, useState } from 'react';
 import { getAllLanguages } from '../api/userApi';

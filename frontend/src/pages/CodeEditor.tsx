@@ -18,7 +18,7 @@ import { getAllLanguages } from '../api/userApi';
 import { HttpStatusCode } from 'axios';
 import { PeerprepBackendError } from '../@types/PeerprepBackendError';
 
-import EditorScreen from '../components/EditorScreen';
+import EditorScreen from '../components/Editor/EditorScreen';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.

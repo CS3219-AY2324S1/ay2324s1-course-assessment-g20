@@ -110,7 +110,7 @@ export default function QuestionForm({
   // Functions to handle form submission
   const handleFormSubmission = async () => {
     const questionInput: IQuestion = {
-      title: currTitle,
+      title: currTitle.trim(),
       categories: currCategory,
       difficulty: currDifficulty,
       description: currDescription,

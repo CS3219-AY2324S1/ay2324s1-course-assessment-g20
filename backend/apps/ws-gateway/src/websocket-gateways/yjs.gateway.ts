@@ -19,8 +19,9 @@ import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 import { Language } from '@app/microservice/interfaces/user';
+import { YjsWebsocketTrackingService } from '../services/yjsWebsocketTrackingService';
 
-type YjsWebsocket = AuthenticatedWebsocket & {
+export type YjsWebsocket = AuthenticatedWebsocket & {
   redisPubClient: Redis;
   redisSubClient: Redis;
   sessionId: string;
@@ -40,6 +41,7 @@ export class YjsGateway extends BaseWebsocketGateway {
     @Inject(Service.COLLABORATION_SERVICE)
     private readonly collaborationServiceClient: ClientGrpc,
     private readonly configService: ConfigService,
+    private readonly yjsWebsocketTrackingService: YjsWebsocketTrackingService,
   ) {
     super(userServiceClient);
     this.mongoUri = configService.getOrThrow('mongoUri');
@@ -69,8 +71,8 @@ export class YjsGateway extends BaseWebsocketGateway {
     if (session.isClosed) {
       return YjsGateway.closeConnection(connection, YjsGateway.SESSION_CLOSED);
     }
-
     connection.sessionId = sessionId;
+    this.yjsWebsocketTrackingService.addConnection(connection);
     YjsGateway.initializeRedisPubSubClients(
       connection,
       this.configService.get('websocketGatewayOptions')?.options,

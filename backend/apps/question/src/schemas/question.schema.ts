@@ -25,6 +25,9 @@ export class Question {
   })
   difficulty: Difficulty;
 
+  @Prop({ default: false })
+  isDeleted: boolean;
+
   @Prop({
     required: true,
     type: [mongoose.Schema.Types.ObjectId],

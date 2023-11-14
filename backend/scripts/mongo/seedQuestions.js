@@ -65,10 +65,6 @@ async function connectToDatabase() {
 
     const questionCollection = database.collection('questions');
 
-    // await questionCollection
-    //   .deleteMany({})
-    //   .then(() => console.log('Deleted all questions'));
-
     await Promise.all(
       questionsJson.map((question) =>
         questionCollection.updateOne(
@@ -79,12 +75,29 @@ async function connectToDatabase() {
               description: filesById[question.id],
               difficulty: difficultyIdsByName[question.difficulty],
               categories: question.categories.map((c) => categoryIdsByName[c]),
+              isDeleted: false,
             },
           },
           { upsert: true },
         ),
       ),
-    ).then(() => console.log('Upserted all question categories'));
+    )
+      .then(
+        async () =>
+          await Promise.all(
+            questionsJson.map((question) =>
+              questionCollection.updateOne(
+                { title: question.title },
+                {
+                  $set: {
+                    isDeleted: false,
+                  },
+                },
+              ),
+            ),
+          ),
+      )
+      .then(() => console.log('Upserted all question categories'));
 
     // Close connection
     await client.close().then(() => console.log('Closed connection'));

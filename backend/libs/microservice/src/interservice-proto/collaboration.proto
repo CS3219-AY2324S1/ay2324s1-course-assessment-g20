@@ -37,11 +37,12 @@ message GetSessionOrTicketRequest {
 
 message SetSessionLanguageIdRequest {
   string sessionId = 1;
-   int32 languageId = 2;
+  int32 languageId = 2;
 }
 
 message GetSessionResponse {
   QuestionPackage.Question question = 1;
+  string otherUserUsername = 2;
 }
 
 message GetSessionTicketResponse {

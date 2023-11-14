@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsNotEmpty, IsAlphanumeric } from 'class-validator';
 
 export default class PatchUserProfileDto {
   @IsOptional()
@@ -16,5 +16,6 @@ export default class PatchUserProfileDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  @IsAlphanumeric()
   username: string;
 }

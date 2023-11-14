@@ -108,31 +108,33 @@ export default function QuestionForm({
   }, [currTitle, currCategory, currDifficulty, currDescription]);
 
   // Functions to handle form submission
-  const handleFormSubmission = () => {
+  const handleFormSubmission = async () => {
     const questionInput: IQuestion = {
       title: currTitle,
       categories: currCategory,
       difficulty: currDifficulty,
       description: currDescription,
     };
-    if (updateQuestion != EMPTY_QUESTION) {
-      questionInput._id = updateQuestion._id;
-      updateQuestionWithId(questionInput)
-        .then(() => {
+
+    try {
+      if (updateQuestion != EMPTY_QUESTION) {
+        questionInput._id = updateQuestion._id;
+        await updateQuestionWithId(questionInput).then(() => {
           fetchAndSet();
-        })
-        .catch((error) => {
-          console.error('Error:', error);
         });
-    } else {
-      addQuestion(questionInput)
-        .then(() => {
+      } else {
+        await addQuestion(questionInput).then(() => {
           fetchAndSet();
-        })
-        .catch((error: PeerprepBackendError) => {
-          enqueueSnackbar(error.details.message, { variant: 'error' });
         });
+      }
+    } catch (error) {
+      if (error instanceof PeerprepBackendError) {
+        enqueueSnackbar(error.details.message, { variant: 'error' });
+      } else {
+        console.error('Error:', error);
+      }
     }
+
     closeForm();
   };
 

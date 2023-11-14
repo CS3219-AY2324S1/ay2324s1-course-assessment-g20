@@ -99,6 +99,11 @@ const EditorScreen = ({
             width={'100%'}
             defaultValue={code}
             onChange={handleCodeChange}
+            options={{
+              padding: {
+                top: 15,
+              },
+            }}
             language={selectedLanguage?.name.toLowerCase() ?? ''}
             onMount={handleEditorDidMount ?? (() => {})}
           />

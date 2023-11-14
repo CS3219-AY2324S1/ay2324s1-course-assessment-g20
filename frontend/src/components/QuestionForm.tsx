@@ -46,6 +46,8 @@ export default function QuestionForm({
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [difficulties, setDifficulties] = useState<IDifficulty[]>([]);
 
+  const [isFormDisabled, setIsFormDisabled] = useState(true);
+
   useEffect(() => {
     // Fetch categories from API
     getCategories()
@@ -96,6 +98,15 @@ export default function QuestionForm({
     }
   }, [updateQuestion]);
 
+  useEffect(() => {
+    setIsFormDisabled(
+      !(currTitle.trim().length > 0) ||
+        !(currCategory.length > 0) ||
+        !(currDifficulty.trim().length > 0) ||
+        !(currDescription.trim().length > 0),
+    );
+  }, [currTitle, currCategory, currDifficulty, currDescription]);
+
   // Functions to handle form submission
   const handleFormSubmission = () => {
     const questionInput: IQuestion = {
@@ -124,16 +135,6 @@ export default function QuestionForm({
     }
     closeForm();
   };
-
-  const isInvalidForm = () => {
-    return (
-      !(currTitle.trim().length > 0) ||
-      !currCategory ||
-      !currDifficulty ||
-      !(currDescription.trim().length > 0)
-    );
-  };
-  const isFormDisabled = isInvalidForm();
 
   return (
     <Dialog open={openForm} onClose={closeForm} fullWidth>

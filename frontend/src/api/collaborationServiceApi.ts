@@ -4,7 +4,7 @@ import { HttpRequestMethod, backendServicesPaths } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 
 export async function getSession(sessionId: string) {
-  return requestBackend<{ question: IQuestion }>({
+  return requestBackend<{ question: IQuestion; otherUserUsername: string }>({
     url: `${backendServicesPaths.collaboration.getSession}/${sessionId}`,
     method: HttpRequestMethod.GET,
   });

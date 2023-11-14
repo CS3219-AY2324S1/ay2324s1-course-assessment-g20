@@ -60,8 +60,9 @@ const CodeEditor = () => {
     if (sessionId) {
       getSession(sessionId)
         .then((resp) => {
-          const { question } = resp.data;
+          const { question, otherUserUsername } = resp.data;
           setQuestion(question);
+          document.body.style.setProperty('--collaboratee', `'${otherUserUsername}'`);
         })
         .catch((e: PeerprepBackendError) => {
           if (e.details.statusCode === HttpStatusCode.Forbidden) {

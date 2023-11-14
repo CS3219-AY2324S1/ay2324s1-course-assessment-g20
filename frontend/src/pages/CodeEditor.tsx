@@ -19,6 +19,7 @@ import { HttpStatusCode } from 'axios';
 import { PeerprepBackendError } from '../@types/PeerprepBackendError';
 
 import EditorScreen from '../components/Editor/EditorScreen';
+import { useProfile } from '../hooks/useProfile';
 
 /**
  * This component abstracts the CodeEditor workspace page in a collaborative session.
@@ -45,6 +46,10 @@ const CodeEditor = () => {
   const [languages, setLanguages] = useState<Language[]>([]);
   const provider = useRef<WebsocketProvider>();
 
+  // Custom CSS injection by useState as a workaround to us not having access to React Lifecycle inside Monaco Editor.
+  const [css, setCss] = useState('');
+
+  const myProfile = useProfile();
   const throwAsyncError = useThrowAsyncError();
 
   // Fetch question information and editor languages
@@ -89,6 +94,27 @@ const CodeEditor = () => {
           bindMessageHandlersToProvider(yjsProvider, [
             onGetSessionLanguageWebsocketHandler(bindEditor),
           ]);
+
+          // Announce user name to all users in room
+          yjsProvider.awareness.setLocalStateField('user', {
+            username: myProfile.username,
+          });
+
+          // Custom CSS injection to remove 'own' cursors from rendering when multiple tabs are opened
+          yjsProvider.awareness.on('change', () => {
+            let css = '';
+            Array.from(yjsProvider.awareness.getStates().entries()).forEach((s) => {
+              if (s[1].user.username === myProfile.username) {
+                css += `
+                  .yRemoteSelectionHead.yRemoteSelectionHead-${s[0]} {
+                    border: none;
+                  }
+                `;
+              }
+            });
+
+            setCss(css);
+          });
 
           provider.current = yjsProvider;
         })
@@ -135,14 +161,17 @@ const CodeEditor = () => {
   }
 
   return (
-    <EditorScreen
-      question={question}
-      selectedLanguage={selectedLanguage}
-      languages={languages}
-      handleLanguageChange={handleLanguageChange}
-      handleEditorDidMount={handleEditorDidMount}
-      sessionId={sessionId}
-    />
+    <>
+      <EditorScreen
+        question={question}
+        selectedLanguage={selectedLanguage}
+        languages={languages}
+        handleLanguageChange={handleLanguageChange}
+        handleEditorDidMount={handleEditorDidMount}
+        sessionId={sessionId}
+      />
+      <style>{css}</style>
+    </>
   );
 };
 

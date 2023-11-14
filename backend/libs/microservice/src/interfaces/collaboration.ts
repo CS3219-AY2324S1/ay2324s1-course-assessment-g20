@@ -28,6 +28,7 @@ export interface SetSessionLanguageIdRequest {
 
 export interface GetSessionResponse {
   question: Question | undefined;
+  otherUserUsername: string;
 }
 
 export interface GetSessionTicketResponse {

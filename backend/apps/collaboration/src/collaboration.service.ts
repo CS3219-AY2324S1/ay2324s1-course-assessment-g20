@@ -9,6 +9,7 @@ import {
   GetAttemptsFromUserIdResponse,
   GetQuestionIdFromSessionIdResponse,
   GetSessionOrTicketRequest,
+  GetSessionResponse,
   SetSessionLanguageIdRequest,
 } from '@app/microservice/interfaces/collaboration';
 import {
@@ -156,9 +157,19 @@ export class CollaborationService implements OnModuleInit {
     return this.sessionDaoService.getQuestionIdFromSession(request.id);
   }
 
-  async getSession(getSessionInfo: GetSessionOrTicketRequest) {
+  async getSession(
+    getSessionInfo: GetSessionOrTicketRequest,
+  ): Promise<GetSessionResponse> {
     const { session } = await this.validatedUserInExistingSession(
       getSessionInfo,
+    );
+
+    const otherProfile = await firstValueFrom(
+      this.userProfileService.getUserProfileById({
+        id: session.userIds.filter(
+          ({ userId }) => userId !== getSessionInfo.userId,
+        )[0].userId,
+      }),
     );
 
     const question = await firstValueFrom(
@@ -169,6 +180,7 @@ export class CollaborationService implements OnModuleInit {
 
     return {
       question,
+      otherUserUsername: otherProfile.username,
     };
   }
 

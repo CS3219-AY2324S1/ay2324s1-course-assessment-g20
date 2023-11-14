@@ -1,6 +1,7 @@
 .yRemoteSelection {
     background-color: rgb(250, 129, 0, .5)
 }
+
 .yRemoteSelectionHead {
     position: absolute;
     border-left: orange solid 2px;
@@ -9,6 +10,7 @@
     height: 100%;
     box-sizing: border-box;
 }
+
 .yRemoteSelectionHead:hover::after {
     position: absolute;
     content: var(--collaboratee, "");
@@ -17,4 +19,21 @@
     background-color: orange;
     font-size: 0.8em;
     padding: 0 2px;
+}
+
+.monaco-editor .overflow-guard {
+    padding-top: 15px;
+}
+
+.monaco-editor .margin {
+    margin-top: 15px;
+}
+
+.monaco-editor .lines-content.monaco-editor-background {
+    contain: none !important;
+    overflow: visible !important;
+}
+
+.monaco-editor .monaco-scrollable-element.editor-scrollable {
+    overflow: visible !important;
 }

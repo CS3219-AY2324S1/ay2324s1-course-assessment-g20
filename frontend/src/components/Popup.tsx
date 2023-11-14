@@ -5,7 +5,7 @@ import { DEFAULT_LANGUAGE } from '../utils/languageUtils';
 import palette from '../theme/palette';
 
 interface PopupProps {
-  questionId?: string;
+  TitleIcon?: React.ReactNode;
   title: string;
   children: string;
   isCode?: boolean;
@@ -22,6 +22,7 @@ interface PopupProps {
 }
 
 export default function Popup({
+  TitleIcon,
   title,
   children,
   isCode = false,
@@ -38,7 +39,10 @@ export default function Popup({
   return (
     <Dialog open={openPopup} onClose={closePopup}>
       <div style={{ display: 'flex' }}>
-        <DialogTitle style={{ justifyContent: 'space-between' }}>{title}</DialogTitle>
+        <DialogTitle style={{ justifyContent: 'space-between' }}>
+          {TitleIcon}
+          <b> {title}</b>
+        </DialogTitle>
         <Button
           type="button"
           className="btn-close"

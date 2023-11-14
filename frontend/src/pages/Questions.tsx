@@ -83,7 +83,7 @@ export default function Dashboard() {
     setUpdateRowInfo(row);
     setOpenForm(true);
   };
-  console.log(rows);
+
   return (
     <Box>
       <Grid container spacing={2} pb={3}>

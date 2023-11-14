@@ -1,6 +1,7 @@
 # Peerprep Backend
 ## Development Setup (uncontainerized)
 1. Ensure that you have PostgreSQL, MongoDB, Redis and node v18 installed.
+1. Ensure that you have yarn v1.22.19 installed (e.g. `npm i -g yarn`).
 1. Start PostgreSQL, MongoDB and Redis (e.g. `brew services start redis` if installed via Homebrew on MacOS)
 1. `cd` to the [`backend`](./) directory.
 1. Run `yarn install`.

@@ -74,6 +74,13 @@ export class QuestionController implements OnModuleInit {
     return this.questionService.getQuestionWithId({ id });
   }
 
+  @Get('questions/difficulty/:id')
+  getQuestionsByDifficultyId(@Param('id') id: string) {
+    return this.questionService
+      .getQuestionsByDifficultyId({ id })
+      .pipe(map(({ questions }) => questions || []));
+  }
+
   // DIFFICULTIES
 
   @Get('difficulties')

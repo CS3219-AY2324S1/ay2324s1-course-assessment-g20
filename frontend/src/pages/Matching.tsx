@@ -2,7 +2,7 @@ import { Button, Stack, Typography, Box, useTheme } from '@mui/material';
 import SearchingScreen from '../components/SearchingScreen';
 import { useEffect, useState } from 'react';
 import { IDifficulty } from '../@types/question';
-import { getDifficulties } from '../api/questionBankApi';
+import { getDifficulties, getQuestionsByDifficulty } from '../api/questionBankApi';
 import { PaletteKey } from '../theme/palette';
 
 export default function Matching() {
@@ -19,12 +19,23 @@ export default function Matching() {
   const handlePopupOnClose = () => setSearchingVisibility(false);
 
   const [difficulties, setDifficulties] = useState<IDifficulty[]>([]);
+  const [isDifficultiesEnabled, setIsDifficultiesEnabled] = useState<boolean[]>([]);
 
   useEffect(() => {
     // Fetch difficulties from API
     getDifficulties()
-      .then((response) => {
-        setDifficulties(response.data);
+      .then(async (response) => {
+        const difficultiesData = response.data;
+        setDifficulties(difficultiesData);
+
+        const difficultyExistsArray = await Promise.all(
+          difficultiesData.map(
+            async (difficulty) =>
+              await getQuestionsByDifficulty(difficulty._id).then((res) => res.data.length > 0),
+          ),
+        );
+
+        setIsDifficultiesEnabled(difficultyExistsArray);
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -49,22 +60,25 @@ export default function Matching() {
           ></SearchingScreen>
         )}
         <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
-          {difficulties.map((difficulty) => (
-            <Button
-              key={difficulty.name}
-              variant="contained"
-              onClick={() => handleSearchingOnClick(difficulty)}
-              style={{ fontSize: '40px' }}
-              sx={{
-                backgroundColor: palette[difficulty.name.toLowerCase() as PaletteKey].main,
-                '&:hover': {
-                  backgroundColor: palette[difficulty.name.toLowerCase() as PaletteKey].dark,
-                },
-              }}
-            >
-              {difficulty.name}
-            </Button>
-          ))}
+          {difficulties.map((difficulty, index) => {
+            return (
+              <Button
+                key={difficulty.name}
+                variant="contained"
+                onClick={() => handleSearchingOnClick(difficulty)}
+                style={{ fontSize: '40px' }}
+                disabled={!isDifficultiesEnabled[index]}
+                sx={{
+                  backgroundColor: palette[difficulty.name.toLowerCase() as PaletteKey].main,
+                  '&:hover': {
+                    backgroundColor: palette[difficulty.name.toLowerCase() as PaletteKey].dark,
+                  },
+                }}
+              >
+                {difficulty.name}
+              </Button>
+            );
+          })}
         </Stack>
       </Box>
     </Box>

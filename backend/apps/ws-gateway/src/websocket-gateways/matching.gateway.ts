@@ -69,10 +69,10 @@ export class MatchingGateway extends BaseWebsocketGateway {
       }
       return false;
     } catch (e) {
-      connection.onerror = () => {
-        throw new WsException(e);
-      };
-      console.error(e);
+      console.error('matching handle conn', e);
+      connection.send('error connecting to matching websocket');
+      connection.close();
+      return false;
     }
   }
 
@@ -104,10 +104,9 @@ export class MatchingGateway extends BaseWebsocketGateway {
         }),
       );
     } catch (e) {
-      connection.onerror = () => {
-        throw new WsException(e);
-      };
       console.error(e);
+      connection.send('error getting match');
+      return connection.close();
     }
   }
 }

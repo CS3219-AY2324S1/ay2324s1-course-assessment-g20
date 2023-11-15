@@ -4,7 +4,11 @@ import {
 } from '@app/microservice/interfaces/user';
 import { OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  WsException,
+} from '@nestjs/websockets';
 import { firstValueFrom } from 'rxjs';
 import { AuthenticatedWebsocket } from './types';
 
@@ -67,6 +71,10 @@ export class BaseWebsocketGateway
     }
 
     connection.ticket = ticket;
+    connection.onerror = (event) => {
+      console.error(event);
+      throw new WsException(event);
+    };
     return true;
   }
 

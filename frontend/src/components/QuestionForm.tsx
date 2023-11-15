@@ -46,6 +46,8 @@ export default function QuestionForm({
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [difficulties, setDifficulties] = useState<IDifficulty[]>([]);
 
+  const [isFormDisabled, setIsFormDisabled] = useState(true);
+
   useEffect(() => {
     // Fetch categories from API
     getCategories()
@@ -96,44 +98,45 @@ export default function QuestionForm({
     }
   }, [updateQuestion]);
 
+  useEffect(() => {
+    setIsFormDisabled(
+      !(currTitle.trim().length > 0) ||
+        !(currCategory.length > 0) ||
+        !(currDifficulty.trim().length > 0) ||
+        !(currDescription.trim().length > 0),
+    );
+  }, [currTitle, currCategory, currDifficulty, currDescription]);
+
   // Functions to handle form submission
-  const handleFormSubmission = () => {
+  const handleFormSubmission = async () => {
     const questionInput: IQuestion = {
-      title: currTitle,
+      title: currTitle.trim(),
       categories: currCategory,
       difficulty: currDifficulty,
       description: currDescription,
     };
-    if (updateQuestion != EMPTY_QUESTION) {
-      questionInput._id = updateQuestion._id;
-      updateQuestionWithId(questionInput)
-        .then(() => {
+
+    try {
+      if (updateQuestion != EMPTY_QUESTION) {
+        questionInput._id = updateQuestion._id;
+        await updateQuestionWithId(questionInput).then(() => {
           fetchAndSet();
-        })
-        .catch((error) => {
-          console.error('Error:', error);
         });
-    } else {
-      addQuestion(questionInput)
-        .then(() => {
+      } else {
+        await addQuestion(questionInput).then(() => {
           fetchAndSet();
-        })
-        .catch((error: PeerprepBackendError) => {
-          enqueueSnackbar(error.details.message, { variant: 'error' });
         });
+      }
+    } catch (error) {
+      if (error instanceof PeerprepBackendError) {
+        enqueueSnackbar(error.details.message, { variant: 'error' });
+      } else {
+        console.error('Error:', error);
+      }
     }
+
     closeForm();
   };
-
-  const isInvalidForm = () => {
-    return (
-      !(currTitle.trim().length > 0) ||
-      !currCategory ||
-      !currDifficulty ||
-      !(currDescription.trim().length > 0)
-    );
-  };
-  const isFormDisabled = isInvalidForm();
 
   return (
     <Dialog open={openForm} onClose={closeForm} fullWidth>

@@ -20,20 +20,3 @@
     font-size: 0.8em;
     padding: 0 2px;
 }
-
-.monaco-editor .overflow-guard {
-    padding-top: 15px;
-}
-
-.monaco-editor .margin {
-    margin-top: 15px;
-}
-
-.monaco-editor .lines-content.monaco-editor-background {
-    contain: none !important;
-    overflow: visible !important;
-}
-
-.monaco-editor .monaco-scrollable-element.editor-scrollable {
-    overflow: visible !important;
-}

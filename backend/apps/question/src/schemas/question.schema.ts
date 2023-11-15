@@ -12,7 +12,7 @@ export class Question {
   @Prop({ required: false })
   id?: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   title: string;
 
   @Prop({ required: true })
@@ -25,15 +25,26 @@ export class Question {
   })
   difficulty: Difficulty;
 
-  @Prop({ default: false })
-  isDeleted: boolean;
-
   @Prop({
     required: true,
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Category',
   })
   categories: Category[];
+
+  @Prop({ default: false })
+  isDeleted: boolean;
+
+  @Prop({
+    required: false,
+    type: mongoose.Schema.Types.Date,
+    default: null,
+  })
+  deletedAt: Date;
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);
+QuestionSchema.index(
+  { title: 1, isDeleted: 1, deletedAt: 1 },
+  { unique: true },
+);

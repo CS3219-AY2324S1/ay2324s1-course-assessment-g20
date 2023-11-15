@@ -76,6 +76,7 @@ async function connectToDatabase() {
               difficulty: difficultyIdsByName[question.difficulty],
               categories: question.categories.map((c) => categoryIdsByName[c]),
               isDeleted: false,
+              deletedAt: null,
             },
           },
           { upsert: true },
@@ -91,6 +92,7 @@ async function connectToDatabase() {
                 {
                   $set: {
                     isDeleted: false,
+                    deletedAt: null,
                   },
                 },
               ),

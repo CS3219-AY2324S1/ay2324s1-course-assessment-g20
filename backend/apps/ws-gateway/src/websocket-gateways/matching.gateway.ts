@@ -1,8 +1,9 @@
-import { Inject } from '@nestjs/common';
+import { Inject, UseFilters } from '@nestjs/common';
 import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
+  WsException,
 } from '@nestjs/websockets';
 import { ClientGrpc } from '@nestjs/microservices';
 import MatchingDto from '../dtos/matching.dto';
@@ -19,6 +20,7 @@ import {
 import { Service } from '@app/microservice/services';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { GatewayExceptionFilter } from '@app/utils/exceptionFilter/gateway-exception.filter';
 
 @PrefixedWebsocketGateway('/matching')
 export class MatchingGateway extends BaseWebsocketGateway {
@@ -57,40 +59,55 @@ export class MatchingGateway extends BaseWebsocketGateway {
     connection: AuthenticatedWebsocket,
     request: Request,
   ): Promise<boolean> {
-    if (await super.handleConnection(connection, request)) {
-      setTimeout(() => {
-        connection.close();
-      }, this.configService.get('connectionTimeout'));
+    try {
+      if (await super.handleConnection(connection, request)) {
+        setTimeout(() => {
+          connection.close();
+        }, this.configService.get('connectionTimeout'));
 
-      return true;
+        return true;
+      }
+      return false;
+    } catch (e) {
+      connection.onerror = () => {
+        throw new WsException(e);
+      };
+      console.error(e);
     }
-    return false;
   }
 
+  @UseFilters(GatewayExceptionFilter)
   @SubscribeMessage('get_match')
   async getMatch(
     @MessageBody() data: MatchingDto,
     @ConnectedSocket() connection: AuthenticatedWebsocket,
   ) {
-    // wait for ticket to be set, or connection to close
-    while (
-      connection.ticket === undefined &&
-      connection.readyState !== connection.CLOSED
-    ) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
+    try {
+      // wait for ticket to be set, or connection to close
+      while (
+        connection.ticket === undefined &&
+        connection.readyState !== connection.CLOSED
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
 
-    if (connection.readyState === connection.CLOSED) {
-      return;
-    }
+      if (connection.readyState === connection.CLOSED) {
+        return;
+      }
 
-    const { userId } = connection.ticket;
-    this.websocketMemoryService.addConnection(userId, connection);
-    await lastValueFrom(
-      this.matchingService.requestMatch({
-        userId,
-        questionDifficulty: data.questionDifficulty,
-      }),
-    );
+      const { userId } = connection.ticket;
+      this.websocketMemoryService.addConnection(userId, connection);
+      await lastValueFrom(
+        this.matchingService.requestMatch({
+          userId,
+          questionDifficulty: data.questionDifficulty,
+        }),
+      );
+    } catch (e) {
+      connection.onerror = () => {
+        throw new WsException(e);
+      };
+      console.error(e);
+    }
   }
 }

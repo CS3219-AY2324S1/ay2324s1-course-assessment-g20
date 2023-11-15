@@ -1,5 +1,5 @@
-import { Inject } from '@nestjs/common';
-import { SubscribeMessage } from '@nestjs/websockets';
+import { Inject, UseFilters } from '@nestjs/common';
+import { SubscribeMessage, WsException } from '@nestjs/websockets';
 import { setupWSConnection, setPersistence } from 'y-websocket/bin/utils';
 import { Redis, RedisOptions } from 'ioredis';
 import { ClientGrpc } from '@nestjs/microservices';
@@ -19,6 +19,7 @@ import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { CollaborationEvent } from '@app/microservice/events-api/collaboration';
 import { Language } from '@app/microservice/interfaces/user';
+import { GatewayExceptionFilter } from '@app/utils';
 
 type YjsWebsocket = AuthenticatedWebsocket & {
   redisPubClient: Redis;
@@ -53,36 +54,54 @@ export class YjsGateway extends BaseWebsocketGateway {
       );
   }
   async handleDisconnect(connection: YjsWebsocket): Promise<void> {
-    return YjsGateway.destroyRedisPubSubClients(connection);
+    try {
+      return YjsGateway.destroyRedisPubSubClients(connection);
+    } catch (e) {
+      connection.onerror = () => {
+        throw new WsException(e);
+      };
+      console.error(e);
+    }
   }
 
   async handleConnection(connection: YjsWebsocket, request: Request) {
-    const authenticated = await super.handleConnection(connection, request);
-    if (!authenticated) {
-      return false;
+    try {
+      const authenticated = await super.handleConnection(connection, request);
+      if (!authenticated) {
+        return false;
+      }
+
+      const ticketId = YjsGateway.getTicketIdFromUrl(request);
+      const { session, language } = await this.getSessionAndLanguage(ticketId);
+      const { id: sessionId } = session;
+
+      if (session.isClosed) {
+        return YjsGateway.closeConnection(
+          connection,
+          YjsGateway.SESSION_CLOSED,
+        );
+      }
+
+      connection.sessionId = sessionId;
+      YjsGateway.initializeRedisPubSubClients(
+        connection,
+        this.configService.get('websocketGatewayOptions')?.options,
+      );
+
+      this.subscribeAndHandleLanguageChange(connection, sessionId);
+      this.setupYjs(connection, sessionId, this.mongoUri);
+      YjsGateway.propagateLanguageToClient(connection, language);
+
+      return YjsGateway.sessionInitialized(connection);
+    } catch (e) {
+      connection.onerror = () => {
+        throw new WsException(e);
+      };
+      console.error(e);
     }
-
-    const ticketId = YjsGateway.getTicketIdFromUrl(request);
-    const { session, language } = await this.getSessionAndLanguage(ticketId);
-    const { id: sessionId } = session;
-
-    if (session.isClosed) {
-      return YjsGateway.closeConnection(connection, YjsGateway.SESSION_CLOSED);
-    }
-
-    connection.sessionId = sessionId;
-    YjsGateway.initializeRedisPubSubClients(
-      connection,
-      this.configService.get('websocketGatewayOptions')?.options,
-    );
-
-    this.subscribeAndHandleLanguageChange(connection, sessionId);
-    this.setupYjs(connection, sessionId, this.mongoUri);
-    YjsGateway.propagateLanguageToClient(connection, language);
-
-    return YjsGateway.sessionInitialized(connection);
   }
 
+  @UseFilters(GatewayExceptionFilter)
   @SubscribeMessage(YjsGateway.LANGUAGE_CHANGE)
   async handleLanguageChange(connection: YjsWebsocket, data: string) {
     try {

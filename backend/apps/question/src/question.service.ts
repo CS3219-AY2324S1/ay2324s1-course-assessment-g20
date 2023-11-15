@@ -35,7 +35,7 @@ export class QuestionService {
 
   getQuestions(): Promise<QuestionWithCategoryAndDifficulty[]> {
     return this.questionModel
-      .find()
+      .find({ isDeleted: false })
       .populate('categories')
       .populate('difficulty')
       .then((questions) =>
@@ -52,6 +52,7 @@ export class QuestionService {
     const questionObjects = await this.questionModel
       .find({
         difficulty: difficultyObject,
+        isDeleted: false,
       })
       .exec();
 

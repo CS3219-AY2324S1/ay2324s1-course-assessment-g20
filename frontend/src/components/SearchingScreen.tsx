@@ -22,14 +22,15 @@ interface PopupProps {
 }
 
 export default function WaitingScreen({ difficulty, openScreen, setCloseScreen }: PopupProps) {
-  const awaitSearch = `Find someone to do a ${difficulty.name.toLowerCase()} difficulty question with you?`;
   const searching = 'Searching for a partner...';
   const noMatch = 'We could not find you a partner, would you like to search again?';
   const matchFound = 'Partner found! Taking you to the collaborative space...';
+  const getSearchStatusWithDifficulty = (difficulty: IDifficulty) =>
+    `Find someone to do a ${difficulty.name.toLowerCase()} difficulty question with you?`;
   const { enqueueSnackbar } = useSnackbar();
 
   // Usestate to display the current search status for a partner
-  const [searchStatus, setSearchStatus] = useState(awaitSearch);
+  const [searchStatus, setSearchStatus] = useState(getSearchStatusWithDifficulty(difficulty));
 
   // Usestate to handle the searching and cancelling of searching
   const [isSearching, setIsSearching] = useState(false);
@@ -56,6 +57,10 @@ export default function WaitingScreen({ difficulty, openScreen, setCloseScreen }
       return () => clearInterval(timer);
     }
   }, [isSearching, timeWaited]);
+
+  useEffect(() => {
+    setSearchStatus(getSearchStatusWithDifficulty(difficulty));
+  }, [difficulty]);
 
   const handleMatchFound = (sessionId: string) => {
     handleCancelSearch();
@@ -88,7 +93,7 @@ export default function WaitingScreen({ difficulty, openScreen, setCloseScreen }
     if (ws !== undefined && ws.readyState !== ws.CLOSED) {
       ws.close();
     }
-    setSearchStatus(awaitSearch);
+
     setCloseScreen();
   };
 

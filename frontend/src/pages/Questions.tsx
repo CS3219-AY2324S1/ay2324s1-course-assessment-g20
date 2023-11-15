@@ -141,96 +141,93 @@ export default function Dashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(
-              (row, index) =>
-                !row.isDeleted && (
-                  <StyledTableRow key={index}>
-                    <StyledTableCell align="left">{index + 1}</StyledTableCell>
-                    <StyledTableCell component="th" scope="row">
-                      <Typography
-                        variant="subtitle2"
-                        onClick={() => handlePopupOnClick(index)}
-                        sx={{ '&:hover': { cursor: 'pointer', color: palette.secondary.main } }}
+            {rows.map((row, index) => (
+              <StyledTableRow key={index}>
+                <StyledTableCell align="left">{index + 1}</StyledTableCell>
+                <StyledTableCell component="th" scope="row">
+                  <Typography
+                    variant="subtitle2"
+                    onClick={() => handlePopupOnClick(index)}
+                    sx={{ '&:hover': { cursor: 'pointer', color: palette.secondary.main } }}
+                  >
+                    {row.title}
+                  </Typography>
+
+                  <Popup
+                    title={row.title}
+                    children={row.description}
+                    openPopup={rowIndex == index && popupVisibility}
+                    closePopup={handlePopupOnClose}
+                  ></Popup>
+                </StyledTableCell>
+                <StyledTableCell align="left">{row.categories.join(', ')}</StyledTableCell>
+                <StyledTableCell align="left">
+                  <Typography
+                    variant="subtitle2"
+                    color={getDifficultyColor(palette, row.difficulty)}
+                  >
+                    {row.difficulty}
+                  </Typography>
+                </StyledTableCell>
+                {isMaintainer && (
+                  <StyledTableCell align="center">
+                    <Stack
+                      justifyContent={'center'}
+                      alignItems={'center'}
+                      spacing={2}
+                      direction={{ xs: 'column', sm: 'row' }}
+                    >
+                      <Button
+                        variant={'contained'}
+                        onClick={() => handleDeleteOnClick(index)}
+                        sx={{
+                          width: 80,
+                          height: 35,
+                          backgroundColor: palette.error.main,
+                          '&:hover': {
+                            backgroundColor: palette.error.light,
+                          },
+                        }}
                       >
-                        {row.title}
-                      </Typography>
+                        DELETE
+                      </Button>
 
                       <Popup
-                        title={row.title}
-                        children={row.description}
-                        openPopup={rowIndex == index && popupVisibility}
-                        closePopup={handlePopupOnClose}
+                        TitleIcon={
+                          <Icon style={{ marginRight: '16px', color: palette.warning.main }}>
+                            <ReportProblemIcon />
+                          </Icon>
+                        }
+                        title={'ARE YOU SURE?'}
+                        children={`Do you really want to delete the question:\n${row.title.toUpperCase()}?`}
+                        openPopup={rowIndex == index && deletePopupVisibility}
+                        closePopup={handleDeletePopupOnClose}
+                        showButton={true}
+                        buttonBackgroundColor={palette.error.main}
+                        buttonHoverColor={palette.error.light}
+                        buttonFontColor={'white'}
+                        buttonText={'DELETE'}
+                        buttonOnClick={() => handleDeleteButtonSubmit(row._id)}
                       ></Popup>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">{row.categories.join(', ')}</StyledTableCell>
-                    <StyledTableCell align="left">
-                      <Typography
-                        variant="subtitle2"
-                        color={getDifficultyColor(palette, row.difficulty)}
+                      <Button
+                        variant={'contained'}
+                        onClick={() => handleUpdateOnClick(row)}
+                        sx={{
+                          width: 80,
+                          height: 35,
+                          backgroundColor: palette.info.main,
+                          '&:hover': {
+                            backgroundColor: palette.info.light,
+                          },
+                        }}
                       >
-                        {row.difficulty}
-                      </Typography>
-                    </StyledTableCell>
-                    {isMaintainer && (
-                      <StyledTableCell align="center">
-                        <Stack
-                          justifyContent={'center'}
-                          alignItems={'center'}
-                          spacing={2}
-                          direction={{ xs: 'column', sm: 'row' }}
-                        >
-                          <Button
-                            variant={'contained'}
-                            onClick={() => handleDeleteOnClick(index)}
-                            sx={{
-                              width: 80,
-                              height: 35,
-                              backgroundColor: palette.error.main,
-                              '&:hover': {
-                                backgroundColor: palette.error.light,
-                              },
-                            }}
-                          >
-                            DELETE
-                          </Button>
-
-                          <Popup
-                            TitleIcon={
-                              <Icon style={{ marginRight: '16px', color: palette.warning.main }}>
-                                <ReportProblemIcon />
-                              </Icon>
-                            }
-                            title={'ARE YOU SURE?'}
-                            children={`Do you really want to delete the question:\n${row.title.toUpperCase()}?`}
-                            openPopup={rowIndex == index && deletePopupVisibility}
-                            closePopup={handleDeletePopupOnClose}
-                            showButton={true}
-                            buttonBackgroundColor={palette.error.main}
-                            buttonHoverColor={palette.error.light}
-                            buttonFontColor={'white'}
-                            buttonText={'DELETE'}
-                            buttonOnClick={() => handleDeleteButtonSubmit(row._id)}
-                          ></Popup>
-                          <Button
-                            variant={'contained'}
-                            onClick={() => handleUpdateOnClick(row)}
-                            sx={{
-                              width: 80,
-                              height: 35,
-                              backgroundColor: palette.info.main,
-                              '&:hover': {
-                                backgroundColor: palette.info.light,
-                              },
-                            }}
-                          >
-                            UPDATE
-                          </Button>
-                        </Stack>
-                      </StyledTableCell>
-                    )}
-                  </StyledTableRow>
-                ),
-            )}
+                        UPDATE
+                      </Button>
+                    </Stack>
+                  </StyledTableCell>
+                )}
+              </StyledTableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

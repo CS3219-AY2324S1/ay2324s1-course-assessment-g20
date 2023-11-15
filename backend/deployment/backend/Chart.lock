@@ -26,5 +26,5 @@ dependencies:
 - name: base-externals
   repository: file://../base-externals
   version: 0.1.0
-digest: sha256:cf7bb0303f57a5d0b67bec8e5119a9a3fa5d2b4571bfec215db8e759ebd721bd
-generated: "2023-11-10T14:43:09.954801+08:00"
+digest: sha256:b1ca8e4ca7f1e0a0a8261d05bd477689ae87bd3fea72536b01593c67bd9db3d0
+generated: "2023-11-15T13:50:42.574332+08:00"

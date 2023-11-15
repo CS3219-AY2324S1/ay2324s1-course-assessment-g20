@@ -28,6 +28,9 @@
 ## Making Commits
 1. Run `yarn lint` and `yarn format` in the [`backend`](./) directory to lint and format the backend codebase.
 
+## Upgrading of user to maintainer role
+1. To test out CRUD operations with questions, update the role_id column of the you want entry in the user_profiles table in the peer-prep-user-service database. (e.g. `UPDATE user_profiles SET role_id=1 WHERE name='Your Name'`)
+
 ## Environment Variables setup
 ### PostgreSQL Variables
 - For local PostgreSQL, `{MICROSERVICE}_SERVICE_SQL_DATABASE_HOST` can be left blank

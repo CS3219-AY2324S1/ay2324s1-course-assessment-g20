@@ -20,7 +20,8 @@ import { useProfile } from '../hooks/useProfile';
 import { frontendPaths } from '../routes/paths';
 import { formatLanguage } from '../utils/languageUtils';
 import { PeerprepBackendError } from '../@types/PeerprepBackendError';
-import { EMPTY_USERNAME_ERROR } from '../utils/errorMessages';
+import { EMPTY_USERNAME_ERROR, USERNAME_NOT_ALPHANUMERIC_ERROR } from '../utils/errorMessages';
+import { isAlphaNumeric } from '../utils/stringUtils';
 
 const modalStyle = {
   position: 'absolute' as const,
@@ -67,6 +68,10 @@ export default function EditProfile() {
       setUsernameValidationErrorText(EMPTY_USERNAME_ERROR);
       return;
     }
+    if (!isAlphaNumeric(newUsername)) {
+      setUsernameValidationErrorText(USERNAME_NOT_ALPHANUMERIC_ERROR);
+      return;
+    }
     setUsernameValidationErrorText('');
   }, [newUsername]);
 
@@ -82,6 +87,10 @@ export default function EditProfile() {
   const handleUpdateProfile = async () => {
     if (newUsername.length === 0) {
       setUsernameValidationErrorText(EMPTY_USERNAME_ERROR);
+      return;
+    }
+    if (!isAlphaNumeric(newUsername)) {
+      setUsernameValidationErrorText(USERNAME_NOT_ALPHANUMERIC_ERROR);
       return;
     }
     try {

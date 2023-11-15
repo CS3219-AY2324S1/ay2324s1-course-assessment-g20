@@ -210,13 +210,13 @@ export class YjsGateway extends BaseWebsocketGateway {
       writeState: async (docName) => {
         // This is called when all connections to the document are closed.
 
-        // flush document on close to have the smallest possible database
-        await mdb.flushDocument(docName);
-
         // Close collab session when all clients have disconnected
         await firstValueFrom(
           this.collaborationService.closeSession({ id: connection.sessionId }),
         );
+
+        // flush document on close to have the smallest possible database
+        await mdb.flushDocument(docName);
       },
     });
   }

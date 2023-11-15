@@ -88,6 +88,7 @@ export default function WaitingScreen({ difficulty, openScreen, setCloseScreen }
     if (ws !== undefined && ws.readyState !== ws.CLOSED) {
       ws.close();
     }
+    setSearchStatus(awaitSearch);
     setCloseScreen();
   };
 

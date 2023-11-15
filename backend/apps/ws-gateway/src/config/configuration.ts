@@ -7,6 +7,8 @@ const wsGatewayConfiguration = () => {
       host: process.env.REDIS_HOST,
       port: parseInt(process.env.REDIS_PORT, 10),
       password: process.env.REDIS_PASSWORD,
+      retryAttempts: 5,
+      retryDelay: 2000,
     },
   };
 

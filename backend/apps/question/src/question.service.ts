@@ -157,7 +157,10 @@ export class QuestionService {
   }
 
   async deleteQuestionWithId(questionId: string): Promise<string> {
-    await this.questionModel.findByIdAndDelete(questionId);
+    await this.questionModel.findByIdAndUpdate(questionId, {
+      isDeleted: true,
+      deletedAt: new Date(),
+    });
     return questionId;
   }
 

@@ -8,7 +8,7 @@ import {
   USER_AUTH_SERVICE_NAME,
   UserAuthServiceClient,
 } from '@app/microservice/interfaces/user';
-import { MOCK_ADMIN_USER, MOCK_QUESTION_1, MOCK_USER_1 } from '@app/mocks';
+import { MOCK_ADMIN_USER, MOCK_QUESTION_3, MOCK_USER_1 } from '@app/mocks';
 import { firstValueFrom } from 'rxjs';
 import * as WebSocket from 'ws';
 import {
@@ -47,17 +47,18 @@ describe('WsGatewayController (e2e)', () => {
         );
 
       await Promise.all(
-        MOCK_QUESTION_1.categories.map((category) =>
+        MOCK_QUESTION_3.categories.map((category) =>
           firstValueFrom(questionService.addCategory({ name: category })),
         ),
       );
 
       mockDifficultyId = (
         await firstValueFrom(
-          questionService.addDifficulty({ name: MOCK_QUESTION_1.difficulty }),
+          questionService.addDifficulty({ name: MOCK_QUESTION_3.difficulty }),
         )
       )._id;
-      await firstValueFrom(questionService.addQuestion(MOCK_QUESTION_1));
+
+      await firstValueFrom(questionService.addQuestion(MOCK_QUESTION_3));
 
       const userServiceClient: ClientGrpc = app.get(Service.USER_SERVICE);
       const userAuthService =

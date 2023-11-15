@@ -52,6 +52,7 @@ export class QuestionService {
     const questionObjects = await this.questionModel
       .find({
         difficulty: difficultyObject,
+        isDeleted: false,
       })
       .exec();
 

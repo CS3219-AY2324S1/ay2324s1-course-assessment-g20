@@ -20,7 +20,8 @@ import { useSnackbar } from 'notistack';
 import { frontendPaths } from '../routes/paths';
 import { formatLanguage } from '../utils/languageUtils';
 import { PeerprepBackendError } from '../@types/PeerprepBackendError';
-import { EMPTY_USERNAME_ERROR } from '../utils/errorMessages';
+import { EMPTY_USERNAME_ERROR, USERNAME_NOT_ALPHANUMERIC_ERROR } from '../utils/errorMessages';
+import { isAlphaNumeric } from '../utils/stringUtils';
 
 export default function Onboarding() {
   const [languages, setLanguages] = useState<Language[]>([]);
@@ -45,9 +46,15 @@ export default function Onboarding() {
   }, []);
 
   useEffect(() => {
-    if (isUsernameEdited && newUsername.length === 0) {
-      setUsernameValidationErrorText(EMPTY_USERNAME_ERROR);
-      return;
+    if (isUsernameEdited) {
+      if (newUsername.length === 0) {
+        setUsernameValidationErrorText(EMPTY_USERNAME_ERROR);
+        return;
+      }
+      if (!isAlphaNumeric(newUsername)) {
+        setUsernameValidationErrorText(USERNAME_NOT_ALPHANUMERIC_ERROR);
+        return;
+      }
     }
     setUsernameValidationErrorText('');
   }, [newUsername, isUsernameEdited]);
@@ -67,9 +74,13 @@ export default function Onboarding() {
       setUsernameValidationErrorText(EMPTY_USERNAME_ERROR);
       return;
     }
+    if (!isAlphaNumeric(newUsername)) {
+      setUsernameValidationErrorText(USERNAME_NOT_ALPHANUMERIC_ERROR);
+      return;
+    }
     try {
       await updateProfile({
-        username: newUsername,
+        username: newUsername.trim(),
         preferredLanguageId: newPreferredLanguageId,
       });
       enqueueSnackbar('Successfully completed onboarding!', { variant: 'success' });

@@ -157,7 +157,10 @@ export class QuestionService {
   }
 
   async deleteQuestionWithId(questionId: string): Promise<string> {
-    await this.questionModel.findByIdAndDelete(questionId);
+    await this.questionModel.findByIdAndUpdate(questionId, {
+      isDeleted: true,
+      deletedAt: new Date(),
+    });
     return questionId;
   }
 
@@ -175,16 +178,27 @@ export class QuestionService {
     );
 
     // Find and update question
-    const newQuestion = await this.questionModel.findByIdAndUpdate(
-      questionWithCategoriesAndDifficulty._id ?? '',
-      {
-        title: questionWithCategoriesAndDifficulty.title,
-        description: questionWithCategoriesAndDifficulty.description,
-        difficulty: difficultyObject,
-        categories: categoryObjects,
-      },
-      { new: true },
-    );
+    const newQuestion = await this.questionModel
+      .findByIdAndUpdate(
+        questionWithCategoriesAndDifficulty._id ?? '',
+        {
+          title: questionWithCategoriesAndDifficulty.title,
+          description: questionWithCategoriesAndDifficulty.description,
+          difficulty: difficultyObject,
+          categories: categoryObjects,
+        },
+        { new: true },
+      )
+      .catch((error) => {
+        if (isMongoServerError(error)) {
+          throw new PeerprepException(
+            mapMongoServerErrorToCustomMessage(error),
+            PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+          );
+        }
+
+        throw error;
+      });
 
     return {
       ...newQuestion.toObject(),

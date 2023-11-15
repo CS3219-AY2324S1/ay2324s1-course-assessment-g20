@@ -1,6 +1,7 @@
 # Peerprep Backend
 ## Development Setup (uncontainerized)
 1. Ensure that you have PostgreSQL, MongoDB, Redis and node v18 installed.
+1. Ensure that you have yarn v1.22.19 installed (e.g. `npm i -g yarn`).
 1. Start PostgreSQL, MongoDB and Redis (e.g. `brew services start redis` if installed via Homebrew on MacOS)
 1. `cd` to the [`backend`](./) directory.
 1. Run `yarn install`.
@@ -26,6 +27,9 @@
 
 ## Making Commits
 1. Run `yarn lint` and `yarn format` in the [`backend`](./) directory to lint and format the backend codebase.
+
+## Upgrading of user to maintainer role
+1. To test out CRUD operations with questions, update the role_id column of the you want entry in the user_profiles table in the peer-prep-user-service database. (e.g. `UPDATE user_profiles SET role_id=1 WHERE name='Your Name'`)
 
 ## Environment Variables setup
 ### PostgreSQL Variables

@@ -1,5 +1,3 @@
-{{- $acmeEmail := .Values.acmeEmail | required ".Values.acmeEmail is required." -}}
-
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -7,7 +5,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: {{ $acmeEmail }}
+    email: {{ .Values.acmeEmail }}
     privateKeySecretRef:
       name: lets-encrypt-prod
     solvers:

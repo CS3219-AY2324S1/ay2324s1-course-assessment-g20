@@ -24,6 +24,8 @@ export const backendServicesPaths = {
     questions: `${QUESTION}/questions`,
     difficulties: `${QUESTION}/difficulties`,
     categories: `${QUESTION}/categories`,
+    getQuestionsByDifficulty: (difficultyId: string) =>
+      `${QUESTION}/questions/difficulty/${difficultyId}`,
   },
   user: {
     root: USER,

@@ -40,7 +40,6 @@ message Question {
   string description = 3;
   repeated string categories = 4;
   string difficulty = 5;
-  optional bool isDeleted = 6;
 }
 
 message Difficulty {

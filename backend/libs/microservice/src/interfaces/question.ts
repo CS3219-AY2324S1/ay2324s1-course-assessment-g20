@@ -22,7 +22,6 @@ export interface Question {
   description: string;
   categories: string[];
   difficulty: string;
-  isDeleted?: boolean | undefined;
 }
 
 export interface Difficulty {

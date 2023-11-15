@@ -4,7 +4,6 @@ export interface IQuestion {
   categories: string[];
   difficulty: string;
   description: string;
-  isDeleted?: boolean;
 }
 
 export interface IDifficulty {
@@ -22,5 +21,4 @@ export const EMPTY_QUESTION: IQuestion = {
   description: '',
   difficulty: '',
   categories: [],
-  isDeleted: false,
 };

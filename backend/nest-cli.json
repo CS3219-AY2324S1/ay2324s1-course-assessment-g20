@@ -39,19 +39,6 @@
         "watchAssets": true
       }
     },
-    "user": {
-      "type": "application",
-      "root": "apps/user",
-      "entryFile": "main",
-      "sourceRoot": "apps/user/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/user/tsconfig.app.json",
-        "assets": [
-          "../../../libs/microservice/src/interservice-proto/**/*"
-        ],
-        "watchAssets": true
-      }
-    },
     "config": {
       "type": "library",
       "root": "libs/config",
@@ -59,15 +46,6 @@
       "sourceRoot": "libs/config/src",
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
-      }
-    },
-    "sql-database": {
-      "type": "library",
-      "root": "libs/sql-database",
-      "entryFile": "index",
-      "sourceRoot": "libs/sql-database/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/sql-database/tsconfig.lib.json"
       }
     },
     "types": {

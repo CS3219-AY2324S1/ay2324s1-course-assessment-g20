@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "build:ci": "nest build && nest build user && nest build question",
+    "build:ci": "nest build && nest build question",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\" \"scripts/**/*.{ts,js}\"",
     "format:ci": "prettier --list-different \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
@@ -17,20 +17,12 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "lint:ci": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "prepare": "cd .. && husky install backend/.husky",
-    "knex-script": "knex --knexfile",
-    "knex": "./scripts/knex/knex.sh",
-    "migrate:sql:all": "node ./scripts/knex/createSqlDatabases.js && yarn migrate:sql user",
-    "migrate:sql": "./scripts/knex/migrate_latest.sh",
-    "migrate:sql:make": "./scripts/knex/migrate_make.sh",
-    "seed:all": "yarn seed:sql:all && yarn seed:mongo:all",
-    "seed:sql": "./scripts/knex/seed.sh",
-    "seed:sql:all": "yarn seed:sql user",
+    "seed:all": "yarn seed:mongo:all",
     "seed:mongo:question-difficulties": "node ./scripts/mongo/seedQuestionDifficulties.js",
     "seed:mongo:question-categories": "node ./scripts/mongo/seedQuestionCategories.js",
     "seed:mongo:questions": "node ./scripts/mongo/seedQuestions.js",
     "seed:mongo:all": "yarn seed:mongo:question-categories && yarn seed:mongo:question-difficulties && yarn seed:mongo:questions",
-    "migrate-and-seed:all": "yarn migrate:sql:all && yarn seed:all",
-    "migrate-and-seed:sql": "yarn migrate:sql:all && yarn seed:sql:all",
+    "migrate-and-seed:all": "yarn seed:all",
     "protoc": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./libs/microservice/src/interfaces --ts_proto_opt=nestJs=true,exportCommonSymbols=false,useDate=true,snakeToCamel=false ./libs/microservice/src/interservice-proto/*.proto -I ./libs/microservice/src/interservice-proto"
   },
   "dependencies": {
@@ -44,11 +36,8 @@
     "@nestjs/platform-express": "^9.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
-    "knex": "^2.5.1",
     "mongodb": "^6.1.0",
     "mongoose": "^6.2.2",
-    "objection": "^3.1.1",
-    "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
@@ -98,7 +87,6 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/sql-database(|/.*)$": "<rootDir>/libs/sql-database/src/$1",
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
       "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1",
       "^@app/microservice(|/.*)$": "<rootDir>/libs/microservice/src/$1",

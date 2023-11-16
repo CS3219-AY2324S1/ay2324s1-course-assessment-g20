@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+import { Public } from '../jwt/jwtPublic.decorator';
 
 @Controller('/')
 export class AppController {
@@ -6,6 +7,7 @@ export class AppController {
     // No implementation
   }
 
+  @Public()
   @Get()
   getAppRequest() {
     return 'Welcome to Peerprep!';

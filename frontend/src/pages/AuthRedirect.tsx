@@ -7,22 +7,22 @@ import { useProfile } from '../hooks/useProfile';
 
 export default function AuthRedirect() {
   const auth = useAuth();
-  const { isLoading, isOnboarded, fetchAndSetProfile } = useProfile();
+  const { isLoading, isOnboarded } = useProfile();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
-    const userId = params.get('userId');
+    const accessToken = params.get('accessToken');
+    const refreshToken = params.get('refreshToken');
 
-    if (!userId) {
+    if (!accessToken || !refreshToken) {
       return;
     }
 
     auth.signIn({
-      userId,
+      accessToken: accessToken!,
+      refreshToken: refreshToken!,
     });
-
-    fetchAndSetProfile(userId);
   });
 
   if (auth.isAuthenticated && !isLoading) {

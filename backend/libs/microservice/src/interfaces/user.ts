@@ -4,12 +4,12 @@ import { Observable } from 'rxjs';
 import { Deleted, ID, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
 
-export interface CreateUserRequest {
-  name: string;
-}
-
 export interface User {
   id?: string | undefined;
+  authProvider: string;
+  authProviderId: string;
+  email: string;
+  oauthName: string;
   userProfile: UserProfile | undefined;
 }
 
@@ -17,8 +17,19 @@ export interface UserProfile {
   userId?: string | undefined;
   name: string;
   preferredLanguageId: number;
+  roleId: number;
   preferredLanguage?: Language | undefined;
+  role?: Role | undefined;
   username?: string | undefined;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface JwtTokens {
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface Username {
@@ -30,27 +41,51 @@ export interface Language {
   name: string;
 }
 
+export interface Role {
+  id: number;
+  name: string;
+}
+
 export interface GetAllLanguagesResponse {
   languages: Language[];
 }
 
 export interface UserAuthServiceClient {
-  createUser(request: CreateUserRequest): Observable<User>;
+  generateJwts(request: User): Observable<JwtTokens>;
 
-  deleteUser(request: ID): Observable<Deleted>;
+  generateJwtsFromRefreshToken(
+    request: RefreshTokenRequest,
+  ): Observable<JwtTokens>;
+
+  findOrCreateOauthUser(request: User): Observable<User>;
+
+  deleteOAuthUser(request: ID): Observable<Deleted>;
 }
 
 export interface UserAuthServiceController {
-  createUser(
-    request: CreateUserRequest,
-  ): Promise<User> | Observable<User> | User;
+  generateJwts(
+    request: User,
+  ): Promise<JwtTokens> | Observable<JwtTokens> | JwtTokens;
 
-  deleteUser(request: ID): Promise<Deleted> | Observable<Deleted> | Deleted;
+  generateJwtsFromRefreshToken(
+    request: RefreshTokenRequest,
+  ): Promise<JwtTokens> | Observable<JwtTokens> | JwtTokens;
+
+  findOrCreateOauthUser(request: User): Promise<User> | Observable<User> | User;
+
+  deleteOAuthUser(
+    request: ID,
+  ): Promise<Deleted> | Observable<Deleted> | Deleted;
 }
 
 export function UserAuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['createUser', 'deleteUser'];
+    const grpcMethods: string[] = [
+      'generateJwts',
+      'generateJwtsFromRefreshToken',
+      'findOrCreateOauthUser',
+      'deleteOAuthUser',
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

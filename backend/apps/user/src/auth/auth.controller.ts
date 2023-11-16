@@ -1,7 +1,9 @@
 import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { UserModel } from '../database/models/user.model';
 import {
-  CreateUserRequest,
+  RefreshTokenRequest,
+  User,
   UserAuthServiceController,
   UserAuthServiceControllerMethods,
 } from '@app/microservice/interfaces/user';
@@ -12,13 +14,21 @@ import { ID } from '@app/microservice/interfaces/common';
 export class AuthController implements UserAuthServiceController {
   constructor(private readonly authService: AuthService) {}
 
-  createUser(request: CreateUserRequest) {
-    return this.authService.createUser(request.name);
+  generateJwts(user: User) {
+    return this.authService.generateJwts(user);
   }
 
-  deleteUser({ id }: ID) {
+  generateJwtsFromRefreshToken({ refreshToken }: RefreshTokenRequest) {
+    return this.authService.generateJwtsFromRefreshToken(refreshToken);
+  }
+
+  findOrCreateOauthUser(user: Partial<User>) {
+    return this.authService.findOrCreateOAuthUser(user as Partial<UserModel>);
+  }
+
+  deleteOAuthUser({ id }: ID) {
     return this.authService
-      .deleteUser(id)
+      .deleteOAuthUser(id)
       .then((deletedCount) => ({ deletedCount }));
   }
 }

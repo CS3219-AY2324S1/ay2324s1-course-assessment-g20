@@ -3,9 +3,9 @@ import { Language } from '../@types/language';
 import { backendServicesPaths, HttpRequestMethod } from '../utils/constants';
 import { requestBackend } from './requestBackend';
 
-export async function getUserProfile(userId: string) {
+export async function getUserProfile() {
   return requestBackend<UserProfile>({
-    url: `${backendServicesPaths.user.root}/${userId}`,
+    url: backendServicesPaths.user.root,
     method: HttpRequestMethod.GET,
   });
 }
@@ -17,17 +17,17 @@ export async function getUserProfileByUsername(username: string) {
   });
 }
 
-export async function updateUserProfile(userId: string, updatedProfile: UpdateUserProfile) {
+export async function updateUserProfile(updatedProfile: UpdateUserProfile) {
   return requestBackend<UserProfile>({
-    url: `${backendServicesPaths.user.root}/${userId}`,
+    url: backendServicesPaths.user.root,
     method: HttpRequestMethod.PATCH,
     data: updatedProfile,
   });
 }
 
-export async function deleteUserProfile(userId: string) {
+export async function deleteUserProfile() {
   return requestBackend({
-    url: `${backendServicesPaths.user.root}/${userId}`,
+    url: backendServicesPaths.user.root,
     method: HttpRequestMethod.DELETE,
   });
 }

@@ -94,7 +94,7 @@ export default function EditProfile() {
       return;
     }
     try {
-      await updateProfile(authContext.userId, {
+      await updateProfile({
         name: newName,
         username: newUsername,
         preferredLanguageId: newPreferredLanguageId,
@@ -109,7 +109,7 @@ export default function EditProfile() {
     }
   };
   const handleDeleteAccount = async () => {
-    await deleteUserProfile(authContext.userId);
+    await deleteUserProfile();
     logUserOut();
   };
   const logUserOut = () => {

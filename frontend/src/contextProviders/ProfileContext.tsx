@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getUserProfile, updateUserProfile, deleteUserProfile } from '../api/userApi';
 import { UpdateUserProfile } from '../@types/userProfile';
 import { IProfileContext } from '../@types/userProfile';
@@ -11,16 +11,25 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   const [username, setUsername] = useState<string>('');
   const [preferredLanguageId, setPreferredLanguageId] = useState<number>(1);
   const [preferredLanguage, setPreferredLanguage] = useState<string>('');
+  const [roleId, setRoleId] = useState<number>(2);
+  const [isMaintainer, setIsMaintainer] = useState<boolean>(false);
   const [isOnboarded, setIsOnboarded] = useState<boolean>(false);
 
-  const fetchAndSetProfile = useCallback(async (userId: string) => {
+  // Prioritise fetching profile before all other API calls in child components
+  useEffect(() => {
+    fetchAndSetProfile();
+  }, []);
+
+  const fetchAndSetProfile = useCallback(async () => {
     setIsLoading(true);
-    await getUserProfile(userId)
+    await getUserProfile()
       .then(({ data }) => {
         setName(data.name ?? '');
         setUsername(data.username ?? '');
         setPreferredLanguageId(data.preferredLanguage?.id ?? 1);
         setPreferredLanguage(data.preferredLanguage?.name ?? 'JavaScript');
+        setRoleId(data.role?.id ?? 2);
+        setIsMaintainer(data.role?.name === 'MAINTAINER');
         setIsOnboarded(!!data.username && data.username.length > 0);
       })
       .catch((error) => {
@@ -30,28 +39,32 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     setIsLoading(false);
   }, []);
 
-  const updateProfile = async (userId: string, newProfile: UpdateUserProfile) => {
-    const response = await updateUserProfile(userId, newProfile);
+  const updateProfile = async (newProfile: UpdateUserProfile) => {
+    const response = await updateUserProfile(newProfile);
     const updatedUserProfile = response.data;
     if (response.status === 200) {
       setName(updatedUserProfile.name ?? '');
       setUsername(updatedUserProfile.username ?? '');
       setPreferredLanguageId(updatedUserProfile.preferredLanguage?.id ?? 1);
       setPreferredLanguage(updatedUserProfile.preferredLanguage?.name ?? 'JavaScript');
+      setRoleId(updatedUserProfile.role?.id ?? 2);
+      setIsMaintainer(updatedUserProfile.role?.name === 'MAINTAINER');
       setIsOnboarded(!!updatedUserProfile.username && updatedUserProfile.username.length > 0);
       return updatedUserProfile;
     }
     throw new Error('Error updating profile');
   };
 
-  const deleteProfile = async (userId: string) => {
+  const deleteProfile = async () => {
     try {
-      const response = await deleteUserProfile(userId);
+      const response = await deleteUserProfile();
       if (response.status === 200) {
         setName('');
         setUsername('');
         setPreferredLanguageId(1);
         setPreferredLanguage('');
+        setRoleId(2);
+        setIsMaintainer(false);
         setIsOnboarded(false);
       }
     } catch (error) {
@@ -64,11 +77,12 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     username,
     preferredLanguageId,
     preferredLanguage,
+    roleId,
+    isMaintainer,
     isOnboarded,
     isLoading,
     updateProfile,
     deleteProfile,
-    fetchAndSetProfile,
   };
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

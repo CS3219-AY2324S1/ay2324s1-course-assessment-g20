@@ -19,9 +19,11 @@ import Popup from '../components/Popup';
 import { useEffect, useState } from 'react';
 import { deleteQuestionWithId, getQuestions } from '../api/questionBankApi';
 import { EMPTY_QUESTION, IQuestion } from '../@types/question';
+import { useProfile } from '../hooks/useProfile';
 import { StyledTableCell, StyledTableRow, getDifficultyColor } from '../utils/styleUtils';
 
 export default function Dashboard() {
+  const { isMaintainer } = useProfile();
   const { palette } = useTheme();
 
   const [rows, setRows] = useState<IQuestion[]>([]);
@@ -107,18 +109,20 @@ export default function Dashboard() {
           </Typography>
         </Grid>
         <Grid item xs={12} sm={4} textAlign={{ xs: 'center', sm: 'right' }}>
-          <Button
-            variant={'contained'}
-            onClick={handleButtonFormClick}
-            style={{ fontSize: '18px' }}
-            sx={{
-              height: 50,
-              whiteSpace: 'nowrap',
-              minWidth: 'max-content',
-            }}
-          >
-            Add a question
-          </Button>
+          {isMaintainer && (
+            <Button
+              variant={'contained'}
+              onClick={handleButtonFormClick}
+              style={{ fontSize: '18px' }}
+              sx={{
+                height: 50,
+                whiteSpace: 'nowrap',
+                minWidth: 'max-content',
+              }}
+            >
+              Add a question
+            </Button>
+          )}
         </Grid>
       </Grid>
       <TableContainer component={Paper}>
@@ -129,9 +133,11 @@ export default function Dashboard() {
               <StyledTableCell align="left">Title</StyledTableCell>
               <StyledTableCell align="left">Category</StyledTableCell>
               <StyledTableCell align="left">Difficulty</StyledTableCell>
-              <StyledTableCell align="left" colSpan={2}>
-                Actions
-              </StyledTableCell>
+              {isMaintainer && (
+                <StyledTableCell align="left" colSpan={2}>
+                  Actions
+                </StyledTableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -163,61 +169,63 @@ export default function Dashboard() {
                     {row.difficulty}
                   </Typography>
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  <Stack
-                    justifyContent={'center'}
-                    alignItems={'center'}
-                    spacing={2}
-                    direction={{ xs: 'column', sm: 'row' }}
-                  >
-                    <Button
-                      variant={'contained'}
-                      onClick={() => handleDeleteOnClick(index)}
-                      sx={{
-                        width: 80,
-                        height: 35,
-                        backgroundColor: palette.error.main,
-                        '&:hover': {
-                          backgroundColor: palette.error.light,
-                        },
-                      }}
+                {isMaintainer && (
+                  <StyledTableCell align="center">
+                    <Stack
+                      justifyContent={'center'}
+                      alignItems={'center'}
+                      spacing={2}
+                      direction={{ xs: 'column', sm: 'row' }}
                     >
-                      DELETE
-                    </Button>
+                      <Button
+                        variant={'contained'}
+                        onClick={() => handleDeleteOnClick(index)}
+                        sx={{
+                          width: 80,
+                          height: 35,
+                          backgroundColor: palette.error.main,
+                          '&:hover': {
+                            backgroundColor: palette.error.light,
+                          },
+                        }}
+                      >
+                        DELETE
+                      </Button>
 
-                    <Popup
-                      TitleIcon={
-                        <Icon style={{ marginRight: '16px', color: palette.warning.main }}>
-                          <ReportProblemIcon />
-                        </Icon>
-                      }
-                      title={'ARE YOU SURE?'}
-                      children={`Do you really want to delete the question:\n${row.title.toUpperCase()}?`}
-                      openPopup={rowIndex == index && deletePopupVisibility}
-                      closePopup={handleDeletePopupOnClose}
-                      showButton={true}
-                      buttonBackgroundColor={palette.error.main}
-                      buttonHoverColor={palette.error.light}
-                      buttonFontColor={'white'}
-                      buttonText={'DELETE'}
-                      buttonOnClick={() => handleDeleteButtonSubmit(row._id)}
-                    ></Popup>
-                    <Button
-                      variant={'contained'}
-                      onClick={() => handleUpdateOnClick(row)}
-                      sx={{
-                        width: 80,
-                        height: 35,
-                        backgroundColor: palette.info.main,
-                        '&:hover': {
-                          backgroundColor: palette.info.light,
-                        },
-                      }}
-                    >
-                      UPDATE
-                    </Button>
-                  </Stack>
-                </StyledTableCell>
+                      <Popup
+                        TitleIcon={
+                          <Icon style={{ marginRight: '16px', color: palette.warning.main }}>
+                            <ReportProblemIcon />
+                          </Icon>
+                        }
+                        title={'ARE YOU SURE?'}
+                        children={`Do you really want to delete the question:\n${row.title.toUpperCase()}?`}
+                        openPopup={rowIndex == index && deletePopupVisibility}
+                        closePopup={handleDeletePopupOnClose}
+                        showButton={true}
+                        buttonBackgroundColor={palette.error.main}
+                        buttonHoverColor={palette.error.light}
+                        buttonFontColor={'white'}
+                        buttonText={'DELETE'}
+                        buttonOnClick={() => handleDeleteButtonSubmit(row._id)}
+                      ></Popup>
+                      <Button
+                        variant={'contained'}
+                        onClick={() => handleUpdateOnClick(row)}
+                        sx={{
+                          width: 80,
+                          height: 35,
+                          backgroundColor: palette.info.main,
+                          '&:hover': {
+                            backgroundColor: palette.info.light,
+                          },
+                        }}
+                      >
+                        UPDATE
+                      </Button>
+                    </Stack>
+                  </StyledTableCell>
+                )}
               </StyledTableRow>
             ))}
           </TableBody>

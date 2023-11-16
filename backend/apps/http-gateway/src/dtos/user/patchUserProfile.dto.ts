@@ -16,6 +16,10 @@ export default class PatchUserProfileDto {
   preferredLanguageId: number;
 
   @IsOptional()
+  @IsNumber()
+  roleId: number;
+
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @IsAlphanumeric()

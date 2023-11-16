@@ -22,7 +22,6 @@ import { formatLanguage } from '../utils/languageUtils';
 import { PeerprepBackendError } from '../@types/PeerprepBackendError';
 import { EMPTY_USERNAME_ERROR, USERNAME_NOT_ALPHANUMERIC_ERROR } from '../utils/errorMessages';
 import { isAlphaNumeric } from '../utils/stringUtils';
-import { useAuth } from '../hooks/useAuth';
 
 export default function Onboarding() {
   const [languages, setLanguages] = useState<Language[]>([]);
@@ -33,7 +32,6 @@ export default function Onboarding() {
   const { enqueueSnackbar } = useSnackbar();
   const [isUsernameEdited, setIsUsernameEdited] = useState(false);
   const [usernameValidationErrorText, setUsernameValidationErrorText] = useState('');
-  const { userId } = useAuth();
 
   useEffect(() => {
     const fetchAndSetLanguages = async () => {
@@ -81,7 +79,7 @@ export default function Onboarding() {
       return;
     }
     try {
-      await updateProfile(userId, {
+      await updateProfile({
         username: newUsername.trim(),
         preferredLanguageId: newPreferredLanguageId,
       });

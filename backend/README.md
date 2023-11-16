@@ -17,7 +17,19 @@
 ## Making Commits
 1. Run `yarn lint` and `yarn format` in the [`backend`](./) directory to lint and format the backend codebase.
 
+## Upgrading of user to maintainer role
+1. To test out CRUD operations with questions, update the role_id column of the you want entry in the user_profiles table in the peer-prep-user-service database. (e.g. `UPDATE user_profiles SET role_id=1 WHERE name='Your Name'`)
+
 ## Environment Variables setup
 ### PostgreSQL Variables
 - For local PostgreSQL, `{MICROSERVICE}_SERVICE_SQL_DATABASE_HOST` can be left blank
 - Update the USER and PASSWORD related variables
+### JWT Tokens
+- Set `ACCESS_TOKEN_SECRET` and `REFRESH_TOKEN_SECRET` to some random secret string
+- Set the corresponding expiries to something desired (e.g. `1h` or `30s` or `7d`)
+### Google OAuth
+- From Google Console, generate a set of OAuth credentials and put it under `OAUTH_GOOGLE_ID` and `OAUTH_GOOGLE_SECRET`
+- For local development:
+   - Under `Authorized JavaScript origins`, add `http://localhost:4000`
+   - Under `Authorized Redirect URIs`, add
+      - `http://localhost:4000/v1/auth/google/redirect`

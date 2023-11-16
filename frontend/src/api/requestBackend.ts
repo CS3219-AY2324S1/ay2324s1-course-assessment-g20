@@ -1,5 +1,6 @@
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import unauthorizedAxios from './axios/unauthorizedAxios';
+import authorizedAxios from './axios/authorizedAxios';
 import {
   DEFAULT_PEERPREP_BACKEND_ERROR,
   PeerprepBackendError,
@@ -14,6 +15,12 @@ const handleRequestBackendError = (error: any) => {
   throw new PeerprepBackendError(DEFAULT_PEERPREP_BACKEND_ERROR);
 };
 
-export function requestBackend<T>(requestParams: AxiosRequestConfig) {
-  return unauthorizedAxios<T>(requestParams).catch(handleRequestBackendError);
+export function requestBackend<T>(
+  requestParams: AxiosRequestConfig,
+  useAuthentication: boolean = true,
+) {
+  if (!useAuthentication) {
+    return unauthorizedAxios<T>(requestParams).catch(handleRequestBackendError);
+  }
+  return authorizedAxios<T>(requestParams).catch(handleRequestBackendError);
 }

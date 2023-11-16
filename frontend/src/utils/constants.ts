@@ -11,7 +11,8 @@ export const VERSION_PREFIX = '/v1';
 export const backendServicesPaths = {
   auth: {
     root: `${AUTH}`,
-    createUser: `${AUTH}/createUser`,
+    refresh: `${AUTH}/refresh`,
+    googleRedirect: `${AUTH}/google`,
   },
   question: {
     root: QUESTION,
@@ -26,6 +27,9 @@ export const backendServicesPaths = {
     root: LANGUAGES,
   },
 };
+
+// other constants
+export const AUTH_TOKEN_LOCAL_STORAGE_KEY = 'authState';
 
 export enum HttpRequestMethod {
   GET = 'get',

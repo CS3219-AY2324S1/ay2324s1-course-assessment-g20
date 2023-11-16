@@ -17,19 +17,8 @@ export interface UserProfile {
   userId?: string | undefined;
   name: string;
   preferredLanguageId: number;
-  roleId: number;
   preferredLanguage?: Language | undefined;
-  role?: Role | undefined;
   username?: string | undefined;
-}
-
-export interface RefreshTokenRequest {
-  refreshToken: string;
-}
-
-export interface JwtTokens {
-  accessToken: string;
-  refreshToken: string;
 }
 
 export interface Username {
@@ -41,36 +30,17 @@ export interface Language {
   name: string;
 }
 
-export interface Role {
-  id: number;
-  name: string;
-}
-
 export interface GetAllLanguagesResponse {
   languages: Language[];
 }
 
 export interface UserAuthServiceClient {
-  generateJwts(request: User): Observable<JwtTokens>;
-
-  generateJwtsFromRefreshToken(
-    request: RefreshTokenRequest,
-  ): Observable<JwtTokens>;
-
   findOrCreateOauthUser(request: User): Observable<User>;
 
   deleteOAuthUser(request: ID): Observable<Deleted>;
 }
 
 export interface UserAuthServiceController {
-  generateJwts(
-    request: User,
-  ): Promise<JwtTokens> | Observable<JwtTokens> | JwtTokens;
-
-  generateJwtsFromRefreshToken(
-    request: RefreshTokenRequest,
-  ): Promise<JwtTokens> | Observable<JwtTokens> | JwtTokens;
-
   findOrCreateOauthUser(request: User): Promise<User> | Observable<User> | User;
 
   deleteOAuthUser(
@@ -80,12 +50,7 @@ export interface UserAuthServiceController {
 
 export function UserAuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = [
-      'generateJwts',
-      'generateJwtsFromRefreshToken',
-      'findOrCreateOauthUser',
-      'deleteOAuthUser',
-    ];
+    const grpcMethods: string[] = ['findOrCreateOauthUser', 'deleteOAuthUser'];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

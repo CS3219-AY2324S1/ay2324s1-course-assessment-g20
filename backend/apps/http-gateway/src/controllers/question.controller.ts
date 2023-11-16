@@ -13,8 +13,6 @@ import { ClientGrpc } from '@nestjs/microservices';
 import QuestionDto from '../dtos/question/question.dto';
 import DifficultyDto from '../dtos/question/difficulty.dto';
 import CategoryDto from '../dtos/question/category.dto';
-import { Roles } from '../roles/roles.decorator';
-import { Role } from '@app/types/roles';
 import { Service } from '@app/microservice/services';
 import {
   QUESTION_SERVICE_NAME,
@@ -47,13 +45,11 @@ export class QuestionController implements OnModuleInit {
   }
 
   @Post('questions')
-  @Roles(Role.MAINTAINER)
   addQuestion(@Body('question') question: QuestionDto) {
     return this.questionService.addQuestion(question);
   }
 
   @Delete('questions/:id')
-  @Roles(Role.MAINTAINER)
   deleteQuestionWithId(@Param('id') id: string) {
     return this.questionService
       .deleteQuestionWithId({ id })
@@ -61,7 +57,6 @@ export class QuestionController implements OnModuleInit {
   }
 
   @Patch('questions/:id')
-  @Roles(Role.MAINTAINER)
   updateQuestionWithId(
     @Param('id') id: string,
     @Body('question') question: QuestionDto,
@@ -84,13 +79,11 @@ export class QuestionController implements OnModuleInit {
   }
 
   @Post('difficulties')
-  @Roles(Role.MAINTAINER)
   addDifficulty(@Body('difficulty') difficulty: DifficultyDto) {
     return this.questionService.addDifficulty(difficulty);
   }
 
   @Delete('difficulties/:id')
-  @Roles(Role.MAINTAINER)
   deleteDifficultyWithId(@Param('id') id: string) {
     return this.questionService
       .deleteDifficultyWithId({ id })
@@ -107,13 +100,11 @@ export class QuestionController implements OnModuleInit {
   }
 
   @Post('categories')
-  @Roles(Role.MAINTAINER)
   addCategory(@Body('category') category: CategoryDto) {
     return this.questionService.addCategory(category);
   }
 
   @Delete('categories/:id')
-  @Roles(Role.MAINTAINER)
   deleteCategoryWithId(@Param('id') id: string) {
     return this.questionService
       .deleteCategoryWithId({ id })

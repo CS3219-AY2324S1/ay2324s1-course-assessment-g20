@@ -1,20 +1,16 @@
 import {
-  Body,
   Controller,
   Get,
   Inject,
   OnModuleInit,
-  Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Public } from '../jwt/jwtPublic.decorator';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
-import RefreshDto from '../dtos/auth/refresh.dto';
 import { Service } from '@app/microservice/services';
 import {
   USER_AUTH_SERVICE_NAME,
@@ -39,14 +35,12 @@ export class AuthController implements OnModuleInit {
       );
   }
 
-  @Public()
   @Get('google')
   @UseGuards(GoogleOauthGuard)
   async googleAuth() {
     // No implementation: Guard redirects
   }
 
-  @Public()
   @Get('google/redirect')
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
@@ -59,13 +53,5 @@ export class AuthController implements OnModuleInit {
     )}/authRedirect?accessToken=${accessToken}&refreshToken=${refreshToken}`;
 
     return res.redirect(redirectUrl);
-  }
-
-  @Public()
-  @Post('refresh')
-  async refreshTokenFlow(@Body() body: RefreshDto) {
-    return this.userAuthService.generateJwtsFromRefreshToken({
-      refreshToken: body.refreshToken,
-    });
   }
 }

@@ -6,8 +6,6 @@ import "google/protobuf/empty.proto";
 import "common.proto";
 
 service UserAuthService {
-  rpc GenerateJwts (User) returns (JwtTokens);
-  rpc GenerateJwtsFromRefreshToken (RefreshTokenRequest) returns (JwtTokens);
   rpc FindOrCreateOauthUser (User) returns (User);
   rpc DeleteOAuthUser (common.ID) returns (common.Deleted);
 }
@@ -36,19 +34,8 @@ message UserProfile {
     optional string userId = 1;
     string name = 2;
     int32 preferredLanguageId = 3;
-    int32 roleId = 4;
     optional Language preferredLanguage = 5;
-    optional Role role = 6;
     optional string username = 7;
-}
-
-message RefreshTokenRequest {
-    string refreshToken = 1;
-}
-
-message JwtTokens {
-    string accessToken = 1;
-    string refreshToken = 2;
 }
 
 message Username {
@@ -56,11 +43,6 @@ message Username {
 }
 
 message Language {
-    int32 id = 1;
-    string name = 2;
-}
-
-message Role {
     int32 id = 1;
     string name = 2;
 }

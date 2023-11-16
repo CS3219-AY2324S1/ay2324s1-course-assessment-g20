@@ -21,7 +21,6 @@ export async function seed(knex: Knex): Promise<void> {
       name: profile.name,
       username: profile.username,
       preferredLanguageId: profile.preferredLanguageId,
-      roleId: profile.roleId,
     })),
   );
 }

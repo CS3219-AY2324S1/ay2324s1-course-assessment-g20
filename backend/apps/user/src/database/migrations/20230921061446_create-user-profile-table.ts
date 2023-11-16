@@ -11,7 +11,6 @@ export async function up(knex: Knex): Promise<void> {
       .onDelete('CASCADE');
     table.string('name').notNullable();
     table.integer('preferredLanguageId').references('id').inTable('languages');
-    table.integer('roleId').references('id').inTable('roles');
     table.timestamps(true, true);
   });
 }

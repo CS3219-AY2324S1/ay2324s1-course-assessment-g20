@@ -26,19 +26,6 @@
         "watchAssets": true
       }
     },
-    "ws-gateway": {
-      "type": "application",
-      "root": "apps/ws-gateway",
-      "entryFile": "main",
-      "sourceRoot": "apps/ws-gateway/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/ws-gateway/tsconfig.app.json",
-        "assets": [
-          "../../../libs/microservice/src/interservice-proto/**/*"
-        ],
-        "watchAssets": true
-      }
-    },
     "question": {
       "type": "application",
       "root": "apps/question",
@@ -52,58 +39,6 @@
         "watchAssets": true
       }
     },
-    "chatbot": {
-      "type": "application",
-      "root": "apps/chatbot",
-      "entryFile": "main",
-      "sourceRoot": "apps/chatbot/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/chatbot/tsconfig.app.json",
-        "assets": [
-          "../../../libs/microservice/src/interservice-proto/**/*"
-        ],
-        "watchAssets": true
-      }
-    },
-    "user": {
-      "type": "application",
-      "root": "apps/user",
-      "entryFile": "main",
-      "sourceRoot": "apps/user/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/user/tsconfig.app.json",
-        "assets": [
-          "../../../libs/microservice/src/interservice-proto/**/*"
-        ],
-        "watchAssets": true
-      }
-    },
-    "matching": {
-      "type": "application",
-      "root": "apps/matching",
-      "entryFile": "main",
-      "sourceRoot": "apps/matching/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/matching/tsconfig.app.json",
-        "assets": [
-          "../../../libs/microservice/src/interservice-proto/**/*"
-        ],
-        "watchAssets": true
-      }
-    },
-    "collaboration": {
-      "type": "application",
-      "root": "apps/collaboration",
-      "entryFile": "main",
-      "sourceRoot": "apps/collaboration/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/collaboration/tsconfig.app.json",
-        "assets": [
-          "../../../libs/microservice/src/interservice-proto/**/*"
-        ],
-        "watchAssets": true
-      }
-    },
     "config": {
       "type": "library",
       "root": "libs/config",
@@ -111,15 +46,6 @@
       "sourceRoot": "libs/config/src",
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
-      }
-    },
-    "sql-database": {
-      "type": "library",
-      "root": "libs/sql-database",
-      "entryFile": "index",
-      "sourceRoot": "libs/sql-database/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/sql-database/tsconfig.lib.json"
       }
     },
     "types": {
@@ -138,15 +64,6 @@
       "sourceRoot": "libs/microservice/src",
       "compilerOptions": {
         "tsConfigPath": "libs/microservice/tsconfig.lib.json"
-      }
-    },
-    "websocket": {
-      "type": "library",
-      "root": "libs/websocket",
-      "entryFile": "index",
-      "sourceRoot": "libs/websocket/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/websocket/tsconfig.lib.json"
       }
     },
     "utils": {

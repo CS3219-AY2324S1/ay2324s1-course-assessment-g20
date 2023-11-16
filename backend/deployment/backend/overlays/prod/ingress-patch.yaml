@@ -1,3 +1,0 @@
-- op: add
-  path: '/metadata/annotations/kubernetes.io~1ingress.global-static-ip-name'
-  value: peerprep-backend-static-ip

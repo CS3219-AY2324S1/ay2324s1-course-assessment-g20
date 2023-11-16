@@ -1,0 +1,33 @@
+{{- $hostName := .Values.hostName | required ".Values.hostName is required." -}}
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: peer-prep-ingress
+  annotations:
+    cert-manager.io/issuer: peerprep-issuer
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - {{ $hostName }}
+    secretName: tls-secret
+  rules:
+  - host: {{ $hostName }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: http-gateway
+            port:
+              number: 4000
+
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+spec:
+  controller: k8s.io/ingress-nginx

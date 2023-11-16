@@ -1,0 +1,5 @@
+- op: remove
+  path: '/spec/tls'
+
+- op: remove
+  path: '/metadata/annotations/cert-manager.io~1issuer'

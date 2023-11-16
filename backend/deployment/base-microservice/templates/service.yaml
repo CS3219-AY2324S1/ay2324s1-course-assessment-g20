@@ -1,0 +1,18 @@
+{{- $microserviceName := .Values.microserviceName | required ".Values.microserviceName is required." -}}
+{{- $portProtocol := .Values.portProtocol | required ".Values.portProtocol is required." -}}
+{{- $containerPort := .Values.containerPort | required ".Values.containerPort is required." -}}
+{{- $servicePort := .Values.servicePort | required ".Values.servicePort is required." -}}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $microserviceName }}
+spec:
+  selector:
+    app: {{ $microserviceName }}
+  ports:
+    - name: {{ $microserviceName }}
+      protocol: {{ $portProtocol }}
+      port: {{ $servicePort }}
+      targetPort: {{ $containerPort }}

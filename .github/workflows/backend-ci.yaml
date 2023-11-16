@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        commands: ['format:ci', 'lint:ci', 'build:ci']
+        commands: ['format:ci', 'lint:ci', 'build:ci', 'test']
 
     steps:
       - name: Check out repository code
@@ -26,3 +26,6 @@ jobs:
         run: cd backend && yarn install --frozen-lockfile;
       - name: Run backend tests
         run: cd backend && yarn run ${{ matrix.commands }}
+      - name: Stop containers
+        if: always()
+        run: cd backend && docker compose -f ./docker-compose.test.yml --env-file=.env.test down

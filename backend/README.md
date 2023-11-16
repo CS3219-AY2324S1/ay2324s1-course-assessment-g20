@@ -10,6 +10,17 @@
 1. Open multiple terminals to the [`backend`](./) directory, and run each microservice in 'watch' mode (e.g. `yarn start:dev http-gateway`, `yarn start:dev question`).
    > NOTE: The complete list of microservices are the directory names under the [`backend/apps`](./apps/) directory. All microservices have to be started for the backend to run correctly.
 
+## Building locally with Docker
+> The teaching team can choose to setup the dockerized backend locally as follows:
+1. Install Docker Desktop if you have not already done so.
+1. Copy the [`.env.docker.example`](./.env.docker.example) file as `.env.docker` (e.g. `cp .env.docker.example .env.docker`) and update the ***remaining*** empty secrets (you may find the [Environment Variables setup](#environment-variables-setup) section below useful).
+1. In the [`backend`](./) directory, run `yarn start:docker` to build and run all Dockerized microservices in detached mode locally.
+1. Run `yarn stop:docker` to stop the microservice containers.
+
+## Testing (local)
+1. Install Docker Desktop if you have not already done so.
+1. In the [`backend`](./) directory, run `yarn test` to run the E2E tests
+
 ## Database migrations
 1. Create a knex (SQL) database migration file via `yarn migrate:sql:make {microservice_name} {migration_file_name}`.
 1. To rollback a knex migration, run `yarn knex {microservice_name} migrate:rollback`.
@@ -32,4 +43,12 @@
 - For local development:
    - Under `Authorized JavaScript origins`, add `http://localhost:4000`
    - Under `Authorized Redirect URIs`, add
-      - `http://localhost:4000/v1/auth/google/redirect`
+      - `http://localhost:4000/v1/auth/google/redirect` (if running via Docker as per the section [Building locally with Docker](#building-locally-with-docker) above)
+      - `http://localhost/v1/auth/google/redirect` (if running via Kubernetes and minikube as per the instructions [here](./deployment/README.md))
+      - OR simply add both
+- For production deployment:
+   - Replace `Authorized JavaScript origins` with the production frontend URL
+   - Replace `Authorized Redirect URIs` with the production backend domain with the same endpoints above
+
+## Deployment
+- Detailed deployment instructions can be found in the deployment README [here](./deployment/README.md).

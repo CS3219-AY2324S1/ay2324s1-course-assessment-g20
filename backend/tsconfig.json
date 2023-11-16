@@ -42,12 +42,6 @@
       "@app/microservice/*": [
         "libs/microservice/src/*"
       ],
-      "@app/websocket": [
-        "libs/websocket/src"
-      ],
-      "@app/websocket/*": [
-        "libs/websocket/src/*"
-      ],
       "@app/utils": [
         "libs/utils/src"
       ],

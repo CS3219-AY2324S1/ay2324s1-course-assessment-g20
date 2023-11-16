@@ -77,7 +77,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 #### Connecting to ingress from localhost
 1. Run `minikube tunnel` to connect to the nginx LoadBalancer service
 1. Access the nginx server via `http://localhost`
-> To connect the frontend to ingress, modify the [`.env.development`](../../frontend/.env.development) in the `/frontend` directory and remove the port numbers (e.g. `VITE_BACKEND_API_HOST=http://localhost` and `VITE_BACKEND_WEBSOCKET_HOST=ws://localhost/ws`)
+> To connect the frontend to ingress, modify the [`.env.development`](../../frontend/.env.development) in the `/frontend` directory and remove the port numbers (e.g. `VITE_BACKEND_API_HOST=http://localhost`)
 <!-- 1. To access the API gateway from localhost, run `kubectl port-forward deployment/http-gateway 4000:4000`. This is a temporary workaround until the ingress is properly configured. -->
 
 ### Testing out Horizontal Pod Autoscaling

@@ -1,15 +1,55 @@
-import { AppBar, Box, Drawer, IconButton, Toolbar, Typography, useTheme } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useProfile } from '../hooks/useProfile';
+import { frontendPaths } from '../routes/paths';
 
 export default function MainMenuBar() {
+  const authContext = useAuth();
   const navigate = useNavigate();
   const { palette } = useTheme();
+  const { username, isOnboarded } = useProfile();
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleMenuToggle = () => setMobileOpen((prevState) => !prevState);
+
+  // Can eventually abstract into a type / interface
+  const options = [
+    {
+      title: 'Profile',
+      onClick: () => {
+        navigate(`${frontendPaths.user}/${username}`);
+      },
+      icon: <AccountCircleIcon />,
+    },
+    {
+      title: 'Logout',
+      onClick: () => {
+        authContext.signout();
+        navigate(frontendPaths.login, { replace: true });
+      },
+      icon: <LogoutIcon />,
+    },
+  ];
 
   const drawer = (
     <Box onClick={handleMenuToggle} sx={{ textAlign: 'center' }}>
@@ -30,6 +70,16 @@ export default function MainMenuBar() {
           PeerPrep
         </Typography>
       </Box>
+      <List>
+        {options.map((option) => (
+          <ListItem key={option.title} disablePadding>
+            <ListItemButton onClick={option.onClick}>
+              <ListItemIcon>{option.icon}</ListItemIcon>
+              <ListItemText primary={option.title} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
     </Box>
   );
 
@@ -44,6 +94,9 @@ export default function MainMenuBar() {
             }}
           >
             <Box
+              onClick={() =>
+                navigate(isOnboarded ? frontendPaths.dashboard : frontendPaths.onboarding)
+              }
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -80,6 +133,17 @@ export default function MainMenuBar() {
           >
             <MenuIcon sx={{ color: 'white' }} />
           </IconButton>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+            {options.map((option) => (
+              <Button
+                key={option.title}
+                sx={{ color: 'white', '&:hover': { backgroundColor: palette.primary.dark } }}
+                onClick={option.onClick}
+              >
+                {option.title}
+              </Button>
+            ))}
+          </Box>
         </Toolbar>
       </AppBar>
       <nav>

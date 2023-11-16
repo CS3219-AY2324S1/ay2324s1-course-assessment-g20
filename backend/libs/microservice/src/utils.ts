@@ -57,6 +57,10 @@ const getFullProtoPath = (protoFileName: string) => [
 
 const SERVICE_TO_PROTO_OPTIONS_MAP = new Map<Service, GrpcOptions['options']>([
   [
+    Service.USER_SERVICE,
+    { package: 'UserPackage', protoPath: getFullProtoPath('user') },
+  ],
+  [
     Service.QUESTION_SERVICE,
     { package: 'QuestionPackage', protoPath: getFullProtoPath('question') },
   ],

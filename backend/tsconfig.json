@@ -18,6 +18,12 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
+      "@app/sql-database": [
+        "libs/sql-database/src"
+      ],
+      "@app/sql-database/*": [
+        "libs/sql-database/src/*"
+      ],
       "@app/config": [
         "libs/config/src"
       ],

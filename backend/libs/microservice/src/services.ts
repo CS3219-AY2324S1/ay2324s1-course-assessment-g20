@@ -1,3 +1,4 @@
 export enum Service {
   QUESTION_SERVICE = 'QUESTION_SERVICE',
+  USER_SERVICE = 'USER_SERVICE',
 }

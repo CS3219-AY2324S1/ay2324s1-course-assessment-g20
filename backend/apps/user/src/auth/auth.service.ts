@@ -5,6 +5,8 @@ import { JwtService as NestJwtService } from '@nestjs/jwt';
 import { JwtPayload, JwtTokenConfig } from '@app/types';
 import { UserDaoService } from '../database/daos/users/user.dao.service';
 import { UserModel } from '../database/models/user.model';
+import { WebsocketTicketDaoService } from '../database/daos/websocketTickets/websocketTicket.dao.service';
+import { CreateWebsocketTicketInfoRequest } from '@app/microservice/interfaces/user';
 import { PEERPREP_EXCEPTION_TYPES } from '@app/types/exceptions';
 import { PeerprepException } from '@app/utils/exceptionFilter/peerprep.exception';
 
@@ -17,6 +19,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly refreshTokensDaoService: RefreshTokensDaoService,
     private readonly userDaoService: UserDaoService,
+    private readonly websocketTicketDaoService: WebsocketTicketDaoService,
   ) {
     this.tokenConfig = configService.get('jwtTokenConfig');
   }
@@ -97,5 +100,28 @@ export class AuthService {
 
   deleteOAuthUser(id: string) {
     return this.userDaoService.deleteOAuthUser(id);
+  }
+
+  generateWebsocketTicket(createTicketInfo: CreateWebsocketTicketInfoRequest) {
+    return this.websocketTicketDaoService.create(createTicketInfo);
+  }
+
+  async consumeWebsocketTicket(ticketId: string) {
+    const ticket = await this.websocketTicketDaoService.get(ticketId);
+
+    if (!ticket || ticket.isUsed) {
+      throw new PeerprepException(
+        'Invalid ticket!',
+        PEERPREP_EXCEPTION_TYPES.BAD_REQUEST,
+      );
+    }
+
+    return this.websocketTicketDaoService.updateUsed(ticketId);
+  }
+
+  validateUsersExist(userIds: string[]) {
+    return this.userDaoService
+      .findByIds(userIds)
+      .then((users) => users.length === userIds.length);
   }
 }

@@ -47,6 +47,22 @@ export class QuestionService {
       );
   }
 
+  async getQuestionsByDifficulty(difficulty: string | Difficulty) {
+    const difficultyObject = await this.getDifficultyIfExists(difficulty);
+    const questionObjects = await this.questionModel
+      .find({
+        difficulty: difficultyObject,
+        isDeleted: false,
+      })
+      .exec();
+
+    return await Promise.all(
+      questionObjects.map(async (question) => {
+        return await this.getQuestionWithId(question._id.toString());
+      }),
+    );
+  }
+
   async addQuestion(
     questionWithCategoriesAndDifficulty: QuestionWithCategoryAndDifficulty,
   ): Promise<QuestionWithCategoryAndDifficulty> {

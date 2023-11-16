@@ -40,6 +40,13 @@ export async function getQuestionWithId(questionId: string) {
   });
 }
 
+export async function getQuestionsByDifficulty(difficultyId: string) {
+  return requestBackend<IQuestion[]>({
+    url: backendServicesPaths.question.getQuestionsByDifficulty(difficultyId),
+    method: HttpRequestMethod.GET,
+  });
+}
+
 export async function getDifficulties() {
   return requestBackend<IDifficulty[]>({
     url: backendServicesPaths.question.difficulties,

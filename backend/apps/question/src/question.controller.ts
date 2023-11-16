@@ -41,6 +41,12 @@ export class QuestionController implements QuestionServiceController {
     return this.questionService.updateQuestionWithId(question);
   }
 
+  getQuestionsByDifficultyId({ id }: ID): Promise<GetQuestionsResponse> {
+    return this.questionService
+      .getQuestionsByDifficulty(id)
+      .then((questions) => ({ questions }));
+  }
+
   // DIFFICULTIES
 
   getDifficulties(): Promise<GetDifficultiesResponse> {

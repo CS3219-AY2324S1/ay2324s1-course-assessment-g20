@@ -4,6 +4,7 @@ base-externals:
   # Alternatively, directly use the cluster private IP directly in the .env file in prod
   mongodbHost: host.docker.internal
   postgresHost: host.docker.internal
+  redisHost: host.docker.internal
 
 base-nginx-ingress:
   # Register a domain for the backend to generate TLS/SSL certs

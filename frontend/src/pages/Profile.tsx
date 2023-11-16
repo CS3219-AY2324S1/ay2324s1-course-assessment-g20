@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { UserProfile } from '../@types/userProfile';
 import ProfileBox from '../components/ProfileBox';
 import { getUserProfileByUsername } from '../api/userApi';
+import HistoryBox from '../components/HistoryBox';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
 export default function Profile() {
@@ -54,6 +55,9 @@ export default function Profile() {
         preferredLanguage={preferredLanguage}
         profile={profile}
       />
+      <hr />
+      <br />
+      <HistoryBox username={username ?? ''} />
     </>
   );
 }

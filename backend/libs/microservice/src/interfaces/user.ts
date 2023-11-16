@@ -1,8 +1,10 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { wrappers } from 'protobufjs';
 import { Observable } from 'rxjs';
-import { Deleted, ID, NumericID } from './common';
+import { Deleted, ID, IDs, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
+import { BoolValue } from './google/protobuf/wrappers';
 
 export interface User {
   id?: string | undefined;
@@ -25,6 +27,17 @@ export interface UserProfile {
 
 export interface RefreshTokenRequest {
   refreshToken: string;
+}
+
+export interface CreateWebsocketTicketInfoRequest {
+  userId: string;
+}
+
+export interface WebsocketTicket {
+  id: string;
+  expiry: Date | undefined;
+  isUsed: boolean;
+  userId: string;
 }
 
 export interface JwtTokens {
@@ -50,6 +63,18 @@ export interface GetAllLanguagesResponse {
   languages: Language[];
 }
 
+wrappers['.google.protobuf.Timestamp'] = {
+  fromObject(value: Date) {
+    return {
+      seconds: value.getTime() / 1000,
+      nanos: (value.getTime() % 1000) * 1e6,
+    };
+  },
+  toObject(message: { seconds: number; nanos: number }) {
+    return new Date(message.seconds * 1000 + message.nanos / 1e6);
+  },
+} as any;
+
 export interface UserAuthServiceClient {
   generateJwts(request: User): Observable<JwtTokens>;
 
@@ -60,6 +85,14 @@ export interface UserAuthServiceClient {
   findOrCreateOauthUser(request: User): Observable<User>;
 
   deleteOAuthUser(request: ID): Observable<Deleted>;
+
+  generateWebsocketTicket(
+    request: CreateWebsocketTicketInfoRequest,
+  ): Observable<WebsocketTicket>;
+
+  consumeWebsocketTicket(request: ID): Observable<WebsocketTicket>;
+
+  validateUsersExists(request: IDs): Observable<BoolValue>;
 }
 
 export interface UserAuthServiceController {
@@ -76,6 +109,18 @@ export interface UserAuthServiceController {
   deleteOAuthUser(
     request: ID,
   ): Promise<Deleted> | Observable<Deleted> | Deleted;
+
+  generateWebsocketTicket(
+    request: CreateWebsocketTicketInfoRequest,
+  ): Promise<WebsocketTicket> | Observable<WebsocketTicket> | WebsocketTicket;
+
+  consumeWebsocketTicket(
+    request: ID,
+  ): Promise<WebsocketTicket> | Observable<WebsocketTicket> | WebsocketTicket;
+
+  validateUsersExists(
+    request: IDs,
+  ): Promise<BoolValue> | Observable<BoolValue> | BoolValue;
 }
 
 export function UserAuthServiceControllerMethods() {
@@ -85,6 +130,9 @@ export function UserAuthServiceControllerMethods() {
       'generateJwtsFromRefreshToken',
       'findOrCreateOauthUser',
       'deleteOAuthUser',
+      'generateWebsocketTicket',
+      'consumeWebsocketTicket',
+      'validateUsersExists',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

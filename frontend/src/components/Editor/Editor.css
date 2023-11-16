@@ -1,0 +1,22 @@
+.yRemoteSelection {
+    background-color: rgb(250, 129, 0, .5)
+}
+
+.yRemoteSelectionHead {
+    position: absolute;
+    border-left: orange solid 2px;
+    border-top: orange solid 2px;
+    border-bottom: orange solid 2px;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.yRemoteSelectionHead:hover::after {
+    position: absolute;
+    content: var(--collaboratee, "");
+    left: 0px;
+    top: -15px;
+    background-color: orange;
+    font-size: 0.8em;
+    padding: 0 2px;
+}

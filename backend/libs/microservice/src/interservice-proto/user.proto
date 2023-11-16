@@ -6,8 +6,8 @@ import "google/protobuf/empty.proto";
 import "common.proto";
 
 service UserAuthService {
-  rpc FindOrCreateOauthUser (User) returns (User);
-  rpc DeleteOAuthUser (common.ID) returns (common.Deleted);
+    rpc CreateUser(CreateUserRequest) returns (User);
+    rpc DeleteUser (common.ID) returns (common.Deleted);
 }
 
 service UserLanguageService {
@@ -21,13 +21,14 @@ service UserProfileService {
     rpc UpdateUserProfile (UserProfile) returns (UserProfile);
 }
 
+message CreateUserRequest {
+    string name = 1;
+}
+
 message User {
     optional string id = 1;
-    string authProvider = 2;
-    string authProviderId = 3;
-    string email = 4;
-    string oauthName = 5;
-    UserProfile userProfile = 6;
+    string name = 2;
+    UserProfile userProfile = 3;
 }
 
 message UserProfile {

@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { Deleted, ID, NumericID } from './common';
 import { Empty } from './google/protobuf/empty';
 
+export interface CreateUserRequest {
+  name: string;
+}
+
 export interface User {
   id?: string | undefined;
-  authProvider: string;
-  authProviderId: string;
-  email: string;
-  oauthName: string;
+  name: string;
   userProfile: UserProfile | undefined;
 }
 
@@ -35,22 +36,22 @@ export interface GetAllLanguagesResponse {
 }
 
 export interface UserAuthServiceClient {
-  findOrCreateOauthUser(request: User): Observable<User>;
+  createUser(request: CreateUserRequest): Observable<User>;
 
-  deleteOAuthUser(request: ID): Observable<Deleted>;
+  deleteUser(request: ID): Observable<Deleted>;
 }
 
 export interface UserAuthServiceController {
-  findOrCreateOauthUser(request: User): Promise<User> | Observable<User> | User;
+  createUser(
+    request: CreateUserRequest,
+  ): Promise<User> | Observable<User> | User;
 
-  deleteOAuthUser(
-    request: ID,
-  ): Promise<Deleted> | Observable<Deleted> | Deleted;
+  deleteUser(request: ID): Promise<Deleted> | Observable<Deleted> | Deleted;
 }
 
 export function UserAuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['findOrCreateOauthUser', 'deleteOAuthUser'];
+    const grpcMethods: string[] = ['createUser', 'deleteUser'];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
         constructor.prototype,

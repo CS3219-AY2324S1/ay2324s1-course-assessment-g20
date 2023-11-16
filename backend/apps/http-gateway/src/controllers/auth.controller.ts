@@ -1,22 +1,20 @@
 import {
   Controller,
-  Get,
   Inject,
   OnModuleInit,
+  Post,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { GoogleOauthGuard } from '../oauthProviders/google/google-oauth.guard';
 import { Service } from '@app/microservice/services';
 import {
   USER_AUTH_SERVICE_NAME,
-  User,
   UserAuthServiceClient,
 } from '@app/microservice/interfaces/user';
+import CreateUserDto from '../dtos/user/createUser.dto';
 import { firstValueFrom } from 'rxjs';
 
 @Controller('auth')
@@ -35,22 +33,16 @@ export class AuthController implements OnModuleInit {
       );
   }
 
-  @Get('google')
-  @UseGuards(GoogleOauthGuard)
-  async googleAuth() {
-    // No implementation: Guard redirects
-  }
-
-  @Get('google/redirect')
-  @UseGuards(GoogleOauthGuard)
-  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-    const { accessToken, refreshToken } = await firstValueFrom(
-      this.userAuthService.generateJwts(req.user as User),
+  // Endpoint separated out from user.controller.ts to facilitate migration
+  // to OAuth in the next assignment.
+  @Post()
+  async createUser(@Req() req: CreateUserDto, @Res() res: Response) {
+    const createdUser = await firstValueFrom(
+      this.userAuthService.createUser({ name: req.name }),
     );
-
     const redirectUrl = `${this.configService.get(
       'corsOrigin',
-    )}/authRedirect?accessToken=${accessToken}&refreshToken=${refreshToken}`;
+    )}/authRedirect?userId=${createdUser.id}`;
 
     return res.redirect(redirectUrl);
   }

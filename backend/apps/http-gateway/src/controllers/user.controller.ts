@@ -61,6 +61,6 @@ export class UserController implements OnModuleInit {
 
   @Delete()
   deleteUser(@Req() req) {
-    return this.userAuthService.deleteOAuthUser({ id: req.user.id });
+    return this.userAuthService.deleteUser({ id: req.user.id });
   }
 }

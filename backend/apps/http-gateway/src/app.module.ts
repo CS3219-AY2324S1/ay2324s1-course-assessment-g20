@@ -7,7 +7,6 @@ import { QuestionController } from './controllers/question.controller';
 import { AuthController } from './controllers/auth.controller';
 import { LanguagesController } from './controllers/languages.controller';
 import { UserController } from './controllers/user.controller';
-import { GoogleOauthStrategy } from './oauthProviders/google/google-oauth.strategy';
 import { AppController } from './controllers/app.controller';
 
 @Module({
@@ -22,6 +21,6 @@ import { AppController } from './controllers/app.controller';
     UserController,
     LanguagesController,
   ],
-  providers: [GoogleOauthStrategy],
+  providers: [],
 })
 export class AppModule {}

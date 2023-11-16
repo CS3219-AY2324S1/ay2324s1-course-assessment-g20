@@ -1,10 +1,5 @@
-import React, { useLayoutEffect, useState } from 'react';
-import { AUTH_TOKEN_LOCAL_STORAGE_KEY, backendServicesPaths } from '../utils/constants';
-import authorizedAxios, {
-  getRequestInterceptor,
-  getResponseInterceptors,
-} from '../api/axios/authorizedAxios';
-import { getBackendPath } from '../utils/api';
+import React, { useState } from 'react';
+import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from '../utils/constants';
 import { readLocalStorage, setLocalStorage } from '../utils/localStorageHelper';
 import { IAuth, IAuthContext } from '../@types/auth';
 
@@ -15,7 +10,7 @@ const setAuthStore = (authState: IAuth | null) =>
   setLocalStorage(AUTH_TOKEN_LOCAL_STORAGE_KEY, authState);
 const checkIfAuthenticated = () => {
   const tokens = getAuthStore();
-  return !!tokens?.accessToken && !!tokens.refreshToken;
+  return !!tokens?.userId;
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -25,28 +20,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    * (see usages of `setIsAuthenticated` below)
    */
   const [isAuthenticated, setIsAuthenticated] = useState(checkIfAuthenticated());
-
-  /**
-   * useLayoutEffect as we want the axios interceptors to be set before triggering API
-   * calls in the children components. Using useEffect will call the children's useEffects first,
-   * before the one in AuthProvider.
-   */
-  useLayoutEffect(() => {
-    const requestInterceptor = authorizedAxios.interceptors.request.use(
-      getRequestInterceptor(value),
-    );
-    const responseInterceptor = authorizedAxios.interceptors.response.use(
-      ...getResponseInterceptors(value),
-    );
-    return () => {
-      authorizedAxios.interceptors.request.eject(requestInterceptor);
-      authorizedAxios.interceptors.response.eject(responseInterceptor);
-    };
-  });
-
-  const redirectToSignIn = () => {
-    window.location.replace(getBackendPath(backendServicesPaths.auth.googleRedirect));
-  };
 
   const signout = () => {
     setAuthStore(null);
@@ -58,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuthenticated(checkIfAuthenticated());
   };
 
-  const value = { isAuthenticated, getAuthStore, redirectToSignIn, signIn, signout };
+  const value = { isAuthenticated, getAuthStore, signIn, signout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

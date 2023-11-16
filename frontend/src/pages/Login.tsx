@@ -1,9 +1,36 @@
-import { Box, Button, Typography } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
-import { useAuth } from '../hooks/useAuth';
+import { Box, Button, InputLabel, TextField, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { createUser } from '../api/authApi';
+import { useNavigate } from 'react-router-dom';
+import { PeerprepBackendError } from '../@types/PeerprepBackendError';
+import { enqueueSnackbar } from 'notistack';
 
 export default function Login() {
-  const auth = useAuth();
+  const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [isFormDisabled, setIsFormDisabled] = useState(true);
+
+  useEffect(() => {
+    setIsFormDisabled(!(name.trim().length > 0));
+  }, [name]);
+
+  const handleNameChange = (event: any) => {
+    setName(event.target.value);
+  };
+
+  const handleFormSubmission = async () => {
+    try {
+      await createUser(name).then((resp) => {
+        navigate(resp.data.id);
+      });
+    } catch (error) {
+      if (error instanceof PeerprepBackendError) {
+        enqueueSnackbar(error.details.message, { variant: 'error' });
+      } else {
+        console.error('Error:', error);
+      }
+    }
+  };
 
   return (
     <>
@@ -18,9 +45,23 @@ export default function Login() {
         <Typography variant="h2" gutterBottom>
           PeerPrep
         </Typography>
-        <Button onClick={auth.redirectToSignIn} variant="contained">
-          <GoogleIcon sx={{ mr: 2 }} />
-          Log in with Google
+        <InputLabel id="title-label">Account name</InputLabel>
+        <TextField
+          required
+          margin="dense"
+          id="name"
+          type="text"
+          variant="outlined"
+          value={name}
+          onChange={handleNameChange}
+        ></TextField>
+        <Button
+          type="submit"
+          onClick={handleFormSubmission}
+          variant="contained"
+          disabled={isFormDisabled}
+        >
+          Create account
         </Button>
       </Box>
     </>

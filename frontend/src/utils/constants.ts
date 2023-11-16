@@ -11,8 +11,7 @@ export const VERSION_PREFIX = '/v1';
 export const backendServicesPaths = {
   auth: {
     root: `${AUTH}`,
-    refresh: `${AUTH}/refresh`,
-    googleRedirect: `${AUTH}/google`,
+    createUser: `${AUTH}/createUser`,
   },
   question: {
     root: QUESTION,

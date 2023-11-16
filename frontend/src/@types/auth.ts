@@ -1,12 +1,15 @@
 export interface IAuth {
-  refreshToken: string;
-  accessToken: string;
+  userId: string;
 }
 
 export interface IAuthContext {
   isAuthenticated: boolean;
   getAuthStore: () => IAuth | null;
-  redirectToSignIn: () => void;
   signIn: (auth: IAuth) => void;
   signout: () => void;
+}
+
+export interface CreatedUser {
+  id: string;
+  name: string;
 }

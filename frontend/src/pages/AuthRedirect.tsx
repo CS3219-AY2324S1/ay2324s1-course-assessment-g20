@@ -12,16 +12,14 @@ export default function AuthRedirect() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
-    const accessToken = params.get('accessToken');
-    const refreshToken = params.get('refreshToken');
+    const userId = params.get('userId');
 
-    if (!accessToken || !refreshToken) {
+    if (!userId) {
       return;
     }
 
     auth.signIn({
-      accessToken: accessToken!,
-      refreshToken: refreshToken!,
+      userId,
     });
   });
 

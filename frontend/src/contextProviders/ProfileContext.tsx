@@ -11,8 +11,6 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   const [username, setUsername] = useState<string>('');
   const [preferredLanguageId, setPreferredLanguageId] = useState<number>(1);
   const [preferredLanguage, setPreferredLanguage] = useState<string>('');
-  const [roleId, setRoleId] = useState<number>(2);
-  const [isMaintainer, setIsMaintainer] = useState<boolean>(false);
   const [isOnboarded, setIsOnboarded] = useState<boolean>(false);
 
   // Prioritise fetching profile before all other API calls in child components
@@ -28,8 +26,6 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
         setUsername(data.username ?? '');
         setPreferredLanguageId(data.preferredLanguage?.id ?? 1);
         setPreferredLanguage(data.preferredLanguage?.name ?? 'JavaScript');
-        setRoleId(data.role?.id ?? 2);
-        setIsMaintainer(data.role?.name === 'MAINTAINER');
         setIsOnboarded(!!data.username && data.username.length > 0);
       })
       .catch((error) => {
@@ -47,8 +43,6 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
       setUsername(updatedUserProfile.username ?? '');
       setPreferredLanguageId(updatedUserProfile.preferredLanguage?.id ?? 1);
       setPreferredLanguage(updatedUserProfile.preferredLanguage?.name ?? 'JavaScript');
-      setRoleId(updatedUserProfile.role?.id ?? 2);
-      setIsMaintainer(updatedUserProfile.role?.name === 'MAINTAINER');
       setIsOnboarded(!!updatedUserProfile.username && updatedUserProfile.username.length > 0);
       return updatedUserProfile;
     }
@@ -63,8 +57,6 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
         setUsername('');
         setPreferredLanguageId(1);
         setPreferredLanguage('');
-        setRoleId(2);
-        setIsMaintainer(false);
         setIsOnboarded(false);
       }
     } catch (error) {
@@ -77,8 +69,6 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     username,
     preferredLanguageId,
     preferredLanguage,
-    roleId,
-    isMaintainer,
     isOnboarded,
     isLoading,
     updateProfile,

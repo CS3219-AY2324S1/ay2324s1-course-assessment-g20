@@ -35,15 +35,12 @@ export class AuthController implements OnModuleInit {
 
   // Endpoint separated out from user.controller.ts to facilitate migration
   // to OAuth in the next assignment.
-  @Post()
+  @Post('createUser')
   async createUser(@Req() req: CreateUserDto, @Res() res: Response) {
     const createdUser = await firstValueFrom(
       this.userAuthService.createUser({ name: req.name }),
     );
-    const redirectUrl = `${this.configService.get(
-      'corsOrigin',
-    )}/authRedirect?userId=${createdUser.id}`;
 
-    return res.redirect(redirectUrl);
+    return createdUser;
   }
 }

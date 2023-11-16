@@ -2,9 +2,7 @@ syntax = "proto3";
 
 package UserPackage;
 
-import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
-import "google/protobuf/timestamp.proto";
 import "common.proto";
 
 service UserAuthService {
@@ -12,9 +10,6 @@ service UserAuthService {
   rpc GenerateJwtsFromRefreshToken (RefreshTokenRequest) returns (JwtTokens);
   rpc FindOrCreateOauthUser (User) returns (User);
   rpc DeleteOAuthUser (common.ID) returns (common.Deleted);
-  rpc GenerateWebsocketTicket (CreateWebsocketTicketInfoRequest) returns (WebsocketTicket);
-  rpc ConsumeWebsocketTicket (common.ID) returns (WebsocketTicket);
-  rpc ValidateUsersExists (common.IDs) returns (google.protobuf.BoolValue);
 }
 
 service UserLanguageService {
@@ -49,17 +44,6 @@ message UserProfile {
 
 message RefreshTokenRequest {
     string refreshToken = 1;
-}
-
-message CreateWebsocketTicketInfoRequest {
-    string userId = 1;
-}
-
-message WebsocketTicket {
-    string id = 1;
-    google.protobuf.Timestamp expiry = 2;
-    bool isUsed = 3;
-    string userId = 4;
 }
 
 message JwtTokens {

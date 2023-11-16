@@ -39,16 +39,6 @@ export class AuthController implements OnModuleInit {
       );
   }
 
-  @Get('ticket')
-  async getWsTicket(@Req() req) {
-    const ticket = await firstValueFrom(
-      this.userAuthService.generateWebsocketTicket({
-        userId: req.user.id,
-      }),
-    );
-    return { id: ticket.id };
-  }
-
   @Public()
   @Get('google')
   @UseGuards(GoogleOauthGuard)

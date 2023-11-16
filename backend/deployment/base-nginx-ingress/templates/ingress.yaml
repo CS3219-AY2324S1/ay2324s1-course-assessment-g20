@@ -23,13 +23,6 @@ spec:
             name: http-gateway
             port: 
               number: 4000
-      - path: /ws
-        pathType: Prefix
-        backend:
-          service:
-            name: ws-gateway
-            port:
-              number: 4200
 
 ---
 apiVersion: networking.k8s.io/v1

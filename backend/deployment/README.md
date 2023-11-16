@@ -97,6 +97,3 @@ Let's test that the Horizontal Pod Autoscaling (HPA) works as configured (we wil
 1. Login to DockerHub via `docker login`.
 1. Push the images to DockerHub via `docker compose push`.
 > Alternatively, a GitHub Action has been configured to build and push to the remote DockerHub repository on push to `master`.
-
-### Deployment Architecture Diagram
-![Deployment Architecture Diagram](deployment_architecture.png)

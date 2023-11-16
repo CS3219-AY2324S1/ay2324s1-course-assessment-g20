@@ -64,22 +64,4 @@ const SERVICE_TO_PROTO_OPTIONS_MAP = new Map<Service, GrpcOptions['options']>([
     Service.QUESTION_SERVICE,
     { package: 'QuestionPackage', protoPath: getFullProtoPath('question') },
   ],
-  [
-    Service.COLLABORATION_SERVICE,
-    {
-      package: 'CollaborationPackage',
-      protoPath: getFullProtoPath('collaboration'),
-    },
-  ],
-  [
-    Service.CHATBOT_SERVICE,
-    {
-      package: 'ChatbotPackage',
-      protoPath: getFullProtoPath('chatbot'),
-    },
-  ],
-  [
-    Service.MATCHING_SERVICE,
-    { package: 'MatchingPackage', protoPath: getFullProtoPath('matching') },
-  ],
 ]);

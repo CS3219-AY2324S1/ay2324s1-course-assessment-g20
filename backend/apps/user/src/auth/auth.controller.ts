@@ -2,7 +2,6 @@ import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserModel } from '../database/models/user.model';
 import {
-  CreateWebsocketTicketInfoRequest,
   RefreshTokenRequest,
   User,
   UserAuthServiceController,
@@ -31,21 +30,5 @@ export class AuthController implements UserAuthServiceController {
     return this.authService
       .deleteOAuthUser(id)
       .then((deletedCount) => ({ deletedCount }));
-  }
-
-  async generateWebsocketTicket(
-    createTicketInfo: CreateWebsocketTicketInfoRequest,
-  ) {
-    return this.authService.generateWebsocketTicket(createTicketInfo);
-  }
-
-  consumeWebsocketTicket({ id }: ID) {
-    return this.authService.consumeWebsocketTicket(id);
-  }
-
-  validateUsersExists({ ids }: IDs) {
-    return this.authService
-      .validateUsersExist(ids)
-      .then((value) => ({ value }));
   }
 }

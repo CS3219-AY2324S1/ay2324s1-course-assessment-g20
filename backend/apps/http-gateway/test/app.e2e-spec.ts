@@ -96,26 +96,6 @@ describe('Gateway (e2e)', () => {
         );
       });
     });
-
-    describe('/ticket', () => {
-      const endpoint = `${prefix}/ticket`;
-
-      it(`(GET) should return 200 OK with authenticated user`, async () => {
-        const { body } = await request(app.getHttpServer())
-          .get(endpoint)
-          .set('Authorization', `Bearer ${MOCK_USER_1_TOKEN}`)
-          .expect(200);
-        expect(body).toEqual(
-          expect.objectContaining({
-            id: expect.any(String),
-          }),
-        );
-      });
-
-      it(`(GET) should return 401 unauthorized with unauthenticated user`, () => {
-        request(app.getHttpServer()).get(endpoint).expect(401);
-      });
-    });
   });
 
   describe('/question endpoints', () => {

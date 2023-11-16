@@ -13,20 +13,6 @@ services:
     env_file:
       .env.test
 
-  ws-gateway:
-    build: 
-      context: .
-      dockerfile: ./apps/ws-gateway/Dockerfile
-      target: test
-    depends_on:
-      sql-migrations:
-        condition: service_completed_successfully
-      redis:
-        condition: service_healthy
-    networks:
-      - backend
-    env_file: .env.test
-
   question:
     build:
       context: .
@@ -42,41 +28,6 @@ services:
     build:
       context: .
       dockerfile: ./apps/user/Dockerfile
-    depends_on:
-      sql-migrations:
-        condition: service_completed_successfully
-    networks:
-      - backend
-    env_file: .env.test
-
-  collaboration:
-    build:
-      context: .
-      dockerfile: ./apps/collaboration/Dockerfile
-    depends_on:
-      sql-migrations:
-        condition: service_completed_successfully
-    networks:
-      - backend
-    env_file: .env.test
-
-  matching:
-    build:
-      context: .
-      dockerfile: ./apps/matching/Dockerfile
-    depends_on:
-      sql-migrations:
-        condition: service_completed_successfully
-      redis:
-        condition: service_healthy
-    networks:
-      - backend
-    env_file: .env.test
-
-  chatbot:
-    build:
-      context: .
-      dockerfile: ./apps/chatbot/Dockerfile
     depends_on:
       sql-migrations:
         condition: service_completed_successfully
@@ -127,20 +78,6 @@ services:
     env_file: .env.test
     environment:
       - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question?authMechanism=DEFAULT
-      - COLLABORATION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-collaboration?authMechanism=DEFAULT
-
-  redis:
-    image: redis:7.2-alpine
-    restart: always
-    networks:
-      - backend
-    env_file: .env.test
-    command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
-    healthcheck:
-      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 networks:
   backend:

@@ -2,12 +2,12 @@
 ## Development Setup (uncontainerized)
 1. Ensure that you have PostgreSQL, MongoDB, Redis and node v18 installed.
 1. Ensure that you have yarn v1.22.19 installed (e.g. `npm i -g yarn`).
-1. Start PostgreSQL, MongoDB and Redis (e.g. `brew services start redis` if installed via Homebrew on MacOS)
+1. Start PostgreSQL and MongoDB on your local machine.
 1. `cd` to the [`backend`](./) directory.
 1. Run `yarn install`.
 1. Copy the [`.env.example`](./.env.example) file as `.env` (e.g. `cp .env.example .env`) and update the variables where necessary (you may find the [Environment Variables setup](#environment-variables-setup) section below useful).
 1. Setup and populate the databases via `yarn migrate-and-seed:all`.
-1. Open multiple terminals to the [`backend`](./) directory, and run each microservice in 'watch' mode (e.g. `yarn start:dev http-gateway`, `yarn start:dev ws-gateway`, `yarn start:dev question`).
+1. Open multiple terminals to the [`backend`](./) directory, and run each microservice in 'watch' mode (e.g. `yarn start:dev http-gateway`, `yarn start:dev question`).
    > NOTE: The complete list of microservices are the directory names under the [`backend/apps`](./apps/) directory. All microservices have to be started for the backend to run correctly.
 
 ## Building locally with Docker
@@ -35,8 +35,6 @@
 ### PostgreSQL Variables
 - For local PostgreSQL, `{MICROSERVICE}_SERVICE_SQL_DATABASE_HOST` can be left blank
 - Update the USER and PASSWORD related variables
-### Chatbot API
-- Populate CHATBOT_SERVICE_OPENAI_API_KEY={Your own API key from open AI}
 ### JWT Tokens
 - Set `ACCESS_TOKEN_SECRET` and `REFRESH_TOKEN_SECRET` to some random secret string
 - Set the corresponding expiries to something desired (e.g. `1h` or `30s` or `7d`)
@@ -54,4 +52,3 @@
 
 ## Deployment
 - Detailed deployment instructions can be found in the deployment README [here](./deployment/README.md).
-- A detailed deployment architecture diagram can be found [here](./deployment/README.md#deployment-architecture-diagram).

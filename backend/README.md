@@ -21,9 +21,3 @@
 ### PostgreSQL Variables
 - For local PostgreSQL, `{MICROSERVICE}_SERVICE_SQL_DATABASE_HOST` can be left blank
 - Update the USER and PASSWORD related variables
-### Google OAuth
-- From Google Console, generate a set of OAuth credentials and put it under `OAUTH_GOOGLE_ID` and `OAUTH_GOOGLE_SECRET`
-- For local development:
-   - Under `Authorized JavaScript origins`, add `http://localhost:4000`
-   - Under `Authorized Redirect URIs`, add
-      - `http://localhost:4000/v1/auth/google/redirect`

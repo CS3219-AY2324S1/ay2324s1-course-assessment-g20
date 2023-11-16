@@ -1,6 +1,6 @@
 # Peerprep Backend
 ## Development Setup (uncontainerized)
-1. Ensure that you have PostgreSQL, MongoDB, Redis and node v18 installed.
+1. Ensure that you have PostgreSQL, MongoDB and node v18 installed.
 1. Ensure that you have yarn v1.22.19 installed (e.g. `npm i -g yarn`).
 1. Start PostgreSQL and MongoDB on your local machine.
 1. `cd` to the [`backend`](./) directory.

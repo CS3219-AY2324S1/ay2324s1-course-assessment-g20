@@ -4,7 +4,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 ### Local K8s Cluster Setup
 #### Prerequisites
 1. Ensure [minikube](https://minikube.sigs.k8s.io/docs/start/), [helm](https://helm.sh/) and [kustomize](https://kustomize.io/) are installed on your local machine.
-1. Ensure PostgreSQL, MongoDB and Redis are installed on your local machine. Start these services.
+1. Ensure PostgreSQL and MongoDB are installed on your local machine. Start these services.
 
 #### Setup minikube and build Docker containers
 1. Start minikube (e.g. `minikube start`).
@@ -56,7 +56,7 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
 #### Deploy microservices
 1. Navigate into the [deployment/backend](./backend/) directory (e.g. `cd deployment/backend`).
 1. Copy [`custom-values.example.yaml`](./backend/custom-values.example.yaml) as `custom-values.yaml` and set the corresponding variables.
-    1. For `dev` deployments, these values do not have to be changed if using the PostgreSQL, MongoDB and Redis services on your local machine (e.g. NOT the dockerized versions).
+    1. For `dev` deployments, these values do not have to be changed if using the PostgreSQL and MongoDB services on your local machine (e.g. NOT the dockerized versions).
     1. For `prod` deployments, set the ingress `hostName` to the domain gotten from the previous section on TLS certificates.
 1. Run `helm dependency update` to install the local `base-xxx` Helm charts.
 1. Run `helm template peerprep-backend . --values ./values.yaml --values ./custom-values.yaml > ./base/backend.yaml` to generate the Helm templated K8s manifest.
@@ -66,7 +66,6 @@ This directory holds the Kubernetes manifests for deployment to a Kubernetes clu
     - **IMPT NOTE (database hosts)**: Set
         - All the `{MICROSERVICE}_SERVICE_SQL_DATABASE_HOST` to `peer-prep-external-postgres-service.default.svc`
         - All the `{MICROSERVICE}_SERVICE_MONGODB_URL` to `mongodb://peer-prep-external-mongodb-service.default.svc:27017/{database_name}`
-        - `REDIS_HOST` to `peer-prep-external-redis-service.default.svc`.
         > For `prod` builds, this step above can be ignored if you are able to specify the private VPC IP to the above services in the `.env` file itself.
     - **IMPT NOTE (Google OAuth)**: Set `OAUTH_GOOGLE_REDIRECT_URL=http://localhost/v1/auth/google/redirect` (modify URL for `prod` accordingly).
     > For the remaining unset environment variables, refer to the instructions [here](../README.md#environment-variables-setup) to configure them.

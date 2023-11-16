@@ -5,7 +5,5 @@ export const frontendPaths = {
   authRedirect: '/authRedirect',
   dashboard: '/dashboard',
   user: '/user',
-  session: '/session',
   editProfile: '/profile/edit',
-  codeEditor: '/codeEditor',
 };

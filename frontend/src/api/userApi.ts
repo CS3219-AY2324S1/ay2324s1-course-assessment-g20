@@ -2,7 +2,6 @@ import { UpdateUserProfile, UserProfile } from '../@types/userProfile';
 import { Language } from '../@types/language';
 import { backendServicesPaths, HttpRequestMethod } from '../utils/constants';
 import { requestBackend } from './requestBackend';
-import { IAttempt } from '../@types/history';
 
 export async function getUserProfile() {
   return requestBackend<UserProfile>({
@@ -36,13 +35,6 @@ export async function deleteUserProfile() {
 export async function getAllLanguages() {
   return requestBackend<Language[]>({
     url: backendServicesPaths.languages.root,
-    method: HttpRequestMethod.GET,
-  });
-}
-
-export async function getUserAttempts() {
-  return requestBackend<IAttempt[]>({
-    url: backendServicesPaths.user.userAttempts,
     method: HttpRequestMethod.GET,
   });
 }

@@ -11,9 +11,7 @@ The frontend and backend projects can be found under the [frontend](./frontend) 
 - To run the frontend in `dev` or `production` mode, view the instructions [here](./frontend/README.md)
 
 #### Backend setup
-- To run a local uncontainerized setup, view the instructions [here](./backend/README.md#development-setup-uncontainerized).
-- To run a local dockerized setup, view the instructions [here](./backend/README.md#building-locally-with-docker).
-- To run a local Kubernetes cluster (e.g. via minikube), view the instructions [here](./backend/deployment/README.md).
+- To run the backend locally, view the instructions [here](./backend/README.md#development-setup-uncontainerized).
 
 ### Contact
 For any setup related issues, feel free to reach out to the team at [chowenrong@u.nus.edu](mailto:chowenrong@u.nus.edu).

@@ -19,11 +19,10 @@ async function connectToDatabase() {
     //   .deleteMany({})
     //   .then(() => console.log('Deleted all difficulties'));
 
-    await Promise.all(
-      difficultiesJson.map((d) =>
-        collection.updateOne(d, { $setOnInsert: d }, { upsert: true }),
-      ),
-    ).then(() => console.log('Finished upserting difficulties'));
+    for (const d of difficultiesJson) {
+      await collection.updateOne(d, { $setOnInsert: d }, { upsert: true });
+    }
+    console.log('Finished upserting difficulties');
 
     // Close connection
     await client.close().then(() => console.log('Closed connection'));

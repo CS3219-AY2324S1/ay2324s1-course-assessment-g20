@@ -1,0 +1,16 @@
+version: '1'
+services:
+  serverless-functions:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8000:8000
+    networks:
+      - backend_backend
+    environment:
+      - QUESTION_SERVICE_MONGODB_URL=mongodb://root:root@mongo:27017/peer-prep-question?authSource=admin
+
+networks:
+  backend_backend:
+    external: true

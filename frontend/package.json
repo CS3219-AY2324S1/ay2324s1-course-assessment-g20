@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "start:docker": "docker compose -f ./docker-compose.yml --env-file .env.development up --build -d",
+    "stop:docker": "docker compose -f ./docker-compose.yml --env-file .env.development down",
     "build": "tsc && vite build",
     "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx src/ test/",
     "lint:ci": "eslint --ext .js,.jsx,.ts,.tsx src/ test/",

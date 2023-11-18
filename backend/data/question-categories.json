@@ -1,0 +1,119 @@
+[
+  {
+    "name": "Arrays"
+  },
+  {
+    "name": "Strings"
+  },
+  {
+    "name": "Hash Tables"
+  },
+  {
+    "name": "Math"
+  },
+  {
+    "name": "Algorithms"
+  },
+  {
+    "name": "Dynamic Programming"
+  },
+  {
+    "name": "Sorting"
+  },
+  {
+    "name": "Greedy"
+  },
+  {
+    "name": "Depth-First Search"
+  },
+  {
+    "name": "Binary Search"
+  },
+  {
+    "name": "Breadth-First Search"
+  },
+  {
+    "name": "Brainteaser"
+  },
+  {
+    "name": "Trees"
+  },
+  {
+    "name": "Matrices"
+  },
+  {
+    "name": "Two Pointers"
+  },
+  {
+    "name": "Binary Trees"
+  },
+  {
+    "name": "Bit Manipulation"
+  },
+  {
+    "name": "Heap (Priority Queue)"
+  },
+  {
+    "name": "Stacks"
+  },
+  {
+    "name": "Prefix Sum"
+  },
+  {
+    "name": "Graphs"
+  },
+  {
+    "name": "Simulation"
+  },
+  {
+    "name": "Design"
+  },
+  {
+    "name": "Counting"
+  },
+  {
+    "name": "Backtracking"
+  },
+  {
+    "name": "Sliding Window"
+  },
+  {
+    "name": "Union Find"
+  },
+  {
+    "name": "Linked Lists"
+  },
+  {
+    "name": "Ordered Sets"
+  },
+  {
+    "name": "Tries"
+  },
+  {
+    "name": "Recursion"
+  },
+  {
+    "name": "Divide and Conquer"
+  },
+  {
+    "name": "Queues"
+  },
+  {
+    "name": "Shortest Path"
+  },
+  {
+    "name": "Binary Search Tree"
+  },
+  {
+    "name": "Merge Sort"
+  },
+  {
+    "name": "Quickselect"
+  },
+  {
+    "name": "Databases"
+  },
+  {
+    "name": "Data Structures"
+  }
+]

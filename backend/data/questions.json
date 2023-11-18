@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "title": "Reverse a String",
+    "difficulty": "Easy",
+    "categories": ["Strings", "Algorithms"]
+  },
+  {
+    "id": 2,
+    "title": "Linked List Cycle Detection",
+    "difficulty": "Easy",
+    "categories": ["Data Structures", "Algorithms"]
+  },
+  {
+    "id": 3,
+    "title": "Roman to Integer",
+    "difficulty": "Easy",
+    "categories": ["Algorithms"]
+  },
+  {
+    "id": 4,
+    "title": "Add Binary",
+    "difficulty": "Easy",
+    "categories": ["Bit Manipulation", "Algorithms"]
+  },
+  {
+    "id": 5,
+    "title": "Fibonacci Number",
+    "difficulty": "Easy",
+    "categories": ["Recursion", "Algorithms"]
+  },
+  {
+    "id": 6,
+    "title": "Implement Stack using Queues",
+    "difficulty": "Easy",
+    "categories": ["Data Structures"]
+  },
+  {
+    "id": 7,
+    "title": "Combine Two Tables",
+    "difficulty": "Easy",
+    "categories": ["Databases"]
+  },
+  {
+    "id": 8,
+    "title": "Repeated DNA Sequences",
+    "difficulty": "Medium",
+    "categories": ["Algorithms", "Bit Manipulation"]
+  },
+  {
+    "id": 9,
+    "title": "Course Schedule",
+    "difficulty": "Medium",
+    "categories": ["Data Structures", "Algorithms"]
+  },
+  {
+    "id": 10,
+    "title": "LRU Cache Design",
+    "difficulty": "Medium",
+    "categories": ["Data Structures"]
+  },
+  {
+    "id": 11,
+    "title": "Longest Common Subsequence",
+    "difficulty": "Medium",
+    "categories": ["Strings", "Algorithms"]
+  },
+  {
+    "id": 12,
+    "title": "Rotate Image",
+    "difficulty": "Medium",
+    "categories": ["Arrays", "Algorithms"]
+  },
+  {
+    "id": 13,
+    "title": "Airplane Seat Assignment Probability",
+    "difficulty": "Medium",
+    "categories": ["Brainteaser"]
+  },
+  {
+    "id": 14,
+    "title": "Validate Binary Search Tree",
+    "difficulty": "Medium",
+    "categories": ["Data Structures", "Algorithms"]
+  },
+  {
+    "id": 15,
+    "title": "Sliding Window Maximum",
+    "difficulty": "Hard",
+    "categories": ["Arrays", "Algorithms"]
+  },
+  {
+    "id": 16,
+    "title": "N-Queen Problem",
+    "difficulty": "Hard",
+    "categories": ["Algorithms"]
+  },
+  {
+    "id": 17,
+    "title": "Serialize and Deserialize Binary Tree",
+    "difficulty": "Hard",
+    "categories": ["Data Structures", "Algorithms"]
+  },
+  {
+    "id": 18,
+    "title": "Wildcard Matching",
+    "difficulty": "Hard",
+    "categories": ["Strings", "Algorithms"]
+  },
+  {
+    "id": 19,
+    "title": "Chalkboard XOR Game",
+    "difficulty": "Hard",
+    "categories": ["Brainteaser"]
+  },
+  {
+    "id": 20,
+    "title": "Trips and Users",
+    "difficulty": "Hard",
+    "categories": ["Databases"]
+  }
+]

@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package UserPackage;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+service UserAuthService {
+  rpc GenerateJwts (User) returns (JwtTokens);
+  rpc GenerateJwtsFromRefreshToken (RefreshTokenRequest) returns (JwtTokens);
+  rpc FindOrCreateOauthUser (User) returns (User);
+  rpc DeleteOAuthUser (common.ID) returns (common.Deleted);
+  rpc GenerateWebsocketTicket (CreateWebsocketTicketInfoRequest) returns (WebsocketTicket);
+  rpc ConsumeWebsocketTicket (common.ID) returns (WebsocketTicket);
+  rpc ValidateUsersExists (common.IDs) returns (google.protobuf.BoolValue);
+}
+
+service UserLanguageService {
+  rpc GetAllLanguages (google.protobuf.Empty) returns (GetAllLanguagesResponse);
+  rpc GetLanguageById (common.NumericID) returns (Language);
+}
+
+service UserProfileService {
+    rpc GetUserProfileById (common.ID) returns (UserProfile);
+    rpc GetUserProfileByUsername (Username) returns (UserProfile);
+    rpc UpdateUserProfile (UserProfile) returns (UserProfile);
+}
+
+message User {
+    optional string id = 1;
+    string authProvider = 2;
+    string authProviderId = 3;
+    string email = 4;
+    string oauthName = 5;
+    UserProfile userProfile = 6;
+}
+
+message UserProfile {
+    optional string userId = 1;
+    string name = 2;
+    int32 preferredLanguageId = 3;
+    int32 roleId = 4;
+    optional Language preferredLanguage = 5;
+    optional Role role = 6;
+    optional string username = 7;
+}
+
+message RefreshTokenRequest {
+    string refreshToken = 1;
+}
+
+message CreateWebsocketTicketInfoRequest {
+    string userId = 1;
+}
+
+message WebsocketTicket {
+    string id = 1;
+    google.protobuf.Timestamp expiry = 2;
+    bool isUsed = 3;
+    string userId = 4;
+}
+
+message JwtTokens {
+    string accessToken = 1;
+    string refreshToken = 2;
+}
+
+message Username {
+    string username = 1;
+}
+
+message Language {
+    int32 id = 1;
+    string name = 2;
+}
+
+message Role {
+    int32 id = 1;
+    string name = 2;
+}
+
+message GetAllLanguagesResponse {
+    repeated Language languages = 1;
+}

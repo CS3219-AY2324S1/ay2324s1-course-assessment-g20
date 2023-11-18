@@ -1,0 +1,16 @@
+{{- $maxReplicas := .Values.maxReplicas | required ".Values.maxReplicas is required." -}}
+{{- $microserviceName := .Values.microserviceName | required ".Values.microserviceName is required." -}}
+
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-{{ $microserviceName }}-microservice
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $microserviceName }}
+  minReplicas: 1
+  maxReplicas: {{ $maxReplicas }}
+  targetCPUUtilizationPercentage: 50

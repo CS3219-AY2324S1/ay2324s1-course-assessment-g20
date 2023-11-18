@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package CollaborationPackage;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "question.proto";
+import "common.proto";
+import "user.proto";
+
+service CollaborationService {
+  rpc CreateCollabSession (CreateCollabSessionRequest) returns (Session);
+  rpc GetSession (GetSessionOrTicketRequest) returns (GetSessionResponse);
+  rpc GetSessionTicket (GetSessionOrTicketRequest) returns (GetSessionTicketResponse);
+  rpc GetSessionFromTicket (common.ID) returns (GetSessionFromTicketResponse);
+  rpc GetQuestionIdFromSessionId (common.ID) returns (GetQuestionIdFromSessionIdResponse);
+  rpc GetLanguageIdFromSessionId (common.ID) returns (UserPackage.Language);
+  rpc SetSessionLanguageId (SetSessionLanguageIdRequest) returns (google.protobuf.Empty) {}
+  rpc GetAttemptsFromUserId (common.ID) returns (GetAttemptsFromUserIdResponse);
+  rpc GetSessionAttempt (GetSessionOrTicketRequest) returns (Attempt);
+  rpc CloseSession (common.ID) returns (google.protobuf.Empty);
+}
+
+message CreateCollabSessionRequest {
+  repeated string userIds = 1;
+  string questionId = 2;
+}
+
+message GetQuestionIdFromSessionIdResponse {
+  string questionId = 1;
+}
+
+message GetSessionOrTicketRequest {
+  string sessionId = 1;
+  string userId = 2;
+}
+
+message SetSessionLanguageIdRequest {
+  string sessionId = 1;
+  int32 languageId = 2;
+}
+
+message GetSessionResponse {
+  QuestionPackage.Question question = 1;
+  string otherUserUsername = 2;
+}
+
+message GetSessionTicketResponse {
+  string ticket = 1;
+}
+
+message GetSessionFromTicketResponse {
+  string id = 1;
+  string questionId = 2;
+  int32 languageId = 3;
+  bool isClosed = 4;
+}
+
+message GetAttemptsFromUserIdResponse {
+  repeated Attempt attempts = 1;
+}
+
+message Attempt {
+  map<int32, string> attemptTextByLanguageId = 1;
+  google.protobuf.Timestamp dateTimeAttempted = 2;
+  QuestionPackage.Question question = 3;
+  int32 languageId = 4;
+  string sessionId = 5;
+  bool isClosed = 6;
+}
+
+message Session {
+  string id = 1;
+  string questionId = 2;
+  repeated UserId userIds = 3;
+  repeated SessionTicket sessionTickets = 4;
+}
+
+message UserId {
+  string userId = 1;
+}
+
+message SessionTicket {
+  string ticketId = 1;
+}

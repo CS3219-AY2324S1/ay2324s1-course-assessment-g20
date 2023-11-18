@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package QuestionPackage;
+
+import "google/protobuf/empty.proto";
+import "common.proto";
+
+service QuestionService {
+  rpc GetQuestions (google.protobuf.Empty) returns (GetQuestionsResponse);
+  rpc AddQuestion (Question) returns (Question);
+  rpc DeleteQuestionWithId (common.ID) returns (common.ID);
+  rpc GetQuestionWithId (common.ID) returns (Question);
+  rpc UpdateQuestionWithId (Question) returns (Question);
+  rpc GetQuestionsByDifficultyId(common.ID) returns (GetQuestionsResponse);
+
+  rpc GetDifficulties (google.protobuf.Empty) returns (GetDifficultiesResponse);
+  rpc AddDifficulty (Difficulty) returns (Difficulty);
+  rpc DeleteDifficultyWithId (common.ID) returns (common.ID);
+
+  rpc GetCategories (google.protobuf.Empty) returns (GetCategoriesResponse);
+  rpc AddCategory (Category) returns (Category);
+  rpc DeleteCategoryWithId (common.ID) returns (common.ID);
+}
+
+message GetQuestionsResponse {
+  repeated Question questions = 1;
+}
+
+message GetDifficultiesResponse {
+  repeated Difficulty difficulties = 1;
+}
+
+message GetCategoriesResponse {
+  repeated Category categories = 1;
+}
+
+message Question {
+  optional string _id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string categories = 4;
+  string difficulty = 5;
+}
+
+message Difficulty {
+  optional string _id = 1;
+  string name = 2;
+}
+
+message Category {
+  optional string _id = 1;
+  string name = 2;
+}

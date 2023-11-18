@@ -1,0 +1,51 @@
+apiVersion: v2
+name: backend
+description: Helm chart to deploy PeerPrep backend
+
+type: application
+
+version: 0.1.0
+
+dependencies:
+  - alias: http-gateway-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: ws-gateway-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: question-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: user-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: collaboration-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: matching-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - alias: chatbot-microservice
+    name: base-microservice
+    version: '0.1.0'
+    repository: file://../base-microservice
+
+  - name: base-nginx-ingress
+    version: '0.1.0'
+    repository: file://../base-nginx-ingress
+
+  - name: base-externals
+    version: '0.1.0'
+    repository: file://../base-externals

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package common;
+
+message ID {
+  string id = 1;
+}
+
+message IDs {
+  repeated string ids = 1;
+}
+
+message NumericID {
+  int32 id = 1;
+}
+
+message Deleted {
+  int32 deletedCount = 1;
+}

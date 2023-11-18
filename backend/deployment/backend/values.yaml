@@ -1,0 +1,90 @@
+http-gateway-microservice:
+  microserviceName: 'http-gateway'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-http-gateway
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4000
+  servicePort: 4000
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
+
+ws-gateway-microservice:
+  microserviceName: 'ws-gateway'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-ws-gateway
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4200
+  servicePort: 4200
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 1
+
+question-microservice:
+  microserviceName: 'question'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-question
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4001
+  servicePort: 4001
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
+
+user-microservice:
+  microserviceName: 'user'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-user
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4002
+  servicePort: 4002
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
+
+collaboration-microservice:
+  microserviceName: 'collaboration'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-collaboration
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4003
+  servicePort: 4003
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
+
+matching-microservice:
+  microserviceName: 'matching'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-matching
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4004
+  servicePort: 4004
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3
+
+chatbot-microservice:
+  microserviceName: 'chatbot'
+  replicaCount: 1
+  image:
+    repository: chownces/backend-chatbot
+    tag: 'latest'
+  portProtocol: TCP
+  containerPort: 4006
+  servicePort: 4006
+  requestsCpu: "200m"
+  limitsCpu: "500m"
+  maxReplicas: 3

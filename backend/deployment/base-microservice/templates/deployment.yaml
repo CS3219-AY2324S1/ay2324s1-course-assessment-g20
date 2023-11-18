@@ -1,0 +1,37 @@
+{{- $microserviceName := .Values.microserviceName | required ".Values.microserviceName is required." -}}
+{{- $replicaCount := .Values.replicaCount | required ".Values.replicaCount is required." -}}
+{{- $imageRepository := .Values.image.repository | required ".Values.image.repository is required." -}}
+{{- $imageTag := .Values.image.tag | required ".Values.image.tag is required." -}}
+{{- $containerPort := .Values.containerPort | required ".Values.containerPort is required." -}}
+{{- $requestsCpu := .Values.requestsCpu | required ".Values.requestsCpu is required." -}}
+{{- $limitsCpu := .Values.limitsCpu | required ".Values.limitsCpu is required." -}}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $microserviceName }}
+spec:
+  replicas: {{ $replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $microserviceName }}
+  template:
+    metadata:
+      labels:
+        app: {{ $microserviceName }}
+    spec:
+      containers:
+        - name: {{ $microserviceName }}
+          image: {{ $imageRepository }}:{{ $imageTag }}
+          resources:
+            requests:
+              cpu: {{ $requestsCpu }}
+            limits:
+              cpu: {{ $limitsCpu }}
+          imagePullPolicy: Never
+          ports:
+            - containerPort: {{ $containerPort }}
+          envFrom:
+            - secretRef:
+                name: env-file

@@ -1,0 +1,9 @@
+- op: add
+  path: '/spec/template/spec/containers/0/env'
+  value:
+    - name: NODE_ENV
+      value: 'production'
+
+- op: replace
+  path: '/spec/template/spec/containers/0/imagePullPolicy'
+  value: Always
